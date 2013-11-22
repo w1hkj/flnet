@@ -1,0 +1,122 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0109 
+header_name {.h} 
+code_name {.cpp}
+Function {winCallsignBrowse()} {} {
+  Fl_Window {} {
+    label {Browse by Callsign}
+    xywh {466 272 304 231} type Double color 52 hide modal
+  } {
+    Fl_Browser brwsCallsign {
+      xywh {0 0 215 230} type Hold when 4 textfont 13
+    }
+    Fl_Button btnCancelCallsignSearch {
+      label Cancel
+      callback cb_btnCancelCallsignSearch
+      xywh {230 35 60 40}
+    }
+    Fl_Button btn_OkCallsignSearch {
+      label OK
+      callback cb_OkCallsignSearch
+      xywh {230 135 60 40}
+    }
+  }
+} 
+
+Function {winNetNbrBrowse()} {open
+} {
+  Fl_Window {} {
+    label {Browse by Net Nbr} open
+    xywh {582 647 300 230} type Double color 52 modal visible
+  } {
+    Fl_Browser brwsNetNbr {
+      xywh {0 0 215 230} type Hold when 4 textfont 4
+    }
+    Fl_Button btnCancelNetNbrSearch {
+      label Cancel
+      callback cb_btnCancelNetNbrSearch
+      xywh {225 45 60 40}
+    }
+    Fl_Button btn_OkNetNbrSearch {
+      label OK
+      callback cb_OkNetNbrSearch
+      xywh {225 120 60 40}
+    }
+  }
+} 
+
+Function {newSearchCallsignDialog()} {} {
+  Fl_Window winSearchCallsignDialog {open
+    xywh {383 185 207 107} type Double hide modal
+  } {
+    Fl_Input sSrchPrefix {
+      label Prefix
+      xywh {40 35 25 25} align 1 textfont 13
+    }
+    Fl_Input sSrchArea {
+      label Area
+      xywh {85 35 25 25} align 1 textfont 13
+    }
+    Fl_Input sSrchSuffix {
+      label Suffix
+      xywh {130 35 40 25} align 5 textfont 13
+    }
+    Fl_Button btnSearchCancel {
+      label Cancel
+      callback cb_btnSearchCancel
+      xywh {20 70 80 25}
+    }
+    Fl_Return_Button btnSearchOK {
+      label Search
+      callback cb_btnSearchOK
+      xywh {105 70 80 25}
+    }
+    Fl_Box {} {
+      label {Enter Full Call / Suffix Only}
+      xywh {0 0 210 20}
+    }
+  }
+} 
+
+Function {newSearchNetNbrDialog()} {} {
+  Fl_Window winSearchNetNbrDialog {open
+    xywh {393 195 207 107} type Double hide modal
+  } {
+    Fl_Input sSrchNetNbr {
+      label {Enter Net Number}
+      xywh {80 30 50 25} align 1 textfont 13
+    }
+    Fl_Button btnSearchNetNbrCancel {
+      label Cancel
+      callback cb_btnSearchNetNbrCancel
+      xywh {20 70 80 25}
+    }
+    Fl_Return_Button btnSearchNetNbrOK {
+      label Search
+      callback cb_btnSearchNetNbrOK
+      xywh {105 70 80 25}
+    }
+  }
+} 
+
+Function {newAboutDialog()} {
+  callback cb_mnuAbout open
+} {
+  Fl_Window dlgAbout {open
+    xywh {363 200 185 180} type Double color 53 modal visible
+  } {
+    Fl_Group lblVersion {
+      label {xxx:} open selected
+      xywh {0 5 180 110} box ENGRAVED_FRAME align 16
+    } {}
+    Fl_Return_Button {} {
+      label Thanks
+      callback {dlgAbout->hide ();}
+      xywh {40 150 100 25}
+    }
+    Fl_Group {} {
+      label {w1hkj@@w1hkj.com}
+      xywh {0 115 180 30} box ENGRAVED_FRAME align 16
+    } {}
+  }
+} 

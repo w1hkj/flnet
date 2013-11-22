@@ -1,0 +1,26 @@
+/* XPM Calendar Label */
+static char *cal_16[] = {
+/* width height num_colors chars_per_pixel */
+"    16    16        3            1",
+/* colors */
+". c #000000",
+"d c none",
+"e c #ffffff",
+/* pixels */
+"dddddddddddddddd",
+"...............d",
+".eeeeeeeeeeeee.d",
+"...............d",
+".e.e.e.e.e.e.e.d",
+"...............d",
+".e.e.e.e.e.e.e.d",
+"...............d",
+".e.e.e.e.e.e.e.d",
+"...............d",
+".e.e.e.e.e.e.e.d",
+"...............d",
+".e.e.e.e.e.e.e.d",
+"...............d",
+"dddddddddddddddd",
+"dddddddddddddddd",
+};

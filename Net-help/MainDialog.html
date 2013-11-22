@@ -1,0 +1,204 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head>
+
+
+
+	
+  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=windows-1252"><title></title>
+
+	
+	
+  
+  <meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+
+	
+  <meta name="CREATED" content="20040527;10305453">
+
+	
+  <meta name="CHANGED" content="16010101;0">
+
+	
+  <style>
+	<!--
+		TD P { color: #000000 }
+		H1 { color: #000000 }
+		P { color: #000000 }
+		H3 { color: #000000 }
+		H4 { color: #000000 }
+		A:link { color: #000099 }
+		A:visited { color: #990099 }
+	-->
+	</style></head><body dir="ltr" bgcolor="#ffffcc" lang="en-US" link="#000099" text="#000000" vlink="#990099">
+
+<h1 align="center">Main Dialog</h1>
+
+<h3>Program Execution</h3>
+
+<h4>Windows:</h4>
+
+<p style="margin-left: 0.42in; margin-bottom: 0in;" align="justify">Invoke
+NET by either clicking on the program within the windows explorer, or
+bringing up a DOS window and changing to the directory containing the
+net5.exe program. &nbsp;If within a DOS window the operator may
+either enter "net5" or "net5 fname", where fname
+is the name of the filename which either contains or will contain the
+net callsign database. &nbsp;A new file will be created if it does
+not exist at the time the program is started. &nbsp;You will be given a
+choice of a two database types. &nbsp;The database sets differ in the
+number and types of fields that will be stored.</p>
+<p style="margin-left: 0.42in; margin-bottom: 0in;" align="justify">Normal: PREFIX, AREA, SUFFIX, NAME, NETNBR, LOGDATA, FNAME, LNAME ADDRESS, CITY, STATE, ZIP, PHONE, BIRTHDATE, SPOUSE, SP_BIRTH</p>
+<p style="margin-left: 0.42in; margin-bottom: 0in;" align="justify">Extended: adds the following fields:</p>
+<p style="margin-left: 0.42in; margin-bottom: 0in;" align="justify">&nbsp;&nbsp;NBRLOGINS,&nbsp;STATUS,&nbsp;JOINED,&nbsp;COMMENT1 ,&nbsp;COMMENT2,&nbsp;&nbsp;EMAIL,&nbsp;PREVDATE<br>
+<br>
+&nbsp;If you start with the normal sized database and decide at a later
+date to move the to the extended you can use the executable file
+"orig2ext" to perform the conversion.</p>
+<p style="margin-left: 0.42in; margin-bottom: 0in;" align="justify">If started from
+the explorer window or by simply entering "net5" at the DOS
+prompt, the program will start with a "file open" dialog
+for you to choose the database file to open. &nbsp;You may also enter
+the name of a new file and it will then be created as above.<br>
+<br>
+All
+database files have the extension ".dbf" which may
+optionally be added to the filename. &nbsp;Either way, the program
+will always open or create a file with that extensiion. &nbsp;These
+are xbase files which are compatible with the old DOS dbase-IV file
+definition.</p>
+
+
+<h4>Linux:</h4>
+
+<p style="margin-left: 0.42in; margin-bottom: 0in;">Operations is
+identical to Windows, except the user will select the file to execute
+using either a terminal command line program or a gui browser
+associated with the windowing system being employed. &nbsp;Under
+Linux it is easy to place a shortcut on the desktop and associate
+that with the database to be opened. &nbsp;</p>
+
+<p><br>
+<br>
+
+</p>
+
+<h4>Main Window Layout:</h4>
+
+<p style="margin-bottom: 0in;" align="center"><img style="border: 0px solid ; width: 398px; height: 458px;" alt="" src="net.png" name="Graphic1"></p>
+
+<p align="justify"><br>
+The main window is divided into three sections.
+&nbsp;The Call In List to the left contains all of the net members
+callsigns, nicknames and time of login, who have been entered for
+this session. &nbsp;The data in this window can be scrolled using the
+UP and DWN arrow keys. &nbsp;The callsign contained within the
+confines of the two dark arrows (WB1HKJ above) is the active call.
+&nbsp;That will be the person who is presently acknowledged by the
+control operator. &nbsp;It is significant for another reason. &nbsp;The
+function keys F1, F2, F3 and F4 when pressed with change the color of
+that entry to BLACK, BLUE, GREEN or RED respectively. &nbsp;The color
+coding can be used by the net control operator in any way that he or
+she chooses. &nbsp;One use might choose to designate</p>
+
+<p align="justify">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Logged in to the net&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BLACK</p>
+
+<p align="justify">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Acknowledged #1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BLUE</p>
+
+<p align="justify">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Acknowledged #2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GREEN</p>
+
+<p align="justify">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Logged
+out&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+RED</p>
+
+<p align="justify">The colors are selected from the configuration
+dialog.<br>
+<br>
+The right most column is a FLAG that specifies some
+special characteristic about that callsign.&nbsp; For example: this
+call might be from a mobile operator, or from a QRP station, or a DX
+station that requires special or early recognition by the net
+operator.&nbsp; Up to three special flags may be assigned (see the
+configuration infomation).</p>
+
+<p align="justify">Entering a callsign into the "Call In List"
+is quite simple. &nbsp;Key in the letters associated with the suffix
+of the call being entered. &nbsp;In the screen above the S has been
+entered (case independent). &nbsp;As each letter in entered the calls
+which match that sequence will be shown in the pick list just below
+the Suffix box.</p>
+
+<p style="margin-left: 0.83in;" align="justify">While the various
+display elements may look like entry fields, scrolling browsers, etc.
+THEY ARE NOT! &nbsp;All of the things shown on the screen are simple
+labels that are being manipulated from the keyboard and under program
+control. &nbsp;Standard GUI controls would have the habit of wanting
+to control what happens when given keyboard or mouse focus. &nbsp;That
+would destroy the quick response mechanism associated with the net
+functionality. &nbsp;You can click your mouse on these controls all
+day long and nothing will happen. &nbsp;You don't need the mouse for
+the net control function.</p>
+
+<p align="justify">If the desired call is singular in the list or at
+the top of the list as is NK2G in the example screen you can select
+it by pressing the ENTER key. &nbsp;The call will be transfered to
+the end of the Call In List along with the nick name of that member
+and the time of logging. &nbsp;If the call is in the list but not at
+the top, then press the DOWN (or UP) arrow key. &nbsp;Control now
+passes to the pick list below the Suffix box and the 2nd call in the
+list will be highlighted RED. &nbsp;You can move between entried
+using the UP and DOWN arrow keys until the desired call is
+highlighted. &nbsp;Press ENTER to select the highlighted call.</p>
+
+<p align="justify">The newly transfered call may or may not be
+immediately shown in the Call In List box depending on whether the
+box is presently filled with calls. &nbsp;Do not be concered. &nbsp;It
+is at the end of the list. &nbsp;To convince yourself of this, press
+the END key after making the selection. &nbsp;The last call entered
+in the Call In List will be moved to the current call position.
+&nbsp;Pressing HOME will put the first call entered in the current
+call position. (see <a href="Function_Keys.html">Function Key</a>
+definitions).</p>
+
+<p align="justify"><b>Aborting the selection process:</b> The operator
+can abort the selection process at any time by simply pressing the
+ESC key.</p>
+
+<p align="justify"><b>No calls appear in the pick list:</b> This is
+because no callsign with that suffix is contained in the database.
+&nbsp;You may have a new log-in to your net. &nbsp;Press the TAB key
+to move to the Prefix box. &nbsp;Enter the prefix and then TAB again
+to move to the Area box. &nbsp;Enter the number for the area and then
+press ENTER to transfer that new call to the Call In List. &nbsp;You
+can abort this operation at any time by pressing the ESC key.<br>
+<br>
+The
+fields displayed in the lower part of the window are the values
+associated with the Call In List current value. &nbsp;These will
+change as you move between log-in entries.</p>
+
+<h3 align="justify">Closing down the program:</h3>
+
+<p align="justify">You close the program by selecting the menu <b>File
+/ Exit.</b> &nbsp;The program will update the database if appropriate
+and create a daily log if the Call In List contains values. &nbsp;The
+log is an appended file for each day of operation. &nbsp;The name of
+the log file is <b>databasename</b>YYYYMMDD.log. &nbsp;Where the
+YYYYMMDD is the current days value. &nbsp;If you open the net
+multiple times during the day, the data for each session is appended
+to the previous for the day. &nbsp;A blank line will appear between
+each session. &nbsp;The data in this file is identical to the Call In
+List values.</p>
+
+<h3 align="justify">Opening a new database:</h3>
+
+<p align="justify">You may close the current database and open a
+different (or create a new one) by selecting the menu button <b>Files
+/ Open</b>. &nbsp;All of the current information will be saved as
+when the program is closed down above.</p>
+
+<p style="margin-bottom: 0in;" align="center"><a href="index.html"><font size="5">Contents</font></a></p>
+
+</body></html>

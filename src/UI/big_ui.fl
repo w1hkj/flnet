@@ -1,0 +1,354 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0300 
+header_name {.h} 
+code_name {.cpp}
+decl {\#include <stdlib.h>} {private local
+} 
+
+decl {\#include <stdio.h>} {private local
+} 
+
+decl {\#include <string.h>} {private local
+} 
+
+decl {\#include "netshared.h"} {private local
+} 
+
+decl {\#include "config.h"} {private local
+} 
+
+decl {\#include "net_config.h"} {private local
+} 
+
+Function {newNetControl()} {open
+} {
+  Fl_Window {} {
+    label {Net Control ver 5.0} open
+    xywh {582 81 475 635} type Double box BORDER_BOX
+    code0 {\#include "my_UI.h"} visible
+  } {
+    Fl_Menu_Bar mnu_bar {open selected
+      xywh {0 0 475 25}
+    } {
+      Submenu {} {
+        label {&Files} open
+        xywh {0 0 100 20}
+      } {
+        MenuItem mnuOpen {
+          label {&Open}
+          callback cb_mnuOpen
+          xywh {0 0 100 20} divider
+        }
+        MenuItem mnuExit {
+          label {&Exit}
+          callback cb_mnuExit
+          xywh {0 0 100 20}
+        }
+      }
+      MenuItem mnuEditor {
+        label {&Editor}
+        callback cb_mnuEditor
+        xywh {0 0 100 20}
+      }
+      MenuItem mnuConfig {
+        label Config
+        callback cb_mnuConfig
+        xywh {0 0 100 20}
+      }
+      Submenu {} {
+        label {&Help} open
+        xywh {0 0 100 20}
+      } {
+        MenuItem mnu_Content {
+          label Content
+          callback cb_mnuHelpContent
+          xywh {0 0 100 20} divider
+        }
+        MenuItem mnu_About {
+          label About
+          callback cb_mnuAbout
+          xywh {0 0 100 20}
+        }
+      }
+    }
+    Fl_Group myUI {open
+      xywh {0 25 390 430}
+      class my_UI
+    } {
+      Fl_Box txtNcallins {
+        label {0 callins}
+        xywh {140 30 115 20} labelsize 16 align 16
+      }
+      Fl_Group net_grp1 {
+        label {    Call In List} open
+        tooltip {Use UP/DN arrow keys to scroll list} xywh {0 49 275 400} labelfont 1 labelsize 16 align 5
+      } {
+        Fl_Group net_grp2 {open
+          xywh {17 60 240 384} box DOWN_BOX color 7
+        } {
+          Fl_Box txtTitles {
+            label {Call    Name    Time  F}
+            xywh {17 60 240 24} box FLAT_BOX color 23 labelfont 4 labelsize 16 align 20
+          }
+          Fl_Box {txtLine[0]} {
+            xywh {17 84 240 24} box FLAT_BOX color 7 labelfont 4 labelsize 16 align 20
+          }
+          Fl_Box {txtLine[1]} {
+            xywh {17 108 240 24} box FLAT_BOX color 7 labelfont 4 labelsize 16 align 20
+          }
+          Fl_Box {txtLine[2]} {
+            xywh {17 132 240 24} box FLAT_BOX color 7 labelfont 4 labelsize 16 align 20
+          }
+          Fl_Box {txtLine[3]} {
+            xywh {17 156 240 24} box FLAT_BOX color 7 labelfont 4 labelsize 16 align 20
+          }
+          Fl_Box {txtLine[4]} {
+            xywh {17 180 240 24} box FLAT_BOX color 7 labelfont 4 labelsize 16 align 20
+          }
+          Fl_Box {txtLine[5]} {
+            xywh {17 204 240 24} box FLAT_BOX color 7 labelfont 4 labelsize 16 align 20
+          }
+          Fl_Box {txtLine[6]} {
+            xywh {17 228 240 24} box FLAT_BOX color 7 labelfont 4 labelsize 16 align 20
+          }
+          Fl_Box {txtLine[7]} {
+            xywh {17 252 240 24} box FLAT_BOX color 7 labelfont 4 labelsize 16 align 20
+          }
+          Fl_Box {txtLine[8]} {
+            xywh {17 276 240 24} box FLAT_BOX color 7 labelfont 4 labelsize 16 align 20
+          }
+          Fl_Box {txtLine[9]} {
+            xywh {17 300 240 24} box FLAT_BOX color 7 labelfont 4 labelsize 16 align 20
+          }
+          Fl_Box {txtLine[10]} {
+            xywh {17 324 240 24} box FLAT_BOX color 7 labelfont 4 labelsize 16 align 20
+          }
+          Fl_Box {txtLine[11]} {
+            xywh {17 348 240 24} box FLAT_BOX color 7 labelfont 4 labelsize 16 align 20
+          }
+          Fl_Box {txtLine[12]} {
+            xywh {17 372 240 24} box FLAT_BOX color 7 labelfont 4 labelsize 16 align 20
+          }
+          Fl_Box {txtLine[13]} {
+            xywh {17 396 240 24} box FLAT_BOX color 7 labelfont 4 labelsize 16 align 20
+          }
+          Fl_Box {txtLine[14]} {
+            xywh {17 420 240 24} box FLAT_BOX color 7 labelfont 4 labelsize 16 align 20
+          }
+        }
+        Fl_Box ptr_left {
+          label {@>}
+          xywh {1 180 15 24} labelsize 16
+        }
+        Fl_Box ptr_right {
+          label {@<}
+          xywh {258 180 15 24} labelsize 16
+        }
+      }
+      Fl_Group dbSelectGroup {open
+        xywh {284 60 185 375} box ENGRAVED_FRAME align 5
+      } {
+        Fl_Box inpLoginSuffix {
+          tooltip {Enter SUFFIX, Esc to abort} xywh {291 87 60 30} box DOWN_BOX color 7 labelfont 13 labelsize 18 align 20
+        }
+        Fl_Box inpLoginPrefix {
+          tooltip {Enter PREFIX Esc to abort} xywh {355 87 60 30} box DOWN_BOX color 7 labelfont 13 labelsize 18 align 20
+        }
+        Fl_Box inpLoginArea {
+          tooltip {Enter AREA Esc to abort} xywh {419 87 40 30} box DOWN_BOX color 7 labelfont 13 labelsize 18 align 20
+        }
+        Fl_Group net_grp3 {open
+          tooltip {Use UP/DN arrow keys to select callsign} xywh {291 125 170 300} box DOWN_BOX color 7 labelsize 18
+        } {
+          Fl_Box {txtPick[0]} {
+            xywh {291 125 170 30} color 7 labelfont 4 labelsize 18 align 20
+          }
+          Fl_Box {txtPick[1]} {
+            xywh {291 155 170 30} color 7 labelfont 4 labelsize 18 align 20
+          }
+          Fl_Box {txtPick[2]} {
+            xywh {291 185 170 30} color 7 labelfont 4 labelsize 18 align 20
+          }
+          Fl_Box {txtPick[3]} {
+            xywh {291 215 170 30} color 7 labelfont 4 labelsize 18 align 20
+          }
+          Fl_Box {txtPick[4]} {
+            xywh {291 245 170 30} color 7 labelfont 4 labelsize 18 align 20
+          }
+          Fl_Box {txtPick[5]} {
+            xywh {291 275 170 30} color 7 labelfont 4 labelsize 18 align 20
+          }
+          Fl_Box {txtPick[6]} {
+            xywh {291 305 170 30} color 7 labelfont 4 labelsize 18 align 20
+          }
+          Fl_Box {txtPick[7]} {
+            xywh {291 335 170 30} color 7 labelfont 4 labelsize 18 align 20
+          }
+          Fl_Box {txtPick[8]} {
+            xywh {291 365 170 30} color 7 labelfont 4 labelsize 18 align 20
+          }
+          Fl_Box {txtPick[9]} {
+            xywh {291 395 170 30} color 7 labelfont 4 labelsize 18 align 20
+          }
+        }
+        Fl_Box txtPickArrows {
+          xywh {374 195 25 180} hide
+        }
+        Fl_Box bx_suffix {
+          label Suffix
+          xywh {291 60 60 25} labelsize 16
+        }
+        Fl_Box bx_prefix {
+          label Prefix
+          xywh {355 60 61 25} labelsize 16
+        }
+        Fl_Box bx_area {
+          label Area
+          xywh {419 60 40 25} labelsize 16
+        }
+      }
+    }
+    Fl_Box txtInfo {
+      xywh {5 449 465 180} box DOWN_BOX color 20 selection_color 7 labelfont 4 labelsize 16 align 21
+    }
+  }
+} 
+
+Function {configDialog()} {} {
+  Fl_Window {} {
+    label {Net Configuration} open
+    xywh {625 128 444 278} type Double hide
+    code0 {\#include "config.h"}
+    code1 {\#include <FL/fl_show_colormap.H>}
+  } {
+    Fl_Tabs tabsConfig {open
+      xywh {5 10 430 210} color 44
+    } {
+      Fl_Group tabGroupColors {
+        label Colors open
+        xywh {7 38 423 177}
+      } {
+        Fl_Output {txtSample[1]} {
+          label {Logged In}
+          xywh {188 61 45 25} textfont 13
+          code0 {o->value("Text");}
+          code1 {o->color(bgColors[1]);}
+          code2 {o->textcolor(fgColors[1]);}
+        }
+        Fl_Button {btnFg[1]} {
+          label Fg
+          callback {fgColors[1] = fl_show_colormap(fgColors[1]);
+txtSample[1]->textcolor(fgColors[1]);
+txtSample[1]->redraw();}
+          xywh {248 61 45 25}
+        }
+        Fl_Button {btnBg[2]} {
+          label Bg
+          callback {bgColors[1] = fl_show_colormap(bgColors[1]);
+txtSample[1]->color(bgColors[1]);
+txtSample[1]->redraw();}
+          xywh {313 61 45 25}
+        }
+        Fl_Output {txtSample[2]} {
+          label {First Response}
+          xywh {188 96 45 25} textfont 13
+          code0 {o->value("Text");}
+          code1 {o->color(bgColors[2]);}
+          code2 {o->textcolor(fgColors[2]);}
+        }
+        Fl_Button {btnFg[2]} {
+          label Fg
+          callback {fgColors[2] = fl_show_colormap(fgColors[2]);
+txtSample[2]->textcolor(fgColors[2]);
+txtSample[2]->redraw();}
+          xywh {248 96 45 25}
+        }
+        Fl_Button {btnBg[2]} {
+          label Bg
+          callback {bgColors[2] = fl_show_colormap(bgColors[2]);
+txtSample[2]->color(bgColors[2]);
+txtSample[2]->redraw();}
+          xywh {313 96 45 25}
+        }
+        Fl_Output {txtSample[3]} {
+          label {Second Response}
+          xywh {188 131 45 25} textfont 13
+          code0 {o->value("Text");}
+          code1 {o->color(bgColors[3]);}
+          code2 {o->textcolor(fgColors[3]);}
+        }
+        Fl_Button {btnFg[3]} {
+          label Fg
+          callback {fgColors[3] = fl_show_colormap(fgColors[3]);
+txtSample[3]->textcolor(fgColors[3]);
+txtSample[3]->redraw();}
+          xywh {248 131 45 25}
+        }
+        Fl_Button {btnBg[3]} {
+          label Bg
+          callback {bgColors[3] = fl_show_colormap(bgColors[3]);
+txtSample[3]->color(bgColors[3]);
+txtSample[3]->redraw();}
+          xywh {313 131 45 25}
+        }
+        Fl_Output {txtSample[4]} {
+          label {Logged Out}
+          xywh {188 166 45 25} textfont 13
+          code0 {o->value("Text");}
+          code1 {o->color(bgColors[4]);}
+          code2 {o->textcolor(fgColors[4]);}
+        }
+        Fl_Button {btnFg[4]} {
+          label Fg
+          callback {fgColors[4] = fl_show_colormap(fgColors[4]);
+txtSample[4]->textcolor(fgColors[4]);
+txtSample[4]->redraw();}
+          xywh {248 166 45 25}
+        }
+        Fl_Button {btnBg[4]} {
+          label Bg
+          callback {bgColors[4] = fl_show_colormap(bgColors[4]);
+txtSample[4]->color(bgColors[4]);
+txtSample[4]->redraw();}
+          xywh {313 166 45 25}
+        }
+      }
+      Fl_Group tabGroupPriority {
+        label Priority open
+        xywh {6 35 427 182} hide
+      } {
+        Fl_Input cfgP1 {
+          label {Priority 1 character}
+          xywh {155 70 20 25}
+        }
+        Fl_Input inpStatesList1 {
+          label {States List (ie: FL, AL, GA)}
+          xywh {195 70 225 25} align 5
+        }
+        Fl_Input cfgP2 {
+          label {Priority 2 character}
+          xywh {155 100 20 25}
+        }
+        Fl_Input inpStatesList2 {
+          xywh {195 100 225 25} align 5
+        }
+        Fl_Input cfgP3 {
+          label {Priority 3 character}
+          xywh {155 130 20 25}
+        }
+        Fl_Input inpStatesList3 {
+          xywh {195 130 225 25} align 5
+        }
+        Fl_Check_Button chkAutoPriority {
+          label {Auto By Priority}
+          xywh {155 165 25 25} down_box DOWN_BOX align 4
+        }
+      }
+    }
+    Fl_Return_Button btnConfigOK {
+      label OK
+      callback cb_btnCloseConfig
+      xywh {355 235 75 25}
+    }
+  }
+} 
