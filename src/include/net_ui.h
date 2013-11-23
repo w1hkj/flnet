@@ -3,7 +3,7 @@
 #ifndef net_ui_h
 #define net_ui_h
 #include <FL/Fl.H>
-#include <FL/Fl_Window.H>
+#include <FL/Fl_Double_Window.H>
 #include "my_UI.h"
 #include <FL/Fl_Menu_Bar.H>
 extern Fl_Menu_Bar *mnu_bar;
@@ -34,7 +34,7 @@ extern Fl_Box *bx_suffix;
 extern Fl_Box *bx_prefix;
 extern Fl_Box *bx_area;
 extern Fl_Box *txtInfo;
-Fl_Window* newNetControl();
+Fl_Double_Window* newNetControl();
 extern Fl_Menu_Item menu_mnu_bar[];
 #define mnuOpen (menu_mnu_bar+1)
 #define mnuExit (menu_mnu_bar+2)
@@ -64,5 +64,5 @@ extern Fl_Check_Button *chkAutoPriority;
 #include <FL/Fl_Return_Button.H>
 extern void cb_btnCloseConfig(Fl_Return_Button*, void*);
 extern Fl_Return_Button *btnConfigOK;
-Fl_Window* configDialog();
+Fl_Double_Window* configDialog();
 #endif

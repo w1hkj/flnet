@@ -68,9 +68,9 @@ Fl_Box *bx_area=(Fl_Box *)0;
 
 Fl_Box *txtInfo=(Fl_Box *)0;
 
-Fl_Window* newNetControl() {
-  Fl_Window* w;
-  { Fl_Window* o = new Fl_Window(390, 455, "Net Control ver 5.0");
+Fl_Double_Window* newNetControl() {
+  Fl_Double_Window* w;
+  { Fl_Double_Window* o = new Fl_Double_Window(390, 455, "flnet");
     w = o;
     o->box(FL_BORDER_BOX);
     { mnu_bar = new Fl_Menu_Bar(0, 0, 390, 25);
@@ -317,7 +317,7 @@ Fl_Window* newNetControl() {
       txtInfo->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
     } // Fl_Box* txtInfo
     o->end();
-  } // Fl_Window* o
+  } // Fl_Double_Window* o
   return w;
 }
 
@@ -397,9 +397,9 @@ Fl_Check_Button *chkAutoPriority=(Fl_Check_Button *)0;
 
 Fl_Return_Button *btnConfigOK=(Fl_Return_Button *)0;
 
-Fl_Window* configDialog() {
-  Fl_Window* w;
-  { Fl_Window* o = new Fl_Window(440, 275, "Net Configuration");
+Fl_Double_Window* configDialog() {
+  Fl_Double_Window* w;
+  { Fl_Double_Window* o = new Fl_Double_Window(440, 275, "Net Configuration");
     w = o;
     { tabsConfig = new Fl_Tabs(5, 10, 430, 210);
       tabsConfig->color((Fl_Color)44);
@@ -483,6 +483,6 @@ Fl_Window* configDialog() {
       btnConfigOK->callback((Fl_Callback*)cb_btnCloseConfig);
     } // Fl_Return_Button* btnConfigOK
     o->end();
-  } // Fl_Window* o
+  } // Fl_Double_Window* o
   return w;
 }

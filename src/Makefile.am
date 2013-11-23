@@ -159,9 +159,7 @@ EXTRA_DIST = \
 	UI/small_ui.fl \
 	netutils.fl \
 	net_icon.cxx \
-	orig2ext.cxx \
 	icons/calendar.xpm \
-	include/orig2ext.h \
 	include/threads.h \
 	include/fl_lock.h
 

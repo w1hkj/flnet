@@ -8,9 +8,9 @@ Fl_Button *btnCancelCallsignSearch=(Fl_Button *)0;
 
 Fl_Button *btn_OkCallsignSearch=(Fl_Button *)0;
 
-Fl_Window* winCallsignBrowse() {
-  Fl_Window* w;
-  { Fl_Window* o = new Fl_Window(304, 231, "Browse by Callsign");
+Fl_Double_Window* winCallsignBrowse() {
+  Fl_Double_Window* w;
+  { Fl_Double_Window* o = new Fl_Double_Window(304, 231, "Browse by Callsign");
     w = o;
     o->color(FL_LIGHT2);
     { brwsCallsign = new Fl_Browser(0, 0, 215, 230);
@@ -26,7 +26,7 @@ Fl_Window* winCallsignBrowse() {
     } // Fl_Button* btn_OkCallsignSearch
     o->set_modal();
     o->end();
-  } // Fl_Window* o
+  } // Fl_Double_Window* o
   return w;
 }
 
@@ -36,9 +36,9 @@ Fl_Button *btnCancelNetNbrSearch=(Fl_Button *)0;
 
 Fl_Button *btn_OkNetNbrSearch=(Fl_Button *)0;
 
-Fl_Window* winNetNbrBrowse() {
-  Fl_Window* w;
-  { Fl_Window* o = new Fl_Window(300, 230, "Browse by Net Nbr");
+Fl_Double_Window* winNetNbrBrowse() {
+  Fl_Double_Window* w;
+  { Fl_Double_Window* o = new Fl_Double_Window(300, 230, "Browse by Net Nbr");
     w = o;
     o->color(FL_LIGHT2);
     { brwsNetNbr = new Fl_Browser(0, 0, 215, 230);
@@ -54,11 +54,11 @@ Fl_Window* winNetNbrBrowse() {
     } // Fl_Button* btn_OkNetNbrSearch
     o->set_modal();
     o->end();
-  } // Fl_Window* o
+  } // Fl_Double_Window* o
   return w;
 }
 
-Fl_Window *winSearchCallsignDialog=(Fl_Window *)0;
+Fl_Double_Window *winSearchCallsignDialog=(Fl_Double_Window *)0;
 
 Fl_Input *sSrchPrefix=(Fl_Input *)0;
 
@@ -70,8 +70,8 @@ Fl_Button *btnSearchCancel=(Fl_Button *)0;
 
 Fl_Return_Button *btnSearchOK=(Fl_Return_Button *)0;
 
-Fl_Window* newSearchCallsignDialog() {
-  { winSearchCallsignDialog = new Fl_Window(207, 107);
+Fl_Double_Window* newSearchCallsignDialog() {
+  { winSearchCallsignDialog = new Fl_Double_Window(207, 107);
     { sSrchPrefix = new Fl_Input(40, 35, 25, 25, "Prefix");
       sSrchPrefix->textfont(13);
       sSrchPrefix->align(Fl_Align(FL_ALIGN_TOP));
@@ -94,11 +94,11 @@ Fl_Window* newSearchCallsignDialog() {
     } // Fl_Box* o
     winSearchCallsignDialog->set_modal();
     winSearchCallsignDialog->end();
-  } // Fl_Window* winSearchCallsignDialog
+  } // Fl_Double_Window* winSearchCallsignDialog
   return winSearchCallsignDialog;
 }
 
-Fl_Window *winSearchNetNbrDialog=(Fl_Window *)0;
+Fl_Double_Window *winSearchNetNbrDialog=(Fl_Double_Window *)0;
 
 Fl_Input *sSrchNetNbr=(Fl_Input *)0;
 
@@ -106,8 +106,8 @@ Fl_Button *btnSearchNetNbrCancel=(Fl_Button *)0;
 
 Fl_Return_Button *btnSearchNetNbrOK=(Fl_Return_Button *)0;
 
-Fl_Window* newSearchNetNbrDialog() {
-  { winSearchNetNbrDialog = new Fl_Window(207, 107);
+Fl_Double_Window* newSearchNetNbrDialog() {
+  { winSearchNetNbrDialog = new Fl_Double_Window(207, 107);
     { sSrchNetNbr = new Fl_Input(80, 30, 50, 25, "Enter Net Number");
       sSrchNetNbr->textfont(13);
       sSrchNetNbr->align(Fl_Align(FL_ALIGN_TOP));
@@ -120,11 +120,11 @@ Fl_Window* newSearchNetNbrDialog() {
     } // Fl_Return_Button* btnSearchNetNbrOK
     winSearchNetNbrDialog->set_modal();
     winSearchNetNbrDialog->end();
-  } // Fl_Window* winSearchNetNbrDialog
+  } // Fl_Double_Window* winSearchNetNbrDialog
   return winSearchNetNbrDialog;
 }
 
-Fl_Window *dlgAbout=(Fl_Window *)0;
+Fl_Double_Window *dlgAbout=(Fl_Double_Window *)0;
 
 Fl_Group *lblVersion=(Fl_Group *)0;
 
@@ -132,8 +132,8 @@ static void cb_Thanks(Fl_Return_Button*, void*) {
   dlgAbout->hide ();
 }
 
-Fl_Window* newAboutDialog() {
-  { dlgAbout = new Fl_Window(185, 180);
+Fl_Double_Window* newAboutDialog() {
+  { dlgAbout = new Fl_Double_Window(185, 180);
     dlgAbout->color((Fl_Color)53);
     { lblVersion = new Fl_Group(0, 5, 180, 110, "xxx:");
       lblVersion->box(FL_ENGRAVED_FRAME);
@@ -150,6 +150,6 @@ Fl_Window* newAboutDialog() {
     } // Fl_Group* o
     dlgAbout->set_modal();
     dlgAbout->end();
-  } // Fl_Window* dlgAbout
+  } // Fl_Double_Window* dlgAbout
   return dlgAbout;
 }

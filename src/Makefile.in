@@ -286,10 +286,9 @@ APPBUNDLE_NOLIBS = $(APPBUNDLE)-nolibs
 # Additional non-source files that are distributed
 # Additional source files that support non-Linux cross compilation
 EXTRA_DIST = flnet.rc net_ui.fl UI/big_ui.fl UI/small_ui.fl \
-	netutils.fl net_icon.cxx orig2ext.cxx icons/calendar.xpm \
-	include/orig2ext.h include/threads.h include/fl_lock.h \
-	$(srcdir)/../data/flnet.desktop $(srcdir)/../data/flnet.xpm \
-	$(srcdir)/../data/win32/fl_app.nsi \
+	netutils.fl net_icon.cxx icons/calendar.xpm include/threads.h \
+	include/fl_lock.h $(srcdir)/../data/flnet.desktop \
+	$(srcdir)/../data/flnet.xpm $(srcdir)/../data/win32/fl_app.nsi \
 	$(srcdir)/../data/win32/flnet.ico \
 	$(srcdir)/../scripts/mknsisinst.sh \
 	$(srcdir)/../scripts/build4mingw.sh \

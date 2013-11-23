@@ -137,43 +137,10 @@ void visit_URL(void* arg)
 #endif
 }
 
-/*
-static void checkdirectories(void)
-{
-	struct {
-		string& dir;
-		const char* suffix;
-		void (*new_dir_func)(void);
-	} dirs[] = {
-		{ homedir, 0, 0 }
-	};
-
-	int r;
-	for (size_t i = 0; i < sizeof(dirs)/sizeof(*dirs); i++) {
-		if (dirs[i].suffix)
-			dirs[i].dir.assign(homedir).append(dirs[i].suffix).append("/");
-
-		if ((r = mkdir(dirs[i].dir.c_str(), 0777)) == -1 && errno != EEXIST) {
-			cerr << "Could not make directory" << ' ' << dirs[i].dir
-				 << ": " << strerror(errno) << '\n';
-			exit(EXIT_FAILURE);
-		}
-		else if (r == 0 && dirs[i].new_dir_func)
-			dirs[i].new_dir_func();
-	}
-}
-*/
-
 void exit_main(Fl_Widget *w)
 {
 	if (Fl::event_key() == FL_Escape)
 		return;
-	cleanExit();
-}
-
-void net_terminate() {
-	std::cerr << "terminating" << std::endl;
-	fl_message("Unrecoverable error\nTerminating net");
 	cleanExit();
 }
 
@@ -187,8 +154,8 @@ int main(int argc, char **argv)
 	main_window = newNetControl();
 	Fl::visual (FL_DOUBLE|FL_INDEX);
 
-	sprintf (title, "Net Version %s", flnet_VERSION);
-	main_window->label(PACKAGE_NAME);
+	sprintf (title, "flnet %s", flnet_VERSION);
+	main_window->label(title);
 	main_window->callback(exit_main);
 
 #ifdef WIN32
@@ -231,20 +198,14 @@ int parse_args(int argc, char **argv, int& idx)
 	if (strcasecmp("--help", argv[idx]) == 0) {
 		printf("Usage: \n\
   --help this help text\n\
-  --config-dir <DIR>\n\
-  --version\n");
+  --version\n\
+  database.csv\n\
+    open 'named' database file.\n");
 		exit(0);
 	} 
 	if (strcasecmp("--version", argv[idx]) == 0) {
 		printf("Version: "VERSION"\n");
 		exit (0);
 	}
-//	if (strcasecmp("--config-dir", argv[idx]) == 0) {
-//		homedir = argv[idx + 1];
-//		if (homedir[homedir.length()-1] != '/')
-//			homedir += '/';
-//		idx += 2;
-//		return 1;
-//	}
 	return 0;
 }

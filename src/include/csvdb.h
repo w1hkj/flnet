@@ -22,18 +22,16 @@
 
 using namespace std;
 
-struct callsigns { 
+struct callsigns {
 	string prefix;
 	string area;
 	string suffix;
-//	string netnbr;
 	int nbr;
 	callsigns() {
 		prefix.clear();
-		area.clear(); 
+		area.clear();
 		suffix.clear();
-//		netnbr.clear();
-		nbr = -1; } 
+		nbr = -1; }
 };
 
 struct csvRecord {
@@ -78,6 +76,7 @@ private:
 	vector<csvRecord> dbrecs;
 	csvRecord record;
 	int cur_recnbr;
+	int fpos[24];
 public:
 	csvdb() {
 		dbfilename.assign("test.csv");
@@ -96,8 +95,10 @@ public:
 	string delimit(string s);
 	string trim(string s);
 	void field(string &s, string &fld);
-	void split(string s, csvRecord &rec);
+	bool split(string s, csvRecord &rec);
 	void join(csvRecord &rec, string &s);
+	void clearrec(csvRecord &rec);
+	bool mapheader(string s);
 };
 
 #endif

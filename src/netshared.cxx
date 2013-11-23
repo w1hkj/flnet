@@ -1,10 +1,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "FL/Fl_Window.H"
-#include "FL/Fl.H"
-#include "FL/fl_ask.H"
-#include "FL/Fl_File_Chooser.H"
+#include <FL/Fl_Window.H>
+#include <FL/Fl.H>
+#include <FL/fl_ask.H>
+#include <FL/Fl_File_Chooser.H>
+#include <FL/filename.H>
 
 #include "netshared.h"
 #include "my_UI.h"
@@ -294,7 +295,7 @@ void getBrwsData()
 		return;
 	}
 
-	sprintf (szDispName,"%s (%d)", sSimpleName, (int)netdb.numrecs());
+	snprintf (szDispName, sizeof(szDispName), "%s (%d)", sSimpleName, (int)netdb.numrecs());
 	dbSelectGroup->label (szDispName);
 	dbSelectGroup->redraw ();
 
@@ -508,7 +509,7 @@ void closeDB()
 
 void openDB(char *fname)
 {
-	strcpy (sSimpleName, fname);
+	strcpy (sSimpleName, fl_filename_name(fname));
 	netdb.filename(fname);
 	if (netdb.load() != 0) {
 		fl_message("Not an flnet csv file");
