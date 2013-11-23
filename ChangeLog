@@ -2,39 +2,7 @@
 
 =Version 7.0.0=
 
-2013-07-09  David Freese  <w1hkj@w1hkj.com>
+2013-11-23  David Freese  <w1hkj@w1hkj.com>
 
-	69bcc05: CSV flat file db
-	18a188e: mxe-mingw32
-
-
-=Version 6.1.1=
-
-	c222d55: Fedora17
-	35304ca: ui resize
-
-
-=Version 6.1.00=
-
-	a72a7a6: UI widget naming
-	b3976d6: Name change
-
-
-=Version 6.0.04=
-
-	a6dd8ec: New dbf seg fault
-
-
-=Version 6.0.03=
-
-	477ae54: WIN32 main window
-	d945550: Help update
-
-
-=Version 6.0.02=
-
-	693ca60: Autom4 files
-	26a1881: Xdate ambiguous compile
-	0bbf3ad: UI tuning
-	001816d: OS X build
-	11eca98: New net source tree
+	a7ae52c: Missing fields
+	ab4ae69: Initial commit
