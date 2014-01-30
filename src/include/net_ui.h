@@ -45,6 +45,10 @@ extern Fl_Menu_Item menu_mnu_bar[];
 #define mnu_About (menu_mnu_bar+9)
 #include <FL/Fl_Tabs.H>
 extern Fl_Tabs *tabsConfig;
+#include <FL/Fl_Check_Button.H>
+extern Fl_Check_Button *btn_new_login_is_up;
+extern Fl_Check_Button *btnOpenEditor;
+extern Fl_Check_Button *btn_current_call_in_is_up;
 extern Fl_Group *tabGroupColors;
 #include <FL/Fl_Output.H>
 #include <FL/Fl_Button.H>
@@ -59,7 +63,6 @@ extern Fl_Input *cfgP2;
 extern Fl_Input *inpStatesList2;
 extern Fl_Input *cfgP3;
 extern Fl_Input *inpStatesList3;
-#include <FL/Fl_Check_Button.H>
 extern Fl_Check_Button *chkAutoPriority;
 #include <FL/Fl_Return_Button.H>
 extern void cb_btnCloseConfig(Fl_Return_Button*, void*);

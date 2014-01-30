@@ -14,6 +14,9 @@ decl {\#include <string.h>} {private local
 decl {\#include <FL/fl_show_colormap.H>} {private local
 } 
 
+decl {\#include "netsupport.h"} {private local
+} 
+
 decl {\#include "netshared.h"} {private local
 } 
 
@@ -23,11 +26,10 @@ decl {\#include "config.h"} {private local
 decl {\#include "net_config.h"} {private local
 } 
 
-Function {newNetControl()} {open
-} {
+Function {newNetControl()} {} {
   Fl_Window {} {
-    label flnet open selected
-    xywh {582 81 390 455} type Double box BORDER_BOX
+    label flnet open
+    xywh {679 31 390 455} type Double box BORDER_BOX
     code0 {\#include "my_UI.h"} visible
   } {
     Fl_Menu_Bar mnu_bar {open
@@ -64,7 +66,7 @@ Function {newNetControl()} {open
         xywh {0 0 36 21}
       }
       Submenu {} {
-        label {&Help} open
+        label {&Help}
         xywh {0 0 100 20}
       } {
         MenuItem mnu_Content {
@@ -222,14 +224,41 @@ Function {newNetControl()} {open
   }
 } 
 
-Function {configDialog()} {} {
+Function {configDialog()} {open
+} {
   Fl_Window {} {
-    label {Net Configuration}
-    xywh {598 576 440 275} type Double hide
+    label {Net Configuration} open
+    xywh {1093 33 440 275} type Double visible
   } {
     Fl_Tabs tabsConfig {open
       xywh {5 10 430 210} color 44
     } {
+      Fl_Group {} {
+        label {UI behavior} open
+        xywh {5 35 430 185}
+      } {
+        Fl_Check_Button btn_new_login_is_up {
+          label {New login is up}
+          callback {disp_new_login=o->value();}
+          tooltip {Move new login to the >...<
+spot in the calll in list} xywh {30 60 70 15} down_box DOWN_BOX
+          code0 {o->value(disp_new_login);}
+        }
+        Fl_Check_Button btnOpenEditor {
+          label {Open editor for new login}
+          callback {open_editor = o->value();}
+          tooltip {Open editor for new call in
+New login is up must be enabled} xywh {60 102 70 15} down_box DOWN_BOX
+          code0 {o->value(open_editor);}
+        }
+        Fl_Check_Button btn_current_call_in_is_up {
+          label {Current call in is up}
+          callback {callin_is_up = o->value();} selected
+          tooltip {Move last login to the >...<
+spot in the calll in list} xywh {30 145 70 15} down_box DOWN_BOX
+          code0 {o->value(callin_is_up);}
+        }
+      }
       Fl_Group tabGroupColors {
         label Colors open
         xywh {5 45 430 160} hide
@@ -321,7 +350,7 @@ txtSample[4]->redraw();}
       }
       Fl_Group tabGroupPriority {
         label Priority open
-        xywh {5 35 430 185}
+        xywh {5 35 430 185} hide
       } {
         Fl_Input cfgP1 {
           label {Priority 1 character}

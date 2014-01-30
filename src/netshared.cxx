@@ -1,3 +1,5 @@
+#include <string>
+
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -33,7 +35,6 @@ size_t		currec;
 size_t		brwsnum;
 size_t		AddedRecNbr;
 
-char sDbFileName[120];
 char sSimpleName[120];
 char szDispName[80];
 
@@ -310,10 +311,12 @@ void getBrwsData()
 	for (int n = 0; n < netdb.numrecs(); n++) {
 		netdb.get(n, rec);
 		brwsData[n].recN = n;
+		strcpy (brwsData[n].netnbr, rec.netnbr.c_str());
 		strcpy (brwsData[n].prefix, rec.prefix.c_str());
 		strcpy (brwsData[n].area, rec.area.c_str());
 		strcpy (brwsData[n].suffix, rec.suffix.c_str());
-		strcpy (brwsData[n].netnbr, rec.netnbr.c_str());
+		while (strlen(brwsData[n].suffix) < 3)
+			strcat (brwsData[n].suffix, " ");
 	}
 	netdb.get(currec, rec);
 }
@@ -505,12 +508,17 @@ void cb_mnuSearchNetNbr (Fl_Menu_ *m, void *d)
 void closeDB()
 {
 	netdb.save();
+	std::string cfg_filename = home_dir;
+	cfg_filename.append("flnet.cfg");
+	FILE *cfg_file = fopen(cfg_filename.c_str(),"w");
+	fprintf(cfg_file, "%s\n", selected_file.c_str());
+	fclose(cfg_file);
 }
 
-void openDB(char *fname)
+void openDB(string fname)
 {
-	strcpy (sSimpleName, fl_filename_name(fname));
-	netdb.filename(fname);
+	strcpy (sSimpleName, fl_filename_name(fname.c_str()));
+	netdb.filename(fname.c_str());
 	if (netdb.load() != 0) {
 		fl_message("Not an flnet csv file");
 		exit(0);

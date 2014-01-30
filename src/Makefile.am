@@ -175,15 +175,5 @@ EXTRA_DIST += \
 	$(srcdir)/../data/mac/Info.plist.in \
 	$(srcdir)/../data/mac/flnet.icns \
 	$(srcdir)/../scripts/mkappbundle.sh \
-	$(srcdir)/../Net-help/BrowseCallsign.png \
-	$(srcdir)/../Net-help/ConfigColors.jpg \
-	$(srcdir)/../Net-help/ConfigPriority.jpg \
-	$(srcdir)/../Net-help/EditorDialog.html \
-	$(srcdir)/../Net-help/Editor.png \
-	$(srcdir)/../Net-help/Function_Keys.html \
-	$(srcdir)/../Net-help/index.html \
-	$(srcdir)/../Net-help/MainDialog.html \
-	$(srcdir)/../Net-help/flnet.png \
-	$(srcdir)/../Net-help/SearchCallsign.jpg \
 	$(flnet_WIN32_SRC) \
 	$(flnet_FL_SRC)

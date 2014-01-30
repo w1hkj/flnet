@@ -1,5 +1,6 @@
 #include <fstream>
 #include <ostream>
+#include <string>
 
 #include <cstring>
 #include <ctime>
@@ -55,6 +56,24 @@
 #include <FL/Fl_File_Chooser.H>
 
 Fl_Window *main_window = (Fl_Window *)0;
+
+std::string home_dir = "";
+std::string selected_file;
+
+// Show an error dialog and print to cerr if available.
+// On win32 Fl::fatal displays its own error window.
+static void fatal_error(string sz_error)
+{
+	string s = "Fatal error!\n";
+	s.append(sz_error).append("\n").append(strerror(errno));
+
+// Win32 will display a MessageBox error message
+#if !defined(__WOE32__)
+	fl_message_font(FL_HELVETICA, FL_NORMAL_SIZE);
+	fl_alert("%s", s.c_str());
+#endif
+	Fl::fatal(s.c_str());
+}
 
 #define KNAME "net"
 #if !defined(__WIN32__) && !defined(__APPLE__)
@@ -144,9 +163,21 @@ void exit_main(Fl_Widget *w)
 	cleanExit();
 }
 
-int main(int argc, char **argv) 
+int main(int argc, char **argv)
 {
 	int arg_idx;
+
+	{
+		char dirbuf[FL_PATH_MAX + 1];
+#ifdef __WOE32__
+		fl_filename_expand(dirbuf, sizeof(dirbuf) -1, "$USERPROFILE/");
+		home_dir = dirbuf;
+#else
+		fl_filename_expand(dirbuf, sizeof(dirbuf) -1, "$HOME/");
+		home_dir = dirbuf;
+#endif
+	}
+	home_dir.append("flnet.files/");
 
 	Fl::args(argc, argv, arg_idx, parse_args);
 
@@ -175,20 +206,51 @@ int main(int argc, char **argv)
 	if (p) *(p+1) = 0;
 
 #if !defined(__APPLE__)
-	if (argc == 2)
-		openDB (argv[1]);
-	else { 
-		char *szChoosen = fl_file_chooser ("Select .csv file", "*.csv", "", 0);
-		if (szChoosen == NULL)
-			exit(0);
-		openDB (szChoosen);
-	}
-#else
-	char *szChoosen = fl_file_chooser ("Select .csv file", "*.csv", "", 0);
-	if (szChoosen == NULL)
-		exit(0);
-	openDB (szChoosen);
+	if (argc == 2) {
+		char absolute[500];
+		fl_filename_absolute(absolute, sizeof(absolute) - 1, argv[1]);
+		int len = strlen(absolute);
+		if (absolute[len-1] == '\n') absolute[len-1] = 0;
+		openDB (selected_file = absolute);
+	} else
 #endif
+	{
+		int r;
+		if ((r = mkdir(home_dir.c_str(), 0777)) == -1 && errno != EEXIST) {
+			string s = "Could not make directory ";
+			fatal_error(s);
+		}
+		std::string last_filename = home_dir;
+		last_filename.append("new_net.csv");
+
+		std::string cfg_filename = home_dir;
+		cfg_filename.append("flnet.cfg");
+
+#define LINESIZE 1024
+		char buff[LINESIZE + 1];
+		fstream dbfile(cfg_filename.c_str(), ios::in | ios::binary);
+		if (dbfile) {
+// read & map header line
+			memset(buff, 0, LINESIZE + 1);
+			dbfile.getline(buff, LINESIZE);
+			selected_file = buff;
+			size_t p = selected_file.rfind('\n');
+			while (p != string::npos) {
+				selected_file.erase(p,1);
+				p = selected_file.rfind('\n');
+			}
+			last_filename = selected_file;
+			dbfile.close();
+		} else {
+			selected_file = last_filename;
+			char *p = fl_file_chooser ("Select .csv file", 
+										"*.csv", 
+										selected_file.c_str(), 0);
+			if (!p) exit(0);
+			selected_file = p;
+		}
+		openDB (selected_file);
+	}
 
 	return Fl::run();
 }
@@ -202,7 +264,7 @@ int parse_args(int argc, char **argv, int& idx)
   database.csv\n\
     open 'named' database file.\n");
 		exit(0);
-	} 
+	}
 	if (strcasecmp("--version", argv[idx]) == 0) {
 		printf("Version: "VERSION"\n");
 		exit (0);

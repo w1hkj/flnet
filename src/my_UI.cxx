@@ -29,7 +29,6 @@ loglist callinlist;
 int	WhoIsUp = 0;
 static int lastUp;
 
-
 char keyval[2] = " ";
 string szPrefix = "";
 string szArea = "";
@@ -167,7 +166,7 @@ void updateLogins ()
 	gmtime_r(&t, &tim);
 	strftime(today, sizeof(today), "%Y%m%d", &tim);
 
-	string outfilename = sDbFileName;
+	string outfilename = selected_file;
 	size_t p = outfilename.find(".csv");
 	if (p != string::npos) outfilename.erase(p);
 	p = outfilename.find(".CSV");
@@ -501,6 +500,10 @@ int my_UI::handle (int e)
 			if (my_status == PICKLIST) {
 				if (k == FL_Enter) {
 					PickedToCallins (whoPicked);
+					if (callin_is_up) {
+						WhoIsUp = callinlist.numlist () - 1;
+						dispCallIns();
+					}
 					my_status = LOGLIST;
 				}
 				if (k == FL_Down) {
@@ -535,6 +538,10 @@ int my_UI::handle (int e)
 			if (my_status == SUFFIX && k == FL_Enter) {
 				if (nbrPicked) {
 					PickedToCallins (0);
+					if (callin_is_up) {
+						WhoIsUp = callinlist.numlist () - 1;
+						dispCallIns();
+					}
 					my_status = LOGLIST;
 				}
 			}
@@ -605,9 +612,11 @@ int my_UI::handle (int e)
 				tm_ptr = localtime (&the_time);
 				sprintf( sztime, "%02d:%02d", tm_ptr->tm_hour, tm_ptr->tm_min);
 				callinlist.add (-1, szPrefix.c_str(), szArea.c_str(), szSuffix.c_str(), "", sztime );
+				if (disp_new_login) WhoIsUp = callinlist.numlist () - 1;
 				dispCallIns ();
 				clearPickList ();
 				clearSAP ();
+				if (disp_new_login && open_editor) cb_F12 (WhoIsUp);
 			}
 		}
 	}

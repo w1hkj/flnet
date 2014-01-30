@@ -1,7 +1,9 @@
 #ifndef _NETSUPPORT
 #define _NETSUPPORT
 
-extern void openDB(char *);
+#include <string>
+
+extern void openDB(std::string);
 extern void dispRec();
 extern void closeDB();
 

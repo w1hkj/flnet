@@ -1,3 +1,5 @@
+#include <string>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -8,6 +10,7 @@
 #include "config.h"
 #include "net_ui.h"
 #include "loglist.h"
+#include "netshared.h"
 
 extern loglist callinlist;
 
@@ -22,20 +25,22 @@ char szP3[256] = "";
 Fl_Color  fgColors[] = {FL_BLACK, FL_BLACK, FL_WHITE, FL_YELLOW, FL_WHITE};
 Fl_Color  bgColors[] = {FL_BLACK, FL_WHITE, FL_BLUE, FL_DARK_GREEN, FL_DARK_RED};
 
-extern char sDbFileName[];
+int disp_new_login = 0;
+int open_editor = 0;
+int callin_is_up = 0;
 
 void readConfig ()
 {
-  char filename[120];
+  std::string filename = selected_file;
   FILE *cfgFile;
   int fg1,fg2,fg3,fg4, bg1,bg2,bg3,bg4;
-  strcpy (filename, sDbFileName);
-  strcat (filename, ".cfg");
-
-  cfgFile = fopen (filename, "r");
+  size_t p = filename.rfind(".csv");
+  if (p != std::string::npos) filename.erase(p);
+  filename.append(".cfg");
+  cfgFile = fopen (filename.c_str(), "r");
   if (cfgFile) {
     fscanf (cfgFile,
-            "%c%c%c%c\t%s\t%s\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d",
+            "%c%c%c%c\t%s\t%s\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n",
             chP1, chP2, chP3, &chAuto,
             szP1, szP2, szP3,
 			&fg1, &fg2, &fg3, &fg4, &bg1, &bg2, &bg3, &bg4);
@@ -47,27 +52,30 @@ void readConfig ()
 	bgColors[2] = (Fl_Color)bg2;
 	bgColors[3] = (Fl_Color)bg3;
 	bgColors[4] = (Fl_Color)bg4;
-    fclose (cfgFile);
+	fscanf (cfgFile, "%d\t%d\t%d\n", &disp_new_login, &open_editor, &callin_is_up);
+	fclose (cfgFile);
   }
 }
 
 void writeConfig ()
 {
-  char filename[120];
+  std::string filename = selected_file;
   FILE *cfgFile;
-  strcpy (filename, sDbFileName);
-  strcat (filename, ".cfg");
-  cfgFile = fopen (filename, "w");
+  size_t p = filename.rfind(".csv");
+  if (p != std::string::npos) filename.erase(p);
+  filename.append(".cfg");
+  cfgFile = fopen (filename.c_str(), "w");
   if (!*szP1) strcpy(szP1, "none");
   if (!*szP2) strcpy(szP2, "none");
   if (!*szP3) strcpy(szP3, "none");
   if (cfgFile) {
     fprintf (cfgFile,
-            "%c%c%c%c\t%s\t%s\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d",
+            "%c%c%c%c\t%s\t%s\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n",
             chP1[0], chP2[0], chP3[0], chAuto,
             szP1, szP2, szP3,
             fgColors[1], fgColors[2], fgColors[3], fgColors[4],
             bgColors[1], bgColors[2], bgColors[3], bgColors[4]);
+    fprintf(cfgFile,"%d\t%d\t%d\n", disp_new_login, open_editor, callin_is_up);
     fclose(cfgFile);
   }
 }

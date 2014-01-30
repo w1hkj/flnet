@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <FL/fl_show_colormap.H>
+#include "netsupport.h"
 #include "netshared.h"
 #include "config.h"
 #include "net_config.h"
@@ -323,6 +324,24 @@ Fl_Double_Window* newNetControl() {
 
 Fl_Tabs *tabsConfig=(Fl_Tabs *)0;
 
+Fl_Check_Button *btn_new_login_is_up=(Fl_Check_Button *)0;
+
+static void cb_btn_new_login_is_up(Fl_Check_Button* o, void*) {
+  disp_new_login=o->value();
+}
+
+Fl_Check_Button *btnOpenEditor=(Fl_Check_Button *)0;
+
+static void cb_btnOpenEditor(Fl_Check_Button* o, void*) {
+  open_editor = o->value();
+}
+
+Fl_Check_Button *btn_current_call_in_is_up=(Fl_Check_Button *)0;
+
+static void cb_btn_current_call_in_is_up(Fl_Check_Button* o, void*) {
+  callin_is_up = o->value();
+}
+
 Fl_Group *tabGroupColors=(Fl_Group *)0;
 
 static void cb_btnFg(Fl_Button*, void*) {
@@ -403,6 +422,27 @@ Fl_Double_Window* configDialog() {
     w = o;
     { tabsConfig = new Fl_Tabs(5, 10, 430, 210);
       tabsConfig->color((Fl_Color)44);
+      { Fl_Group* o = new Fl_Group(5, 35, 430, 185, "UI behavior");
+        { Fl_Check_Button* o = btn_new_login_is_up = new Fl_Check_Button(30, 60, 70, 15, "New login is up");
+          btn_new_login_is_up->tooltip("Move new login to the >...<\nspot in the calll in list");
+          btn_new_login_is_up->down_box(FL_DOWN_BOX);
+          btn_new_login_is_up->callback((Fl_Callback*)cb_btn_new_login_is_up);
+          o->value(disp_new_login);
+        } // Fl_Check_Button* btn_new_login_is_up
+        { Fl_Check_Button* o = btnOpenEditor = new Fl_Check_Button(60, 102, 70, 15, "Open editor for new login");
+          btnOpenEditor->tooltip("Open editor for new call in\nNew login is up must be enabled");
+          btnOpenEditor->down_box(FL_DOWN_BOX);
+          btnOpenEditor->callback((Fl_Callback*)cb_btnOpenEditor);
+          o->value(open_editor);
+        } // Fl_Check_Button* btnOpenEditor
+        { Fl_Check_Button* o = btn_current_call_in_is_up = new Fl_Check_Button(30, 145, 70, 15, "Current call in is up");
+          btn_current_call_in_is_up->tooltip("Move last login to the >...<\nspot in the calll in list");
+          btn_current_call_in_is_up->down_box(FL_DOWN_BOX);
+          btn_current_call_in_is_up->callback((Fl_Callback*)cb_btn_current_call_in_is_up);
+          o->value(callin_is_up);
+        } // Fl_Check_Button* btn_current_call_in_is_up
+        o->end();
+      } // Fl_Group* o
       { tabGroupColors = new Fl_Group(5, 45, 430, 160, "Colors");
         tabGroupColors->hide();
         { Fl_Output* o = txtSample[1] = new Fl_Output(135, 60, 45, 25, "Logged In");
@@ -456,6 +496,7 @@ Fl_Double_Window* configDialog() {
         tabGroupColors->end();
       } // Fl_Group* tabGroupColors
       { tabGroupPriority = new Fl_Group(5, 35, 430, 185, "Priority");
+        tabGroupPriority->hide();
         { cfgP1 = new Fl_Input(160, 70, 20, 25, "Priority 1 character");
         } // Fl_Input* cfgP1
         { inpStatesList1 = new Fl_Input(200, 70, 225, 25, "States List (ie: FL, AL, GA)");

@@ -2,11 +2,16 @@
 #ifndef _NETSHARED
 #define _NETSHARED
 
+#include <string>
+
 #include "net_ui.h"
 #include "netutils.h"
 #include "netedits.h"
 
 #include "csvdb.h"
+
+extern std::string home_dir;
+extern std::string selected_file;
 
 extern csvdb netdb;
 
@@ -30,10 +35,8 @@ extern State editstate;
 extern size_t currec;
 extern size_t brwsnum;
 
-extern char sDbFileName[];
 extern char sSimpleName[];
 
-extern char sDbFileName[];
 extern Fl_Input *inpPrefix;
 
 extern void saveCurRecord ();

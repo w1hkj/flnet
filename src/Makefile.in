@@ -294,17 +294,7 @@ EXTRA_DIST = flnet.rc net_ui.fl UI/big_ui.fl UI/small_ui.fl \
 	$(srcdir)/../scripts/build4mingw.sh \
 	$(srcdir)/../data/mac/Info.plist.in \
 	$(srcdir)/../data/mac/flnet.icns \
-	$(srcdir)/../scripts/mkappbundle.sh \
-	$(srcdir)/../Net-help/BrowseCallsign.png \
-	$(srcdir)/../Net-help/ConfigColors.jpg \
-	$(srcdir)/../Net-help/ConfigPriority.jpg \
-	$(srcdir)/../Net-help/EditorDialog.html \
-	$(srcdir)/../Net-help/Editor.png \
-	$(srcdir)/../Net-help/Function_Keys.html \
-	$(srcdir)/../Net-help/index.html \
-	$(srcdir)/../Net-help/MainDialog.html \
-	$(srcdir)/../Net-help/flnet.png \
-	$(srcdir)/../Net-help/SearchCallsign.jpg $(flnet_WIN32_SRC) \
+	$(srcdir)/../scripts/mkappbundle.sh $(flnet_WIN32_SRC) \
 	$(flnet_FL_SRC)
 all: $(BUILT_SOURCES) config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am

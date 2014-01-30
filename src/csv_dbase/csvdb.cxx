@@ -183,7 +183,6 @@ int csvdb::load()
 	if (!dbfile) return 0;
 
 	csvRecord rec;
-
 	dbrecs.clear();
 
 // read & map header line
