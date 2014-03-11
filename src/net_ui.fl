@@ -29,7 +29,7 @@ decl {\#include "net_config.h"} {private local
 Function {newNetControl()} {} {
   Fl_Window {} {
     label flnet open
-    xywh {679 31 390 455} type Double box BORDER_BOX
+    xywh {1145 23 390 455} type Double box BORDER_BOX
     code0 {\#include "my_UI.h"} visible
   } {
     Fl_Menu_Bar mnu_bar {open
@@ -60,13 +60,18 @@ Function {newNetControl()} {} {
         callback cb_mnuConfig
         xywh {0 0 100 20}
       }
+      MenuItem mnuLogIns {
+        label {Log-Ins}
+        callback {open_log_ins();}
+        xywh {0 0 36 21}
+      }
       MenuItem mnuSize {
         label Size
         callback {change_size();}
         xywh {0 0 36 21}
       }
       Submenu {} {
-        label {&Help}
+        label {&Help} open
         xywh {0 0 100 20}
       } {
         MenuItem mnu_Content {
@@ -224,11 +229,10 @@ Function {newNetControl()} {} {
   }
 } 
 
-Function {configDialog()} {open
-} {
+Function {configDialog()} {} {
   Fl_Window {} {
     label {Net Configuration} open
-    xywh {1093 33 440 275} type Double visible
+    xywh {1093 33 440 275} type Double hide
   } {
     Fl_Tabs tabsConfig {open
       xywh {5 10 430 210} color 44
@@ -253,7 +257,7 @@ New login is up must be enabled} xywh {60 102 70 15} down_box DOWN_BOX
         }
         Fl_Check_Button btn_current_call_in_is_up {
           label {Current call in is up}
-          callback {callin_is_up = o->value();} selected
+          callback {callin_is_up = o->value();}
           tooltip {Move last login to the >...<
 spot in the calll in list} xywh {30 145 70 15} down_box DOWN_BOX
           code0 {o->value(callin_is_up);}
@@ -384,6 +388,27 @@ txtSample[4]->redraw();}
       label OK
       callback cb_btnCloseConfig
       xywh {355 235 75 25}
+    }
+  }
+} 
+
+Function {Log_ins_dialog()} {} {
+  Fl_Window {} {
+    label {Current Log Ins} open selected
+    xywh {608 169 240 235} type Double hide
+  } {
+    Fl_Browser log_in_view {
+      xywh {0 0 240 205} align 1
+    }
+    Fl_Button btn_copy_to_clipboard {
+      label Copy
+      callback {copy_to_clipboard();}
+      xywh {30 210 70 20}
+    }
+    Fl_Button btn_close_log_ins {
+      label Close
+      callback {o->parent()->hide();}
+      xywh {140 210 70 20}
     }
   }
 } 

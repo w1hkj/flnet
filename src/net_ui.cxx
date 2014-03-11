@@ -12,6 +12,10 @@
 
 Fl_Menu_Bar *mnu_bar=(Fl_Menu_Bar *)0;
 
+static void cb_mnuLogIns(Fl_Menu_*, void*) {
+  open_log_ins();
+}
+
 static void cb_mnuSize(Fl_Menu_*, void*) {
   change_size();
 }
@@ -23,6 +27,7 @@ Fl_Menu_Item menu_mnu_bar[] = {
  {0,0,0,0,0,0,0,0,0},
  {"&Editor", 0,  (Fl_Callback*)cb_mnuEditor, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
  {"Config", 0,  (Fl_Callback*)cb_mnuConfig, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+ {"Log-Ins", 0,  (Fl_Callback*)cb_mnuLogIns, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
  {"Size", 0,  (Fl_Callback*)cb_mnuSize, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
  {"&Help", 0,  0, 0, 64, FL_NORMAL_LABEL, 0, 14, 0},
  {"Content", 0,  (Fl_Callback*)cb_mnuHelpContent, 0, 128, FL_NORMAL_LABEL, 0, 14, 0},
@@ -523,6 +528,38 @@ Fl_Double_Window* configDialog() {
     { btnConfigOK = new Fl_Return_Button(355, 235, 75, 25, "OK");
       btnConfigOK->callback((Fl_Callback*)cb_btnCloseConfig);
     } // Fl_Return_Button* btnConfigOK
+    o->end();
+  } // Fl_Double_Window* o
+  return w;
+}
+
+Fl_Browser *log_in_view=(Fl_Browser *)0;
+
+Fl_Button *btn_copy_to_clipboard=(Fl_Button *)0;
+
+static void cb_btn_copy_to_clipboard(Fl_Button*, void*) {
+  copy_to_clipboard();
+}
+
+Fl_Button *btn_close_log_ins=(Fl_Button *)0;
+
+static void cb_btn_close_log_ins(Fl_Button* o, void*) {
+  o->parent()->hide();
+}
+
+Fl_Double_Window* Log_ins_dialog() {
+  Fl_Double_Window* w;
+  { Fl_Double_Window* o = new Fl_Double_Window(240, 235, "Current Log Ins");
+    w = o;
+    { log_in_view = new Fl_Browser(0, 0, 240, 205);
+      log_in_view->align(Fl_Align(FL_ALIGN_TOP));
+    } // Fl_Browser* log_in_view
+    { btn_copy_to_clipboard = new Fl_Button(30, 210, 70, 20, "Copy");
+      btn_copy_to_clipboard->callback((Fl_Callback*)cb_btn_copy_to_clipboard);
+    } // Fl_Button* btn_copy_to_clipboard
+    { btn_close_log_ins = new Fl_Button(140, 210, 70, 20, "Close");
+      btn_close_log_ins->callback((Fl_Callback*)cb_btn_close_log_ins);
+    } // Fl_Button* btn_close_log_ins
     o->end();
   } // Fl_Double_Window* o
   return w;

@@ -40,9 +40,10 @@ extern Fl_Menu_Item menu_mnu_bar[];
 #define mnuExit (menu_mnu_bar+2)
 #define mnuEditor (menu_mnu_bar+4)
 #define mnuConfig (menu_mnu_bar+5)
-#define mnuSize (menu_mnu_bar+6)
-#define mnu_Content (menu_mnu_bar+8)
-#define mnu_About (menu_mnu_bar+9)
+#define mnuLogIns (menu_mnu_bar+6)
+#define mnuSize (menu_mnu_bar+7)
+#define mnu_Content (menu_mnu_bar+9)
+#define mnu_About (menu_mnu_bar+10)
 #include <FL/Fl_Tabs.H>
 extern Fl_Tabs *tabsConfig;
 #include <FL/Fl_Check_Button.H>
@@ -68,4 +69,9 @@ extern Fl_Check_Button *chkAutoPriority;
 extern void cb_btnCloseConfig(Fl_Return_Button*, void*);
 extern Fl_Return_Button *btnConfigOK;
 Fl_Double_Window* configDialog();
+#include <FL/Fl_Browser.H>
+extern Fl_Browser *log_in_view;
+extern Fl_Button *btn_copy_to_clipboard;
+extern Fl_Button *btn_close_log_ins;
+Fl_Double_Window* Log_ins_dialog();
 #endif

@@ -50,6 +50,7 @@ public:
   int del (int n);
   void clear (void);
   char *displine (int n);
+  char *report_line(int n);
   char *prefix (int n);
   char *area (int n);
   char *suffix (long n);

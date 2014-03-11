@@ -2,9 +2,11 @@
 #define _MY_UI
 
 #include <FL/Fl_Group.H>
+#include "loglist.h"
 
 extern int WhoIsUp;
 extern void updateCallins ();
+extern loglist callinlist;
 
 enum MYGUI_STATUS {LOGLIST, SUFFIX, PREFIX, AREA, PICKLIST};
 

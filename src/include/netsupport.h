@@ -18,5 +18,8 @@ extern void cb_mnuMigrate (Fl_Menu_ *, void*);
 
 extern void visit_URL(void *);
 
+extern void open_log_ins();
+extern void copy_to_clipboard();
+
 #endif
 

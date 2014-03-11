@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "loglist.h"
+#include "netshared.h"
 
 void loglist::clear (void)
 {
@@ -31,7 +32,6 @@ loglist::loglist ()
 
 void loglist::CreateDispLine (int n)
 {
-  extern char *trim(const char*);
   char dline[25], call[10];
   strcpy (call, trim(llist[n].szPrefix));
   strcat (call, trim(llist[n].szArea));
@@ -45,6 +45,20 @@ void loglist::CreateDispLine (int n)
   strncpy (llist[n].displine, dline, DLINESIZE);
 
   return;
+}
+
+char *loglist::report_line(int n)
+{
+	int nn = n + BLANKS;
+	static char dline[50], call[10];
+	strcpy (call, trim(llist[nn].szPrefix));
+	strcat (call, trim(llist[nn].szArea));
+	strcat (call, trim(llist[nn].szSuffix));
+	snprintf (dline, sizeof(dline), "%s\t%s\t%s", 
+					call,
+					llist[nn].szName, 
+					llist[nn].szTime);
+	return dline;
 }
 
 int loglist::add (long N,

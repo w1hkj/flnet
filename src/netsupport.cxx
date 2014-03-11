@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string>
 
 #include <FL/fl_ask.H>
 #include <FL/Fl_File_Chooser.H>
@@ -93,3 +94,34 @@ void cb_mnuHelpContent (Fl_Menu_ *mnu, void *d)
 	return;
 }
 
+//------------------------------------------------------------------------------
+// support of log-in list viewer
+//------------------------------------------------------------------------------
+Fl_Double_Window *login_list = (Fl_Double_Window *)0;
+string copy_list;
+
+void open_log_ins()
+{
+	if (!login_list) login_list = Log_ins_dialog();
+	if (callinlist.numlist() == 0) return;
+
+	char szLine[40];
+	log_in_view->clear();
+	copy_list.clear();
+
+	static int widths[] = { 80, 80, 80, 0 };  // widths for each column
+	log_in_view->column_widths(widths); // assign array to widget
+
+	for (int i = 0; i < callinlist.numlist(); i++) {
+		strcpy(szLine, callinlist.report_line(i));
+		log_in_view->add(szLine);
+		copy_list.append(szLine).append("\n");
+	}
+	login_list->show();
+}
+
+void copy_to_clipboard()
+{
+// copy list to clipboard
+	Fl::copy(copy_list.c_str(), copy_list.length(), 1);
+}
