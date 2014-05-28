@@ -141,13 +141,13 @@ int mingw_rename(const char *pold, const char *pnew)
 		return 0;
 	/* TODO: translate more errors */
 	if (GetLastError() == ERROR_ACCESS_DENIED &&
-	    (attrs = GetFileAttributes(pnew)) != INVALID_FILE_ATTRIBUTES) {
+		(attrs = GetFileAttributes(pnew)) != INVALID_FILE_ATTRIBUTES) {
 		if (attrs & FILE_ATTRIBUTE_DIRECTORY) {
 			errno = EISDIR;
 			return -1;
 		}
 		if ((attrs & FILE_ATTRIBUTE_READONLY) &&
-		    SetFileAttributes(pnew, attrs & ~FILE_ATTRIBUTE_READONLY)) {
+			SetFileAttributes(pnew, attrs & ~FILE_ATTRIBUTE_READONLY)) {
 			if (MoveFileEx(pold, pnew, MOVEFILE_REPLACE_EXISTING))
 				return 0;
 			/* revert file attributes on failure */
@@ -250,64 +250,64 @@ int nanosleep(const struct timespec *req, struct timespec *rem)
 }
 
 /*
-BOOL GetOsInfo(LPSTR OsName, LPSTR Release, LPSTR Version);
-BOOL GetMachInfo(LPSTR MachineName, LPSTR ProcessorName);
-int uname(struct utsname *name)
-{
-	char processor[1024];
+ BOOL GetOsInfo(LPSTR OsName, LPSTR Release, LPSTR Version);
+ BOOL GetMachInfo(LPSTR MachineName, LPSTR ProcessorName);
+ int uname(struct utsname *name)
+ {
+ char processor[1024];
 
-	if (name == NULL) {
-		errno = EINVAL;
-		return -1;
-	}
+ if (name == NULL) {
+ errno = EINVAL;
+ return -1;
+ }
 
-	if (gethostname(name->nodename, sizeof(name->nodename)) < 0) {
-		name->nodename[0] = '\0';
-		errno = ENOSYS;
-		return -1;
-	}
+ if (gethostname(name->nodename, sizeof(name->nodename)) < 0) {
+ name->nodename[0] = '\0';
+ errno = ENOSYS;
+ return -1;
+ }
 
-	if (!GetOsInfo(name->sysname, name->release, name->version)) {
-		strncpy (name->sysname, "win32", sizeof (name->sysname));
-		strncpy (name->release, "unknown", sizeof (name->release));
-		strncpy (name->version, "unknown", sizeof (name->version));
-	}
-	// "windows32" is as yet the only universal windows description allowed
-	//   by config.guess and config.sub
-	strncpy(name->sysname, "windows32", sizeof (name->sysname));
-	if (!GetMachInfo(name->machine, processor))
-		strncpy(name->machine, "i386", sizeof (name->machine));
+ if (!GetOsInfo(name->sysname, name->release, name->version)) {
+ strncpy (name->sysname, "win32", sizeof (name->sysname));
+ strncpy (name->release, "unknown", sizeof (name->release));
+ strncpy (name->version, "unknown", sizeof (name->version));
+ }
+ // "windows32" is as yet the only universal windows description allowed
+ //   by config.guess and config.sub
+ strncpy(name->sysname, "windows32", sizeof (name->sysname));
+ if (!GetMachInfo(name->machine, processor))
+ strncpy(name->machine, "i386", sizeof (name->machine));
 
-	return 0;
-}
+ return 0;
+ }
 
-int getrusage(int who, struct rusage *usage)
-{
-	FILETIME ct, et, kt, ut;
-	ULARGE_INTEGER uli;
+ int getrusage(int who, struct rusage *usage)
+ {
+ FILETIME ct, et, kt, ut;
+ ULARGE_INTEGER uli;
 
-	if (who != RUSAGE_SELF) {
-		errno = EINVAL;
-		return -1;
-	}
-	if (!usage) {
-		errno = EFAULT;
-		return -1;
-	}
+ if (who != RUSAGE_SELF) {
+ errno = EINVAL;
+ return -1;
+ }
+ if (!usage) {
+ errno = EFAULT;
+ return -1;
+ }
 
-	if (!GetProcessTimes(GetCurrentProcess(), &ct, &et, &kt, &ut)) {
-		errno = ENOENT;
-		return -1;
-	}
+ if (!GetProcessTimes(GetCurrentProcess(), &ct, &et, &kt, &ut)) {
+ errno = ENOENT;
+ return -1;
+ }
 
-	// FILETIMEs use 100-ns units
-	memcpy(&uli, &kt, sizeof(FILETIME));
-	usage->ru_stime.tv_sec  = uli.QuadPart / 10000000L;
-	usage->ru_stime.tv_usec = uli.QuadPart % 10000000L;
-	memcpy(&uli, &ut, sizeof(FILETIME));
-	usage->ru_utime.tv_sec  = uli.QuadPart / 10000000L;
-	usage->ru_utime.tv_usec = uli.QuadPart % 10000000L;
-
-	return 0;
-}
-*/
+ // FILETIMEs use 100-ns units
+ memcpy(&uli, &kt, sizeof(FILETIME));
+ usage->ru_stime.tv_sec  = uli.QuadPart / 10000000L;
+ usage->ru_stime.tv_usec = uli.QuadPart % 10000000L;
+ memcpy(&uli, &ut, sizeof(FILETIME));
+ usage->ru_utime.tv_sec  = uli.QuadPart / 10000000L;
+ usage->ru_utime.tv_usec = uli.QuadPart % 10000000L;
+ 
+ return 0;
+ }
+ */

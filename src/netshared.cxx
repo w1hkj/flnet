@@ -1,7 +1,36 @@
+// =====================================================================
+//
+// netshared.cxx
+//
+// Authors:
+//
+// Copyright (C) 2012, Dave Freese, W1HKJ
+// Copyright (C) 2014, Robert Stiles, KK5VD
+//
+// This file is part of FLNET.
+//
+// This is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
+//
+// This software is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// =====================================================================
+
+
 #include <string>
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <ctype.h>
+#include <time.h>
 
 #include <FL/Fl_Window.H>
 #include <FL/Fl.H>
@@ -16,6 +45,7 @@
 #include "netsupport.h"
 #include "config.h"
 #include "net_config.h"
+#include "xml_io.h"
 
 #include "csvdb.h"
 
@@ -39,24 +69,25 @@ char sSimpleName[120];
 char szDispName[80];
 
 Fl_Window	*NetNbrSearch = NULL,
-			*NetNbrBrowse = NULL,
-			*CallsignSearch = NULL,
-			*CallsignBrowse = NULL;
+*NetNbrBrowse = NULL,
+*CallsignSearch = NULL,
+*CallsignBrowse = NULL;
 
 char *uppercase (const char *s)
 {
-	static char ucase[81];
-	memset (ucase, (char)0, 81);
-	strncpy (ucase, s, 80);
+	static char ucase[128];
+	memset (ucase, (char)0, sizeof(ucase));
+	strncpy (ucase, s, sizeof(ucase)-1);
 	for (unsigned int i = 0; i < strlen(ucase); i++)
-	 ucase[i] = toupper(ucase[i]);
+		ucase[i] = toupper(ucase[i]);
 	return ucase;
 }
 
 char *trim (const char *s)
 {
-	static char trimmed[60];
-	strcpy (trimmed, s);
+	static char trimmed[128];
+	memset (trimmed, (char)0, sizeof(trimmed));
+	strncpy (trimmed, s, sizeof(trimmed)-1);
 	while ( (strlen(trimmed)) && (trimmed[strlen(trimmed)-1] == ' '))
 		trimmed[strlen(trimmed)-1] = 0;
 	if (trimmed[0] == 0) return trimmed;
@@ -65,39 +96,10 @@ char *trim (const char *s)
 	return trimmed;
 }
 
-
 void gotoRec (long L)
 {
 	currec = L;
 	dispRec ();
-}
-
-void cbGoFirstRec(Fl_Button *b, void *d) 
-{
-	if (!brwsData) return;
-	brwsnum = 0;
-	gotoRec (brwsData[brwsnum].recN);
-}
-
-void cbGoPrevRec(Fl_Button *b, void *d) 
-{
-	if (!brwsData || brwsnum == 0) return;
-	brwsnum--;
-	gotoRec (brwsData[brwsnum].recN);
-}
-
-void cbGoNextRec(Fl_Button *b, void *d) 
-{
-	if (!brwsData || brwsnum == (netdb.numrecs() - 1)) return;
-	brwsnum++;
-	gotoRec (brwsData[brwsnum].recN);
-}
-
-void cbGoLastRec(Fl_Button *b, void *d) 
-{
-	if (!brwsData) return;
-	brwsnum = netdb.numrecs() - 1;
-	gotoRec (brwsData[brwsnum].recN);
 }
 
 void showState ()
@@ -112,7 +114,9 @@ void showState ()
 			btnPrev->show ();
 			btnNext->show ();
 			btnLast->show ();
+			btn2Queue->show ();
 			break;
+
 		case NEW:
 			btnNewSave->label ("Save");
 			btnUpdateCancel->label ("Cancel");
@@ -123,7 +127,9 @@ void showState ()
 			btnPrev->show ();
 			btnNext->show ();
 			btnLast->show ();
+			btn2Queue->show ();
 			break;
+
 		case ADD:
 			btnNewSave->label ("Save");
 			btnUpdateCancel->label ("Cancel");
@@ -133,7 +139,9 @@ void showState ()
 			btnPrev->hide ();
 			btnNext->hide ();
 			btnLast->hide ();
+			btn2Queue->hide ();
 			break;
+
 		case MODIFY:
 			btnNewSave->hide ();
 			btnDelete->hide ();
@@ -141,6 +149,7 @@ void showState ()
 			btnPrev->hide ();
 			btnNext->hide ();
 			btnLast->hide ();
+			btn2Queue->hide ();
 			btnUpdateCancel->label ("Update");
 			break;
 	}
@@ -170,57 +179,25 @@ long IsInDB (const char *p, const char *a, const char *s)
 
 	found = -1L;
 	if (area[0] == 0 && prefix[0]== 0) suffix_only = 1;
-	
+
 	SortBySAP ();
 
 	for (int n = 0; n < netdb.numrecs(); n++) {
 		cmp = strcmp (suffix, trim (brwsData[n].suffix));
 		if (cmp > 0) continue;
 		if (cmp < 0) break;
-// only looking for a suffix match
+		// only looking for a suffix match
 		if (suffix_only) {
 			found = n;
 			break;
 		}
 		if (strcmp(prefix, trim (brwsData[n].prefix)) == 0 &&
-				strcmp(area, brwsData[n].area) == 0) {
+			strcmp(area, brwsData[n].area) == 0) {
 			found = n;
 			break;
 		}
 	}
 	return found;
-}
-
-void cb_btnNewSave(Fl_Button *b, void *d)
-{
-	if (editState == NEW || editState == ADD) {
-		if (IsInDB (inpPrefix->value(), inpArea->value(), inpSuffix->value()) == -1) {
-			appendNewRecord ();
-			callinlist.modify (WhoIsUp, netdb.numrecs() - 1, 
-								inpPrefix->value(),
-								inpArea->value (),
-								inpSuffix->value (),
-								inpNickname->value ());
-			getBrwsData ();
-			SortBySAP();
-			if (editState == ADD) {
-				myUI->UpdateWhoIsUp (netdb.numrecs() - 1);
-				toggleState ();
-				editor->hide ();
-				updateCallins ();
-				return;
-			}
-		} else
-			fl_alert ("Callsign already in database");
-		cbGoLastRec (NULL, NULL);
-	} else {
-		clearEditForm ();
-		editState = NEW;
-		showState ();
-		inpPrefix->take_focus ();
-		return;
-	}
-	toggleState ();
 }
 
 extern Fl_Input *inpCallsign;
@@ -248,47 +225,6 @@ void ModifyRecord (long N)
 	gotoRec (N);
 }
 
-void cb_btnUpdateCancel(Fl_Button *b, void *d)
-{
-	if (editState == ADD) {
-		toggleState ();
-		editor->hide ();
-		return;
-	}
-	if (editState == NEW) {
-		clearEditForm ();
-		dispRec ();
-		toggleState ();
-		return;
-	}
-	if (editState == MODIFY) {
-		callinlist.modify (WhoIsUp, currec, 
-											 inpPrefix->value(),
-											 inpArea->value (),
-											 inpSuffix->value (),
-											 inpNickname->value ());
-		saveCurRecord ();
-		getBrwsData ();
-		SortBySAP ();
-		toggleState ();
-		editor->hide ();
-		updateCallins ();
-	} else { // must be an UPDATE in normal editor mode
-		if (netdb.numrecs() > 0) {
-			saveCurRecord ();
-			getBrwsData ();
-			SortBySAP ();
-		}
-	}
-}
-
-void cb_btnDelete(Fl_Button *b, void *d)
-{
-	if (fl_choice("Confirm Delete", "cancel", "OK", NULL) == 1) {
-		netdb.erase(currec);
-		cbGoFirstRec (NULL,NULL);
-	}
-}
 
 void getBrwsData()
 {
@@ -307,7 +243,7 @@ void getBrwsData()
 	}
 
 	csvRecord rec;
-	brwsData = new brwsStruct[netdb.numrecs()]; 
+	brwsData = new brwsStruct[netdb.numrecs()];
 	for (int n = 0; n < netdb.numrecs(); n++) {
 		netdb.get(n, rec);
 		brwsData[n].recN = n;
@@ -372,7 +308,335 @@ void SortByAPS()
 	qsort ( &(brwsData[0]), netdb.numrecs(), sizeof(brwsStruct), APScompare);
 }
 
+void closeDB()
+{
+	netdb.save();
+	std::string cfg_filename = home_dir;
+	cfg_filename.append("flnet.cfg");
+	FILE *cfg_file = fopen(cfg_filename.c_str(),"w");
+	fprintf(cfg_file, "%s\n", selected_file.c_str());
+	fclose(cfg_file);
+}
 
+void openDB(string fname)
+{
+	strcpy (sSimpleName, fl_filename_name(fname.c_str()));
+	netdb.filename(fname.c_str());
+	if (netdb.load() != 0) {
+		fl_message("Not an flnet csv file");
+		exit(0);
+	}
+	if (netdb.numrecs()) {
+		readConfig ();
+		callinlist.setPri_1 (chP1[0]);
+		callinlist.setPri_2 (chP2[0]);
+		callinlist.setPri_3 (chP3[0]);
+		if (chAuto == 'y') callinlist.AutoPriority (1);
+		getBrwsData();
+	}
+}
+
+void dispRec ()
+{
+	char buf[80];
+	sprintf (buf,"File:%s",sSimpleName);
+	lblFileName->value (buf);
+	sprintf (buf,"Recs: %d", (int)netdb.numrecs());
+	lblNumRecs->value (buf);
+
+	csvRecord rec;
+	netdb.get(currec, rec);
+
+	inpPrefix->value (trim (rec.prefix.c_str()));
+	inpArea->value (trim (rec.area.c_str()));
+	inpSuffix->value (trim (rec.suffix.c_str()));
+	inpNickname->value (trim (rec.name.c_str()));
+	inpNetNbr->value (trim (rec.netnbr.c_str()));
+	txtLogDate->value( rec.logdate.c_str());
+	inpFname->value (trim (rec.fname.c_str()));
+	inpLname->value (trim (rec.lname.c_str()));
+	inpAddress->value (trim (rec.addr.c_str()));
+	inpCity->value (trim (rec.city.c_str()));
+	inpState->value (trim (rec.state.c_str()));
+	inpZip->value (trim (rec.zip.c_str()));
+	strcpy(buf, rec.phone.c_str());
+	if (strpbrk (buf, "0123456789") != NULL)
+		inpPhone->value (trim (buf));
+	else
+		inpPhone->value ("");
+	inpSpouse->value (trim (rec.spouse.c_str()));
+	inpSpBirthday->value (trim (rec.sp_birth.c_str()));
+	inpBirthday->value(rec.birthdate.c_str());
+
+	inpCallsign->value (trim (rec.callsign.c_str()));
+	inpNbrLogins->value (trim (rec.nbrlogins.c_str()));
+	inpStatus->value (trim (rec.status.c_str()));
+	inpJoined->value (trim (rec.joined.c_str()));
+	inpComment1->value (trim (rec.comment1.c_str()));
+	inpComment2->value (trim (rec.comment2.c_str()));
+	inpEmail->value (trim (rec.email.c_str()));
+	inpPrevDate->value (trim (rec.prevdate.c_str()));
+
+}
+
+void clearEditForm ()
+{
+	inpPrefix->value ("");
+	inpArea->value ("");
+	inpSuffix->value ("");
+	inpNickname->value ("");
+	inpNetNbr->value ("");
+	txtLogDate->value ("");
+	inpFname->value ("");
+	inpLname->value ("");
+	inpAddress->value ("");
+	inpCity->value ("");
+	inpState->value ("");
+	inpZip->value ("");
+	inpPhone->value ("");
+	inpBirthday->value ("");
+	inpSpouse->value ("");
+	inpSpBirthday->value ("");
+	inpCallsign->value ("");
+	inpNbrLogins->value ("");
+	inpStatus->value ("");
+	inpJoined->value ("");
+	inpComment1->value ("");
+	inpComment2->value ("");
+	inpPrevDate->value ("");
+	inpEmail->value ("");
+}
+
+void setFields (csvRecord &rec)
+{
+	rec.prefix = uppercase (inpPrefix->value ());
+	rec.area = inpArea->value ();
+	rec.suffix =	uppercase (inpSuffix->value ());
+	rec.name = inpNickname->value ();
+	rec.netnbr = inpNetNbr->value ();
+	rec.logdate = txtLogDate->value();
+	rec.fname = inpFname->value ();
+	rec.lname = inpLname->value ();
+	rec.addr	= inpAddress->value ();
+	rec.city	= inpCity->value ();
+	rec.state = inpState->value ();
+	rec.zip	 = inpZip->value ();
+	rec.phone = inpPhone->value ();
+	rec.birthdate = inpBirthday->value ();
+	rec.spouse = inpSpouse->value ();
+	rec.sp_birth = inpSpBirthday->value ();
+	rec.callsign = inpCallsign->value();
+	rec.nbrlogins = inpNbrLogins->value ();
+	rec.status = inpStatus->value ();
+	rec.joined = inpJoined->value();
+	rec.comment1 = inpComment1->value ();
+	rec.comment2 = inpComment2->value ();
+	rec.email = inpEmail->value ();
+	rec.prevdate = inpPrevDate->value();
+
+}
+
+void saveCurRecord ()
+{
+	csvRecord rec;
+	setFields (rec);
+	netdb.put(currec, rec);
+	dispRec ();
+}
+
+void appendNewRecord ()
+{
+	csvRecord rec;
+	setFields (rec);
+	netdb.add(rec);
+	getBrwsData ();
+}
+
+void appendNewRecord (csvRecord &rec)
+{
+	setFields (rec);
+	netdb.add(rec);
+	getBrwsData ();
+}
+
+
+int add_fldigi_record(void)
+{
+	std::string prefix, area, suffix;
+
+	if (!fldigi_online) {
+		fl_alert ("FLDIGI<->FLNET XMLRPC Commmunication failure!");
+		return -1;
+	}
+
+	struct callsign_data *data = update_flnet_calldata();
+
+	if(!data) {
+		fl_alert ("XMLRPC Internal Data transfer failure!");
+		return -1;
+	}
+
+	if(split_call(data->callsign, prefix, area, suffix) == false) return -1;
+
+	if(IsInDB (prefix.c_str(), area.c_str(), suffix.c_str()) < 0) {
+		csvRecord rec;
+		char date[32];
+		time_t rawtime = 0;
+		struct tm * timeinfo = 0;
+
+		time (&rawtime);
+		timeinfo = localtime (&rawtime);
+		memset(date, 0, sizeof(date));
+		snprintf(date, sizeof(date)-1, "%04d%02d%02d", timeinfo->tm_year+1900, timeinfo->tm_mon+1, timeinfo->tm_mday);
+
+		rec.prefix    = trim(uppercase(prefix.c_str()));
+		rec.area      = trim(area.c_str());
+		rec.suffix    = trim(uppercase(suffix.c_str()));
+		rec.name      = trim(data->name.c_str());
+		rec.fname     = trim(data->name.c_str());
+		rec.city      = trim(data->qth.c_str());
+		rec.state     = trim(data->state.c_str());
+		rec.callsign  = trim(uppercase(data->callsign.c_str()));
+		rec.netnbr 	  = "";
+		rec.logdate   = date;
+		rec.lname 	  = "";
+		rec.addr	  = "";
+		rec.zip	      = "";
+		rec.phone     = "";
+		rec.birthdate = "";
+		rec.spouse    = "";
+		rec.sp_birth  = "";
+		rec.nbrlogins = "";
+		rec.status    = "";
+		rec.joined    = date;
+		rec.comment1  = "";
+		rec.comment2  = "";
+		rec.email     = "";
+		rec.prevdate  = "";
+
+		netdb.add(rec);
+		getBrwsData ();
+	}
+
+	delete data;
+
+	return (int) IsInDB (prefix.c_str(), area.c_str(), suffix.c_str());
+}
+
+bool split_call(std::string src, std::string &pre, std::string &area, std::string &post)
+{
+	if(src.empty()) return false;
+
+	int index = 0;
+	int start = 0;
+	int end = 0;
+	std::string temp;
+
+	for(index = src.size() - 1; index > -1; index--) {
+		if(src[index] <= ' ') continue;
+		if(isdigit(src[index])) break;
+		if(!end) end = index;
+		start = index;
+	}
+
+	temp.clear();
+	for(int j = start; j <= end; j++)
+		temp += toupper(src[j]);
+	post.assign(temp);
+
+	start = 0;
+	end = 0;
+
+	for(; index > -1; index--) {
+		if(src[index] <= ' ') continue;
+		if(isalpha(src[index])) break;
+		if(!end) end = index;
+		start = index;
+	}
+
+	temp.clear();
+	for(int j = start; j <= end; j++)
+		temp += src[j];
+	area.assign(temp);
+
+	start = 0;
+	end = 0;
+
+	for(; index > -1; index--) {
+		if(src[index] <= ' ') continue;
+		if(!isalnum(src[index])) break;
+		if(!end) end = index;
+		start = index;
+	}
+
+	temp.clear();
+	for(int j = start; j <= end; j++)
+		temp += toupper(src[j]);
+	pre.assign(temp);
+
+	return true;
+}
+
+void cb_mnuFldigiEditor(Fl_Menu_*, void*)
+{
+	int rn = add_fldigi_record();
+	if(rn < 0) return;
+	gotoRec(brwsData[rn].recN);
+}
+
+void cb_F12(int WhoIsUp)
+{
+	long shownrec;
+	int n;
+	n = callinlist.numlist ();
+	if (!n) return;
+
+	Fl_Window *editor = getEditWindow();
+	editor->resize(main_window->x() + main_window->w() + 10, main_window->y(), 535, 460);
+
+	SortBySAP ();
+	clearEditForm ();
+	editor->show ();
+
+	if ((shownrec = callinlist.recN (WhoIsUp)) != -1)
+		ModifyRecord (shownrec);
+	else
+		AddNewRecord (callinlist.prefix (WhoIsUp),
+					  callinlist.area (WhoIsUp),
+					  callinlist.suffix (WhoIsUp));
+}
+
+void cb_ShiftF12(void)
+{
+	int rn = add_fldigi_record();
+	if(rn < 0) return;
+	myUI->PickedToCallinsDB((size_t) brwsData[rn].recN);
+}
+
+
+void cbEditor ()
+{
+	Fl_Window *editor = getEditWindow();
+	editor->resize(main_window->x() + main_window->w() + 10, main_window->y(), 535, 460);
+
+	SortBySAP ();
+	clearEditForm ();
+	editor->show ();
+	editState = UPDATE;
+	showState ();
+	cbGoFirstRec (NULL, NULL);
+}
+
+void cbCloseEditor ()
+{
+	Fl_Window *editor = getEditWindow();
+	getBrwsData ();
+	SortBySAP ();
+	editState = UPDATE;
+	showState ();
+	editor->hide ();
+	myUI->dispCallIns (false);
+}
 void cb_btnCancelCallsignSearch(Fl_Button*, void*)
 {
 	CallsignBrowse->hide();
@@ -505,148 +769,127 @@ void cb_mnuSearchNetNbr (Fl_Menu_ *m, void *d)
 	NetNbrSearch->show ();
 }
 
-void closeDB()
+void cb_btn2Queue(Fl_Button *b, void *d)
 {
-	netdb.save();
-	std::string cfg_filename = home_dir;
-	cfg_filename.append("flnet.cfg");
-	FILE *cfg_file = fopen(cfg_filename.c_str(),"w");
-	fprintf(cfg_file, "%s\n", selected_file.c_str());
-	fclose(cfg_file);
+	myUI->PickedToCallinsDB ((size_t)currec);
 }
 
-void openDB(string fname)
+void cb_btnUpdateCancel(Fl_Button *b, void *d)
 {
-	strcpy (sSimpleName, fl_filename_name(fname.c_str()));
-	netdb.filename(fname.c_str());
-	if (netdb.load() != 0) {
-		fl_message("Not an flnet csv file");
-		exit(0);
+	Fl_Window *editor = getEditWindow();
+
+	if (editState == ADD) {
+		toggleState ();
+		editor->hide ();
+		return;
 	}
-	if (netdb.numrecs()) {
-		readConfig ();
-		callinlist.setPri_1 (chP1[0]);
-		callinlist.setPri_2 (chP2[0]);
-		callinlist.setPri_3 (chP3[0]);
-		if (chAuto == 'y') callinlist.AutoPriority (1);
-		getBrwsData();
+	if (editState == NEW) {
+		clearEditForm ();
+		dispRec ();
+		toggleState ();
+		return;
+	}
+	if (editState == MODIFY) {
+		callinlist.modify (WhoIsUp, currec,
+						   inpPrefix->value(),
+						   inpArea->value (),
+						   inpSuffix->value (),
+						   inpNickname->value ());
+		saveCurRecord ();
+		getBrwsData ();
+		SortBySAP ();
+		toggleState ();
+		editor->hide ();
+		updateCallins (false);
+	} else { // must be an UPDATE in normal editor mode
+		if (netdb.numrecs() > 0) {
+			saveCurRecord ();
+			getBrwsData ();
+			SortBySAP ();
+		}
 	}
 }
 
-void dispRec ()
+void cb_btnDelete(Fl_Button *b, void *d)
 {
-	char buf[80];
-	sprintf (buf,"File:%s",sSimpleName);
-	lblFileName->value (buf);
-	sprintf (buf,"Recs: %d", (int)netdb.numrecs());
-	lblNumRecs->value (buf);
-
-	csvRecord rec;
-	netdb.get(currec, rec);
-
-	inpPrefix->value (trim (rec.prefix.c_str()));
-	inpArea->value (trim (rec.area.c_str()));
-	inpSuffix->value (trim (rec.suffix.c_str()));
-	inpNickname->value (trim (rec.name.c_str()));
-	inpNetNbr->value (trim (rec.netnbr.c_str()));
-	txtLogDate->value( rec.logdate.c_str());
-	inpFname->value (trim (rec.fname.c_str()));
-	inpLname->value (trim (rec.lname.c_str()));
-	inpAddress->value (trim (rec.addr.c_str()));
-	inpCity->value (trim (rec.city.c_str()));
-	inpState->value (trim (rec.state.c_str()));
-	inpZip->value (trim (rec.zip.c_str()));
-	strcpy(buf, rec.phone.c_str()); 
-	if (strpbrk (buf, "0123456789") != NULL)
-		inpPhone->value (trim (buf));
-	else
-		inpPhone->value ("");
-	inpSpouse->value (trim (rec.spouse.c_str()));
-	inpSpBirthday->value (trim (rec.sp_birth.c_str()));
-	inpBirthday->value(rec.birthdate.c_str());
-
-	inpCallsign->value (trim (rec.callsign.c_str()));
-	inpNbrLogins->value (trim (rec.nbrlogins.c_str()));
-	inpStatus->value (trim (rec.status.c_str()));
-	inpJoined->value (trim (rec.joined.c_str()));
-	inpComment1->value (trim (rec.comment1.c_str()));
-	inpComment2->value (trim (rec.comment2.c_str()));
-	inpEmail->value (trim (rec.email.c_str()));
-	inpPrevDate->value (trim (rec.prevdate.c_str()));
-
+	if (fl_choice("Confirm Delete", "cancel", "OK", NULL) == 1) {
+		netdb.erase(currec);
+		cbGoFirstRec (NULL,NULL);
+	}
 }
 
-void clearEditForm ()
+void cbGoFirstRec(Fl_Button *b, void *d)
 {
-	inpPrefix->value ("");
-	inpArea->value ("");
-	inpSuffix->value ("");
-	inpNickname->value ("");
-	inpNetNbr->value ("");
-	txtLogDate->value ("");
-	inpFname->value ("");
-	inpLname->value ("");
-	inpAddress->value ("");
-	inpCity->value ("");
-	inpState->value ("");
-	inpZip->value ("");
-	inpPhone->value ("");
-	inpBirthday->value ("");
-	inpSpouse->value ("");
-	inpSpBirthday->value ("");
-	inpCallsign->value ("");
-	inpNbrLogins->value ("");
-	inpStatus->value ("");
-	inpJoined->value ("");
-	inpComment1->value ("");
-	inpComment2->value ("");
-	inpPrevDate->value ("");
-	inpEmail->value ("");
+	if (!brwsData) return;
+	brwsnum = 0;
+	gotoRec (brwsData[brwsnum].recN);
 }
 
-void setFields (csvRecord &rec)
+void cbGoPrevRec(Fl_Button *b, void *d)
 {
-	rec.prefix = uppercase (inpPrefix->value ());
-	rec.area = inpArea->value ();
-	rec.suffix =	uppercase (inpSuffix->value ());
-	rec.name = inpNickname->value ();
-	rec.netnbr = inpNetNbr->value ();
-	rec.logdate = txtLogDate->value();
-	rec.fname = inpFname->value ();
-	rec.lname = inpLname->value ();
-	rec.addr	= inpAddress->value ();
-	rec.city	= inpCity->value ();
-	rec.state = inpState->value ();
-	rec.zip	 = inpZip->value ();
-	rec.phone = inpPhone->value ();
-	rec.birthdate = inpBirthday->value ();
-	rec.spouse = inpSpouse->value ();
-	rec.sp_birth = inpSpBirthday->value ();
-	rec.callsign = inpCallsign->value();
-	rec.nbrlogins = inpNbrLogins->value ();
-	rec.status = inpStatus->value ();
-	rec.joined = inpJoined->value();
-	rec.comment1 = inpComment1->value ();
-	rec.comment2 = inpComment2->value ();
-	rec.email = inpEmail->value ();
-	rec.prevdate = inpPrevDate->value();
-
+	if (!brwsData || brwsnum == 0) return;
+	brwsnum--;
+	gotoRec (brwsData[brwsnum].recN);
 }
 
-void saveCurRecord ()
+void cbGoNextRec(Fl_Button *b, void *d)
 {
-	csvRecord rec;
-	setFields (rec);
-	netdb.put(currec, rec);
-	dispRec ();
+	if (!brwsData || brwsnum == (netdb.numrecs() - 1)) return;
+	brwsnum++;
+	gotoRec (brwsData[brwsnum].recN);
 }
 
-void appendNewRecord ()
+void cbGoLastRec(Fl_Button *b, void *d)
 {
-	csvRecord rec;
-	setFields (rec);
-	netdb.add(rec);
-	getBrwsData ();
+	if (!brwsData) return;
+	brwsnum = netdb.numrecs() - 1;
+	gotoRec (brwsData[brwsnum].recN);
+}
+
+void cb_btnNewSave(Fl_Button *b, void *d)
+{
+	if (editState == NEW || editState == ADD) {
+		if (IsInDB (inpPrefix->value(), inpArea->value(), inpSuffix->value()) == -1) {
+			std::string newPrefix;
+			std::string newArea;
+			std::string newSuffix;
+
+			newPrefix.assign(trim(inpPrefix->value()));
+			newArea.assign(trim(inpArea->value()));
+			newSuffix.assign(trim(inpSuffix->value()));
+
+			appendNewRecord ();
+
+			getBrwsData ();
+			SortBySAP();
+
+			if(newPrefix.size() && newArea.size() && newSuffix.size()) {
+				long found =  IsInDB (newPrefix.c_str(), newArea.c_str(), newSuffix.c_str());
+				if(found > -1) {
+					currec = brwsData[found].recN;
+					gotoRec(currec);
+				}
+			}
+
+			if (editState == ADD) {
+				Fl_Window *editor = getEditWindow();
+				myUI->UpdateWhoIsUp (netdb.numrecs() - 1);
+				toggleState ();
+				editor->hide ();
+				updateCallins (false);
+				return;
+			}
+		} else
+			fl_alert ("Callsign already in database");
+		//cbGoLastRec (NULL, NULL);
+	} else {
+		clearEditForm ();
+		editState = NEW;
+		showState ();
+		inpPrefix->take_focus ();
+		return;
+	}
+	toggleState ();
 }
 
 void cb_mnuQRZ (Fl_Menu_ *m, void *d)
@@ -682,60 +925,12 @@ void cb_mnuQRZ (Fl_Menu_ *m, void *d)
 		inpZip->value (buff);
 #ifdef HAVE_EMAIL
 		if (inpEmail) {
-				strcpy (buff, szEmail(qCall->GetCall()));
-				inpEmail->value (buff);
+			strcpy (buff, szEmail(qCall->GetCall()));
+			inpEmail->value (buff);
 		}
 #endif
 	}
 	delete qCall;
 	return;
-}
-
-void cb_F12(int WhoIsUp)
-{
-	long shownrec;
-	int n;
-	n = callinlist.numlist ();
-	if (!n) return;
-	if (!editor)
-		editor = newEditWindow();
-	else
-		editor->resize(main_window->x() + main_window->w() + 10, main_window->y(), 535, 460);
-
-	SortBySAP ();
-	clearEditForm ();
-	editor->show ();
-
-	if ((shownrec = callinlist.recN (WhoIsUp)) != -1)
-		ModifyRecord (shownrec);
-	else
-		AddNewRecord (callinlist.prefix (WhoIsUp),
-									callinlist.area (WhoIsUp),
-									callinlist.suffix (WhoIsUp));
-}
-
-void cbEditor ()
-{
-	if (!editor)
-		editor = newEditWindow();
-	else
-		editor->resize(main_window->x() + main_window->w() + 10, main_window->y(), 535, 460);
-
-	SortBySAP ();
-	clearEditForm ();
-	editor->show ();
-	editState = UPDATE;
-	showState ();
-	cbGoFirstRec (NULL, NULL);
-}
-
-void cbCloseEditor ()
-{
-	getBrwsData ();
-	SortBySAP ();
-	editState = UPDATE;
-	showState ();
-	editor->hide ();
-	myUI->dispCallIns ();
 }
 

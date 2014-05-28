@@ -1,3 +1,29 @@
+// =====================================================================
+//
+// netsupport.cxx
+//
+// Authors:
+//
+// Copyright (C) 2012, Dave Freese, W1HKJ
+//
+// This file is part of FLNET.
+//
+// This is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
+//
+// This software is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// =====================================================================
+
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string>
@@ -10,13 +36,13 @@
 #include "netversion.h"
 #include "loglist.h"
 #include "netsupport.h"
+#include "xml_io.h"
 
 #include "config.h"
 
-Fl_Window *editor = NULL;
-
-Fl_Window *about = NULL;
-Fl_Window *content = NULL;
+static Fl_Window *about = ( Fl_Window * )0;
+//Fl_Window *editor = NULL;
+//Fl_Window *content = ( Fl_Window * )0;
 
 extern void updateLogins ();
 
@@ -31,35 +57,36 @@ void cb_mnuOpen(Fl_Menu_*mnu, void *d)
 
 void cb_CloseEditor (Fl_Button *b, void *d)
 {
-  cbCloseEditor ();
+	cbCloseEditor ();
 }
 
 
 void cb_mnuEditor(Fl_Menu_ *mnu, void *d)
 {
-  cbEditor ();
+	cbEditor ();
 }
 
 void cleanExit()
 {
-  updateLogins ();
-  closeDB();
-  exit(0);
+	updateLogins ();
+	closeDB();
+	close_xmlrpc();
+	exit(0);
 }
 
 void cb_mnuExit (Fl_Menu_ *m, void *d)
 {
-    cleanExit();
+	cleanExit();
 }
 
 void cb_mnuConfig (Fl_Menu_ *m, void *d)
 {
-  cbConfig ();
+	cbConfig ();
 }
 
 void cb_btnCloseConfig (Fl_Return_Button *b, void *d)
 {
-  cbCloseConfig ();
+	cbCloseConfig ();
 }
 
 void cb_mnuMigrate (Fl_Menu_ *m, void *d)
@@ -70,17 +97,17 @@ char szVersion[80];
 
 void cb_mnuAbout(Fl_Menu_ *mnu, void *d)
 {
-  if (!about) {
-    sprintf (szVersion, "\
-Net control program\n\
-Version %s\n\
-Free Hamware From\n\
-W1HKJ\n\n\
-Report problems to:", flnet_VERSION);
-    about = newAboutDialog ();
-    lblVersion->label (szVersion);
-  }
-  about->show ();
+	if (!about) {
+		sprintf (szVersion, "\
+				 Net control program\n\
+				 Version %s\n\
+				 Free Hamware From\n\
+				 W1HKJ\n\n\
+				 Report problems to:", flnet_VERSION);
+		about = newAboutDialog ();
+		lblVersion->label (szVersion);
+	}
+	about->show ();
 }
 
 void cb_mnuHelpContent (Fl_Menu_ *mnu, void *d)
@@ -122,6 +149,6 @@ void open_log_ins()
 
 void copy_to_clipboard()
 {
-// copy list to clipboard
+	// copy list to clipboard
 	Fl::copy(copy_list.c_str(), copy_list.length(), 1);
 }

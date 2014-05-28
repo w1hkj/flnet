@@ -26,10 +26,11 @@ decl {\#include "config.h"} {private local
 decl {\#include "net_config.h"} {private local
 } 
 
-Function {newNetControl()} {} {
+Function {newNetControl()} {open
+} {
   Fl_Window {} {
     label flnet open
-    xywh {1145 23 390 455} type Double box BORDER_BOX
+    xywh {541 215 390 455} type Double box BORDER_BOX
     code0 {\#include "my_UI.h"} visible
   } {
     Fl_Menu_Bar mnu_bar {open
@@ -52,7 +53,7 @@ Function {newNetControl()} {} {
       }
       MenuItem mnuEditor {
         label {&Editor}
-        callback cb_mnuEditor
+        callback cb_mnuEditor selected
         xywh {0 0 100 20}
       }
       MenuItem mnuConfig {
@@ -394,7 +395,7 @@ txtSample[4]->redraw();}
 
 Function {Log_ins_dialog()} {} {
   Fl_Window {} {
-    label {Current Log Ins} open selected
+    label {Current Log Ins} open
     xywh {608 169 240 235} type Double hide
   } {
     Fl_Browser log_in_view {

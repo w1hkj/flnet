@@ -131,7 +131,35 @@ flnet_SOURCES += \
 	netutils.cxx \
 	qrzlib.cxx \
 	timeops.cxx \
+	xml_io.cxx \
 	UI/ui_sizes.cxx \
+	xmlrpcpp/XmlRpcClient.cpp \
+	xmlrpcpp/XmlRpcDispatch.cpp	 \
+	xmlrpcpp/XmlRpcMutex.cpp \
+	xmlrpcpp/XmlRpcServer.cpp \
+	xmlrpcpp/XmlRpcServerConnection.cpp \
+	xmlrpcpp/XmlRpcServerMethod.cpp \
+	xmlrpcpp/XmlRpcSocket.cpp \
+	xmlrpcpp/XmlRpcSource.cpp \
+	xmlrpcpp/XmlRpcThread.cpp \
+	xmlrpcpp/XmlRpcThreadedServer.cpp \
+	xmlrpcpp/XmlRpcUtil.cpp \
+	xmlrpcpp/XmlRpcValue.cpp \
+	xmlrpcpp/base64.h \
+	xmlrpcpp/XmlRpc.h \
+	xmlrpcpp/XmlRpcClient.h \
+	xmlrpcpp/XmlRpcDispatch.h \
+	xmlrpcpp/XmlRpcException.h \
+	xmlrpcpp/XmlRpcMutex.h \
+	xmlrpcpp/XmlRpcServer.h \
+	xmlrpcpp/XmlRpcServerConnection.h \
+	xmlrpcpp/XmlRpcServerMethod.h \
+	xmlrpcpp/XmlRpcSocket.h \
+	xmlrpcpp/XmlRpcSource.h \
+	xmlrpcpp/XmlRpcThread.h \
+	xmlrpcpp/XmlRpcThreadedServer.h \
+	xmlrpcpp/XmlRpcUtil.h \
+	xmlrpcpp/XmlRpcValue.h \
 	include/calendar.h \
 	include/combo.h \
 	include/csvdb.h \
@@ -149,7 +177,10 @@ flnet_SOURCES += \
 	include/netversion.h \
 	include/qrzlib.h \
 	include/timeops.h \
-	include/util.h
+	include/util.h \
+	include/xmlreader.h \
+	include/xmlrpc.h \
+	include/xml_io.h
 
 # Additional source files that are distributed
 EXTRA_DIST = \

@@ -1,3 +1,30 @@
+// =====================================================================
+//
+// main.cxx
+//
+// Authors:
+//
+// Copyright (C) 2012, Dave Freese, W1HKJ
+// Copyright (C) 2014, Robert Stiles, KK5VD
+//
+// This file is part of FLNET.
+//
+// This is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
+//
+// This software is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// =====================================================================
+
+
 #include <fstream>
 #include <ostream>
 #include <string>
@@ -27,6 +54,7 @@
 #include "netshared.h"
 #include "netversion.h"
 #include "netsupport.h"
+#include "xml_io.h"
 
 #ifdef WIN32
 #  include "flnetrc.h"
@@ -67,7 +95,7 @@ static void fatal_error(string sz_error)
 	string s = "Fatal error!\n";
 	s.append(sz_error).append("\n").append(strerror(errno));
 
-// Win32 will display a MessageBox error message
+	// Win32 will display a MessageBox error message
 #if !defined(__WOE32__)
 	fl_message_font(FL_HELVETICA, FL_NORMAL_SIZE);
 	fl_alert("%s", s.c_str());
@@ -128,20 +156,20 @@ void visit_URL(void* arg)
 #  endif
 	};
 	switch (fork()) {
-	case 0:
+		case 0:
 #  ifndef NDEBUG
-		unsetenv("MALLOC_CHECK_");
-		unsetenv("MALLOC_PERTURB_");
+			unsetenv("MALLOC_CHECK_");
+			unsetenv("MALLOC_PERTURB_");
 #  endif
-		for (size_t i = 0; i < sizeof(browsers)/sizeof(browsers[0]); i++)
-			if (browsers[i])
-				execlp(browsers[i], browsers[i], url, (char*)0);
-		exit(EXIT_FAILURE);
-	case -1:
-		fl_alert(
-"Could not run a web browser:\n%s\n\n"
-"Open this URL manually:\n%s",
-			 strerror(errno), url);
+			for (size_t i = 0; i < sizeof(browsers)/sizeof(browsers[0]); i++)
+				if (browsers[i])
+					execlp(browsers[i], browsers[i], url, (char*)0);
+			exit(EXIT_FAILURE);
+		case -1:
+			fl_alert(
+					 "Could not run a web browser:\n%s\n\n"
+					 "Open this URL manually:\n%s",
+					 strerror(errno), url);
 	}
 #else
 	// gurgle... gurgle... HOWL
@@ -230,7 +258,7 @@ int main(int argc, char **argv)
 		char buff[LINESIZE + 1];
 		fstream dbfile(cfg_filename.c_str(), ios::in | ios::binary);
 		if (dbfile) {
-// read & map header line
+			// read & map header line
 			memset(buff, 0, LINESIZE + 1);
 			dbfile.getline(buff, LINESIZE);
 			selected_file = buff;
@@ -243,14 +271,16 @@ int main(int argc, char **argv)
 			dbfile.close();
 		} else {
 			selected_file = last_filename;
-			char *p = fl_file_chooser ("Select .csv file", 
-										"*.csv", 
-										selected_file.c_str(), 0);
+			char *p = fl_file_chooser ("Select .csv file",
+									   "*.csv",
+									   selected_file.c_str(), 0);
 			if (!p) exit(0);
 			selected_file = p;
 		}
 		openDB (selected_file);
 	}
+
+	open_xmlrpc();
 
 	return Fl::run();
 }
@@ -258,16 +288,39 @@ int main(int argc, char **argv)
 int parse_args(int argc, char **argv, int& idx)
 {
 	if (strcasecmp("--help", argv[idx]) == 0) {
-		printf("Usage: \n\
-  --help this help text\n\
-  --version\n\
-  database.csv\n\
-    open 'named' database file.\n");
+		printf("\nUsage: \n" \
+			   "\t--help this help text\n" \
+			   "\t--version\n" \
+			   "\tdatabase.csv\n" \
+			   "\topen 'named' database file.\n"
+			   "\t--xmlrpc-server-address <ip_addess> default:"DEFAULT_XMLRPC_IP_ADDRESS"\n" \
+			   "\t--xmlrpc-server-port <port> default:"DEFAULT_XMLRPC_PORT_NO"\n\n\n" \
+			   );
 		exit(0);
 	}
+
 	if (strcasecmp("--version", argv[idx]) == 0) {
 		printf("Version: "VERSION"\n");
 		exit (0);
 	}
+	
+	if (strcasecmp(argv[idx], "--xmlrpc-server-address") == 0) {
+		idx++;
+		if((idx < argc) && argv[idx]) {
+			set_xmlrpc_ip_address(argv[idx]);
+			idx++;
+		}
+		return 1;
+	}
+	
+	if (strcasecmp(argv[idx], "--xmlrpc-server-port") == 0) {
+		idx++;
+		if((idx < argc) && argv[idx]) {
+			set_xmlrpc_port_number(argv[idx]);
+			idx++;
+		}
+		return 1;
+	}
+	
 	return 0;
 }

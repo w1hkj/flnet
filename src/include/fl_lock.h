@@ -4,7 +4,7 @@
 // Copyright (C) 2007
 //		Stelios Bounanos, M0GLD
 //
-// This file is part of fldigi.
+// This file is part of flnet.
 //
 // fldigi is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -45,21 +45,21 @@
 
 #	ifndef NO_LOCKS
 #               include "debug.h"
-#		define FL_LOCK(x)                                       \
-                do {                                                    \
-                        switch (GET_THREAD_ID()) {                      \
-                        case TRX_TID:                                   \
-                                LOG_ERROR("trx lock");			\
-                                break;                                  \
-                        case FLMAIN_TID:                                \
-                                LOG_WARN("flrun lock");			\
-                                break;                                  \
-                        default:                                        \
-                                LOG_VERBOSE("lock");			\
-                        }                                               \
-                        pstack_maybe();                                 \
-                        Fl::lock(x);                                    \
-                } while (0);
+#		define FL_LOCK(x)           \
+do {                                \
+	switch (GET_THREAD_ID()) {      \
+		case TRX_TID:               \
+			LOG_ERROR("trx lock");	\
+			break;                  \
+	case FLMAIN_TID:                \
+			LOG_WARN("flrun lock"); \
+			break;                  \
+	default:                        \
+		LOG_VERBOSE("lock");		\
+	}                               \
+	pstack_maybe();                 \
+	Fl::lock(x);                    \
+} while (0);
 
 #		define FL_UNLOCK(x) Fl::unlock(x)
 #		define FL_AWAKE(x)  Fl::awake(x)

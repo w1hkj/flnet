@@ -1,3 +1,27 @@
+//======================================================================
+// netedits.h
+//
+// Authors:
+//
+// Copyright (C) 2013, Dave Freese, W1HKJ
+//
+// This file is part of FLNET.
+//
+// This is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
+//
+// This software is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+//======================================================================
+
 #ifndef netedits_h
 #define netedits_h
 #include <FL/Fl.H>
@@ -5,7 +29,8 @@
 #include "date.h"
 #include "calendar.h"
 
-Fl_Window *newEditWindow();
+Fl_Window *newEditWindow(bool);
+Fl_Window *getEditWindow(void);
 
 #include <FL/Fl_Menu_Bar.H>
 extern Fl_Menu_Bar *mbarMain;
@@ -14,6 +39,7 @@ extern void cb_mnuSearchNetNbr(Fl_Menu_*, void*);
 extern void cb_mnuBrowseCallsign(Fl_Menu_*, void*);
 extern void cb_mnuBrowseNetNbr(Fl_Menu_*, void*);
 extern void cb_mnuQRZ(Fl_Menu_*, void*);
+extern void cb_mnuFldigiEditor(Fl_Menu_*, void*);
 #include <FL/Fl_Input.H>
 extern Fl_Input *inpPrefix;
 extern Fl_Input *inpArea;
@@ -47,6 +73,8 @@ extern Fl_Button *btnNewSave;
 extern void cb_btnDelete(Fl_Button*, void*);
 extern Fl_Button *btnDelete;
 extern void cb_btnUpdateCancel(Fl_Button*, void*);
+extern Fl_Button *btn2Queue;
+extern void cb_btn2Queue(Fl_Button *, void *);
 extern Fl_Button *btnUpdateCancel;
 extern void cb_CloseEditor(Fl_Button*, void*);
 extern Fl_Button *btnClose;

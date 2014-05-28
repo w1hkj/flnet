@@ -71,19 +71,19 @@ extern THREAD_ID_TYPE thread_id_;
 #  include "debug.h"
 bool thread_in_list(int id, const int* list);
 #  define ENSURE_THREAD(...)						\
-	do {								\
-		int id_ = GET_THREAD_ID();				\
-		int t_[] = { __VA_ARGS__, INVALID_TID };		\
-		if (!thread_in_list(id_, t_))				\
-			LOG_ERROR("bad thread context: %d", id_);	\
-	} while (0)
+do {								\
+int id_ = GET_THREAD_ID();				\
+int t_[] = { __VA_ARGS__, INVALID_TID };		\
+if (!thread_in_list(id_, t_))				\
+LOG_ERROR("bad thread context: %d", id_);	\
+} while (0)
 #  define ENSURE_NOT_THREAD(...)					\
-	do {								\
-		int id_ = GET_THREAD_ID();				\
-		int t_[] = { __VA_ARGS__, INVALID_TID };		\
-		if (thread_in_list(id_, t_))				\
-			LOG_ERROR("bad thread context: %d", id_);	\
-	} while (0)
+do {								\
+int id_ = GET_THREAD_ID();				\
+int t_[] = { __VA_ARGS__, INVALID_TID };		\
+if (thread_in_list(id_, t_))				\
+LOG_ERROR("bad thread context: %d", id_);	\
+} while (0)
 #else
 #  define ENSURE_THREAD(...) ((void)0)
 #  define ENSURE_NOT_THREAD(...) ((void)0)
@@ -95,12 +95,12 @@ bool thread_in_list(int id, const int* list);
 // pthread_cancel and there is no good/sane way to interrupt.
 #ifndef __WOE32__
 #  define SET_THREAD_CANCEL()					\
-	do {							\
-		sigset_t usr2;					\
-		sigemptyset(&usr2);				\
-		sigaddset(&usr2, SIGUSR2);			\
-		pthread_sigmask(SIG_UNBLOCK, &usr2, NULL);	\
-	} while (0)
+do {							\
+sigset_t usr2;					\
+sigemptyset(&usr2);				\
+sigaddset(&usr2, SIGUSR2);			\
+pthread_sigmask(SIG_UNBLOCK, &usr2, NULL);	\
+} while (0)
 #  define TEST_THREAD_CANCEL() /* nothing */
 #  define CANCEL_THREAD(t__) pthread_kill(t__, SIGUSR2)
 #else

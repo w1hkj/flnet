@@ -1,19 +1,33 @@
-// =====================================================================
-//
+//======================================================================
 // csvdb.cxx
 //
-// comma separated value database file support for flnet
+// Authors:
 //
-// Copyright 2013, Dave Freese, W1HKJ
+// Copyright (C) 2013, Dave Freese, W1HKJ
 //
-// =====================================================================
+// This file is part of FLNET.
+//
+// This is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
+//
+// This software is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+//======================================================================
 
 #include "csvdb.h"
 
 enum FIELDS {
-PREFIX,AREA,SUFFIX,CALLSIGN,NAME,NETNBR,LOGDATE,NBRLOGINS,STATUS,JOINED,
-FNAME,LNAME,ADDR,CITY,STATE,ZIP,PHONE,BIRTHDATE,SPOUSE,SP_BIRTH,
-COMMENT1,COMMENT2,EMAIL,PREVDATE };
+	PREFIX,AREA,SUFFIX,CALLSIGN,NAME,NETNBR,LOGDATE,NBRLOGINS,STATUS,JOINED,
+	FNAME,LNAME,ADDR,CITY,STATE,ZIP,PHONE,BIRTHDATE,SPOUSE,SP_BIRTH,
+	COMMENT1,COMMENT2,EMAIL,PREVDATE };
 
 //szFields on 10 char spacing
 static string szFields = "\
@@ -50,7 +64,7 @@ bool csvdb::mapheader(string header)
 static int compfunc(const void *r1, const void *r2) {
 	callsigns *p1 = (callsigns *)r1;
 	callsigns *p2 = (callsigns *)r2;
-// sort by area / prefix / suffix
+	// sort by area / prefix / suffix
 	int comp = p1->area.compare(p2->area);
 	if (comp == 0) {
 		comp = p1->prefix.compare(p2->prefix);
@@ -90,7 +104,7 @@ void csvdb::field(string &s, string &fld)
 		s.erase(0, 1);
 	}
 	if (s[0] == '"') {
-	// field is quoted
+		// field is quoted
 		s.erase(0, 1);
 		p = s.find("\","); // find end of field
 		if (p == string::npos) {
@@ -113,7 +127,7 @@ void csvdb::field(string &s, string &fld)
 			s.erase(0, p+1);
 		}
 	} else {
-	// field is only comma delimited
+		// field is only comma delimited
 		if (s[0] == ',') {
 			fld.clear();
 		} else {
@@ -185,12 +199,12 @@ int csvdb::load()
 	csvRecord rec;
 	dbrecs.clear();
 
-// read & map header line
+	// read & map header line
 	memset(buff, 0, LINESIZE + 1);
 	dbfile.getline(buff, LINESIZE);
 	if (!mapheader(buff)) return -1;
 
-// header passes test, read rest of file
+	// header passes test, read rest of file
 	string sbuff;
 	while (dbfile) {
 		memset(buff, 0, LINESIZE + 1);
@@ -277,7 +291,13 @@ int csvdb::save()
 	fstream dbfile(dbfilename.c_str(), ios::out | ios::binary);
 	if (!dbfile) return -1;
 
-	struct callsigns clist[dbrecs.size()];
+	struct callsigns *clist = (struct callsigns *) new callsigns[dbrecs.size()];
+
+	if(!clist) {
+		printf("In Function %s near Line %d: Allocation Error", __func__, __LINE__);
+		return -1;
+	}
+
 	for (size_t n = 0; n < dbrecs.size(); n++) {
 		clist[n].prefix = dbrecs[n].prefix;
 		clist[n].area   = dbrecs[n].area;
@@ -286,9 +306,9 @@ int csvdb::save()
 	}
 	qsort ( &(clist[0]), dbrecs.size(), sizeof(callsigns), compfunc);
 
-// csv file header line
+	// csv file header line
 	dbfile << csvFields << "\n";
-// records
+	// records
 	string line;
 	for (size_t n = 0; n < dbrecs.size(); n++) {
 		join(dbrecs[clist[n].nbr], line);
@@ -296,6 +316,8 @@ int csvdb::save()
 	}
 
 	dbfile.close();
+
+	delete [] clist;
 
 	return 0;
 }
@@ -341,9 +363,9 @@ int csvdb::get(size_t n, csvRecord &rec)
 	if (!dbrecs.size()) return -2;
 
 	rec = dbrecs[n];
-
+	
 	cur_recnbr = n;
-
+	
 	return 0;
 }
 
