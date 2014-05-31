@@ -1,10 +1,10 @@
 
 
-=Version 7.0.3=
+=Version 7.1=
 
-2014-05-09  Robert Stiles  <kk5vd@yahoo.com>
+2014-05-27  Robert Stiles  <kk5vd@yahoo.com>
 
-	550305c: fldigi-xmlrpc-link
+	fe05d96: Integrate XMLRPC for name and call sign transfers to/from FLDIGI
 
 
 =Version 7.0.2=
