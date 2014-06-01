@@ -11,8 +11,8 @@ AC_PREREQ([2.63])
 dnl major and minor must be integers; patch may
 dnl contain other characters or be empty
 m4_define(flnet_MAJOR,  [7])
-m4_define(flnet_MINOR,  [0])
-m4_define(flnet_PATCH,  [.3])
+m4_define(flnet_MINOR,  [1])
+m4_define(flnet_PATCH,  [.0])
 
 AC_INIT([flnet], flnet_MAJOR.flnet_MINOR[]flnet_PATCH, [w1hkj AT w1hkj DOT com])
 

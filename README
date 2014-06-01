@@ -1,8 +1,14 @@
-Flrig is a transceiver control program for Amateur Radio use.  It does
-not use any 3rd party transceiver control libraries.  It is a c++ pro-
-gram that encapsulates each transceiver in it's own class.  Where ever
-possible the transceiver class(s) use polymorphism to reuse code that
-is portable across a series of transceivers.
+Flnet provides the Amateur Radio Net Control Station operator with a real
+time tool to assist him or her in managing the net activities.  A single
+screen with multiple windows is used to allow rapid entry, search, pick
+and display of all stations calling in to the net.  All operations on
+the main screen are accomplished with keyboard entries only.  No mouse
+action is required to perform the net control functions.  Experience
+has shown that most net control operators prefer this method of operation
+to improve the speed of entry and selection
+
+Flnet can function cooperatively with fldigi/flrig to enable a smooth operation
+for the digital mode net controller.
 
 The latest version can always be found at:
 
