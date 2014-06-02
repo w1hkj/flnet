@@ -195,6 +195,30 @@ also be opened using a spreadsheet.  You should avoid modifying the contents
 of the file using a spreadsheet program.  These files may be stored
 anywhere on your computer system.
 
+\subsection ssXmlRpcLink Add call-ins using FLNET/FLDIGI XMLRPC's data link.
+
+While running digital nets using FLDIGI, transfering callsign information
+from FLDIGI to FLNET is possible.  From FLDIGI's receive window double click or
+right click on the callsign and select the 'call' menu item. This action
+fills the callsign field.  If you have the callbook feature set up, press
+the callbook button to fill in the remaining information fields.  Otherwise
+use the right click menu items to fill in the relavent data.
+
+Return to FLNET's main window (editor window must be closed). Pressing
+Shift-F12 transfers the data from FLDIGI to FLNET.  If the callsign is not
+present in the database it will be created and the following data will be
+assigned; callsign, name, nickname, qth, state, logged date, and join date.
+The logged in and join dates are set to the local time zone. The transfered
+callsign will be added to the call-in list.
+
+If additional information needs to be added or updated. Press the up/down
+key to place the newly entered callsign between the two arrows in the call-in
+list.  Pressing F12 opens the editor window to the selected callsign.  The
+nickname is initially set the the proper first name when the database entry
+is created. Modify as needed, the nickname is the information passed back to
+FLDIGI's name field. Add/Modify the other fields as required. Press the update
+button to save the changes.
+
 \ref flnetDesc "Top of Page"
 
 \section sEditorDialog Editor Dialog
