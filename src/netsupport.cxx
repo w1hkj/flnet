@@ -112,12 +112,7 @@ void cb_mnuAbout(Fl_Menu_ *mnu, void *d)
 
 void cb_mnuHelpContent (Fl_Menu_ *mnu, void *d)
 {
-	FILE *tfile = fopen("Net-help/index.html", "r");
-	if (tfile) {
-		fclose(tfile);
-		visit_URL((void*)"Net-help/index.html");
-	} else
-		visit_URL((void*)"http://www.w1hkj.com/Net-help/index.html");
+	visit_URL((void*)"http://www.w1hkj.com/Net-help/index.html");
 	return;
 }
 
