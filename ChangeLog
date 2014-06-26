@@ -1,6 +1,19 @@
 
 
+=Version 7.2.0=
+
+2014-06-02  Robert Stiles  <kk5vd@yahoo.com>
+
+	9608104: Doc Call-ins
+
+2014-06-02  David Freese  <w1hkj@w1hkj.com>
+
+	45d4765: rm configure
+	4b19677: Corrections
+
+
 =Version 7.1=
+
 
 2014-05-27  Robert Stiles  <kk5vd@yahoo.com>
 

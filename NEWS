@@ -1,0 +1,5 @@
+flnet release notes:
+
+  * Added call-ins using FLNET/FLDIGI XMLRPC's data link
+  * Amended README and AUTHORS
+  * Integrated XMLRPC for name and call sign transfers to/from FLDIGI
