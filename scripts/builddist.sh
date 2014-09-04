@@ -1,11 +1,7 @@
 # build file to generate the distribution binary tarball
 
 make clean
-./configure --prefix=/tmp/flnet-build
-make install-strip
-tar czf flnet-$1.bin.tgz -C /tmp/flnet-build/bin flnet
-
-make clean
+autoreconf
 
 ./configure \
   $PKGCFG \

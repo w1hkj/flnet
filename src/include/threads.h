@@ -66,29 +66,8 @@ void linux_log_tid(void);
 #endif // USE_TLS
 extern THREAD_ID_TYPE thread_id_;
 
-
-#ifndef NDEBUG
-#  include "debug.h"
-bool thread_in_list(int id, const int* list);
-#  define ENSURE_THREAD(...)						\
-do {								\
-int id_ = GET_THREAD_ID();				\
-int t_[] = { __VA_ARGS__, INVALID_TID };		\
-if (!thread_in_list(id_, t_))				\
-LOG_ERROR("bad thread context: %d", id_);	\
-} while (0)
-#  define ENSURE_NOT_THREAD(...)					\
-do {								\
-int id_ = GET_THREAD_ID();				\
-int t_[] = { __VA_ARGS__, INVALID_TID };		\
-if (thread_in_list(id_, t_))				\
-LOG_ERROR("bad thread context: %d", id_);	\
-} while (0)
-#else
 #  define ENSURE_THREAD(...) ((void)0)
 #  define ENSURE_NOT_THREAD(...) ((void)0)
-#endif // ! NDEBUG
-
 
 // On POSIX systems we cancel threads by sending them SIGUSR2,
 // which will also interrupt blocking calls.  On woe32 we use
@@ -110,7 +89,6 @@ pthread_sigmask(SIG_UNBLOCK, &usr2, NULL);	\
 #  define CANCEL_THREAD(t__) pthread_cancel(t__);
 #endif
 
-#include "fl_lock.h"
 
 /// This ensures that a mutex is always unlocked when leaving a function or block.
 class guard_lock
@@ -120,20 +98,6 @@ public:
 	~guard_lock(void);
 private:
 	pthread_mutex_t* mutex;
-};
-
-/// This wraps together a mutex and a condition variable which are used
-/// together very often for queues etc...
-class syncobj
-{
-	pthread_mutex_t m_mutex ;
-	pthread_cond_t m_cond ;
-public:
-	syncobj();
-	~syncobj();
-	pthread_mutex_t * mtxp(void) { return & m_mutex; }
-	void signal();
-	bool wait( double seconds );
 };
 
 #endif // !THREADS_H_

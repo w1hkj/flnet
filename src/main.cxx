@@ -48,7 +48,7 @@
 #include <FL/Fl_Help_Dialog.H>
 #include <FL/Fl_Menu_Item.H>
 
-#include "net_icon.cxx"
+#include "UI/net_icon.cxx"
 #include "config.h"
 #include "net_config.h"
 #include "netshared.h"

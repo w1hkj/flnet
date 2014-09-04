@@ -9,9 +9,9 @@ flnet_LDFLAGS = @flnet_BUILD_LDFLAGS@
 flnet_LDADD = @flnet_BUILD_LDADD@
 
 MINGW32_SRC = \
-	flnet.rc \
+	UI/flnet.rc \
 	include/flnetrc.h \
-	mingw.c \
+	support/mingw.c \
 	include/compat.h \
 	include/compat-mingw.h
 
@@ -66,7 +66,7 @@ uninstall-local:
 	rm -f $(DESTDIR)/$(datadir)/pixmaps/flnet.xpm
 	rm -f $(DESTDIR)/$(datadir)/applications/flnet.desktop
 
-FL_SRC = net_ui.fl netutils.fl
+FL_SRC = UI/net_ui.fl UI/netutils.fl
 
 if HAVE_FLUID
 flgen: $(FL_SRC)
@@ -116,22 +116,22 @@ clean-local:
 
 # Sources that we build. It is OK to have headers here.
 flnet_SOURCES += \
-	calendar.cxx \
-	combo.cxx \
-	config.cxx \
-	csv_dbase/csvdb.cxx \
-	date.cxx \
-	loglist.cxx \
 	main.cxx \
-	my_UI.cxx \
-	netedits.cxx \
-	netshared.cxx \
-	netsupport.cxx \
-	net_ui.cxx \
-	netutils.cxx \
-	qrzlib.cxx \
-	timeops.cxx \
-	xml_io.cxx \
+	support/calendar.cxx \
+	support/combo.cxx \
+	support/config.cxx \
+	csv_dbase/csvdb.cxx \
+	support/date.cxx \
+	support/loglist.cxx \
+	support/netshared.cxx \
+	support/netsupport.cxx \
+	support/qrzlib.cxx \
+	support/timeops.cxx \
+	support/xml_io.cxx \
+	UI/my_UI.cxx \
+	UI/netedits.cxx \
+	UI/net_ui.cxx \
+	UI/netutils.cxx \
 	UI/ui_sizes.cxx \
 	xmlrpcpp/XmlRpcClient.cpp \
 	xmlrpcpp/XmlRpcDispatch.cpp	 \
@@ -184,15 +184,15 @@ flnet_SOURCES += \
 
 # Additional source files that are distributed
 EXTRA_DIST = \
-	flnet.rc \
-	net_ui.fl \
-	UI/big_ui.fl \
-	UI/small_ui.fl \
-	netutils.fl \
-	net_icon.cxx \
 	icons/calendar.xpm \
 	include/threads.h \
-	include/fl_lock.h
+	include/fl_lock.h \
+	UI/flnet.rc \
+	UI/net_ui.fl \
+	UI/big_ui.fl \
+	UI/small_ui.fl \
+	UI/netutils.fl \
+	UI/net_icon.cxx 
 
 # Additional non-source files that are distributed
 # Additional source files that support non-Linux cross compilation
