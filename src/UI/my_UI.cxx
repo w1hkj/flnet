@@ -233,6 +233,7 @@ void updateLogins ()
 				rec.logdate.assign(today);
 				netdb.put(rc, rec);
 			} else {
+				netdb.clearrec(rec);
 				szLine[6] = 0;
 				char *pos = strpbrk(szLine,"0123456789");
 				if (pos != NULL) {
@@ -351,7 +352,6 @@ void my_UI::PickedToCallinsDB (size_t record_number)
 	time (&the_time);
 	tm_ptr = localtime (&the_time);
 	sprintf( sztime, "%02d:%02d", tm_ptr->tm_hour, tm_ptr->tm_min);
-
 
 	csvRecord rec;
 	netdb.get(record_number, rec);
@@ -622,14 +622,14 @@ int my_UI::handle (int e)
 						inpLoginSuffix->color (FL_DARK_BLUE);
 						break;
 					case SUFFIX :
-						if (szSuffix.length() > 2) szSuffix.erase(0,1);
 						szSuffix.append(keyval);
+						if (szSuffix.length() > 3) szSuffix.erase(0,1);
 						inpLoginSuffix->label (szSuffix.c_str());
 						fillPickList ();
 						break;
 					case PREFIX :
-						if (szPrefix.length() > 1) szPrefix.erase(0,1);
 						szPrefix.append(keyval);
+						if (szPrefix.length() > 2) szPrefix.erase(0,1);
 						inpLoginPrefix->label (szPrefix.c_str());
 						break;
 					case AREA :
@@ -659,8 +659,8 @@ int my_UI::handle (int e)
 						my_status = AREA;
 						break;
 					case AREA :
-					default : ;
-						
+					default : 
+						break;
 				}
 				return 1;
 			}
