@@ -386,15 +386,14 @@ int csvdb::add(csvRecord &rec)
 
 int csvdb::erase(size_t n)
 {
-	csvRecord rec;
-	get(n, rec);
 	vector<csvRecord>::iterator p = dbrecs.begin();
-	while (p != dbrecs.end()) {
-		if (p->callsign == rec.callsign) {
+	size_t i = 0;
+	while (p != dbrecs.end() && i != dbrecs.size()) {
+		if (i == n) {
 			dbrecs.erase(p);
 			return 0;
 		}
-		p++;
+		p++; i++;
 	}
 	return 1;
 }
