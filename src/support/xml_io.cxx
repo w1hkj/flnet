@@ -409,7 +409,7 @@ void * xmlrpc_loop(void *d)
 			update_interval = XMLRPC_UPDATE_INTERVAL;
 		pthread_mutex_unlock(&mutex_xmlrpc);
 	}
-		
+	return NULL;
 }
 
 /*************************************************************
