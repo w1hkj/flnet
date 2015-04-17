@@ -27,14 +27,35 @@
 /* Define to 1 if the `closedir' function returns void instead of `int'. */
 #undef CLOSEDIR_VOID
 
+/* FLNET compiler flags */
+#undef FLNET_BUILD_CXXFLAGS
+
+/* FLNET linker flags */
+#undef FLNET_BUILD_LDFLAGS
+
 /* FLTK API major version */
 #undef FLNET_FLTK_API_MAJOR
 
 /* FLTK API minor version */
 #undef FLNET_FLTK_API_MINOR
 
+/* version string */
+#undef FLNET_VERSION
+
+/* major version number */
+#undef FLNET_VERSION_MAJOR
+
+/* minor version number */
+#undef FLNET_VERSION_MINOR
+
+/* patch/alpha version string */
+#undef FLNET_VERSION_PATCH
+
 /* FLTK version */
 #undef FLTK_BUILD_VERSION
+
+/* flxmlrpc version */
+#undef FLXMLRPC_BUILD_VERSION
 
 /* Define to 1 if you have the <arpa/inet.h> header file. */
 #undef HAVE_ARPA_INET_H
@@ -273,6 +294,9 @@
 /* Define to 1 if your <sys/time.h> declares `struct tm'. */
 #undef TM_IN_SYS_TIME
 
+/* Define to 1 if we are using flxmlrpc */
+#undef USE_FLXMLRPC
+
 /* Enable extensions on AIX 3, Interix.  */
 #ifndef _ALL_SOURCE
 # undef _ALL_SOURCE
@@ -334,24 +358,6 @@
 
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const
-
-/* flnet compiler flags */
-#undef flnet_BUILD_CXXFLAGS
-
-/* flnet linker flags */
-#undef flnet_BUILD_LDFLAGS
-
-/* version string */
-#undef flnet_VERSION
-
-/* major version number */
-#undef flnet_VERSION_MAJOR
-
-/* minor version number */
-#undef flnet_VERSION_MINOR
-
-/* patch/alpha version string */
-#undef flnet_VERSION_PATCH
 
 /* Define to `__inline__' or `__inline' if that's what the C compiler
    calls it, or to nothing if 'inline' is not supported under any name.  */

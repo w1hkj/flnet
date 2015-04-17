@@ -50,9 +50,9 @@
 using namespace std;
 using XmlRpc::XmlRpcValue;
 
-#define DEFAULT_XMLRPC_TIMEOUT 6.0
+//#define DEFAULT_XMLRPC_TIMEOUT 6.0
 
-double xmlrpc_timeout = DEFAULT_XMLRPC_TIMEOUT;
+//double xmlrpc_timeout = DEFAULT_XMLRPC_TIMEOUT;
 
 // these are set only
 static const char* fldigi_set_callsign  = "log.set_call";
@@ -162,7 +162,7 @@ bool numbers_and_dots_only(char *str, int expected_argc)
 static inline void execute(const char* name, const XmlRpcValue& param, XmlRpcValue& result)
 {
 	if (client) {
-		if (!client->execute(name, param, result, xmlrpc_timeout)) {
+		if (!client->execute(name, param, result)) { //, xmlrpc_timeout)) {
 			xmlrpc_errno = errno;
 
 			if(client->isFault())
@@ -177,21 +177,21 @@ static inline void execute(const char* name, const XmlRpcValue& param, XmlRpcVal
 /*************************************************************
  *
  *************************************************************/
-void set_xmlrpc_timeout(double value)
-{
-	pthread_mutex_lock(&mutex_xmlrpc);
-	if(value < DEFAULT_XMLRPC_TIMEOUT) return;
-	xmlrpc_timeout = value;
-	pthread_mutex_unlock(&mutex_xmlrpc);
-}
+//void set_xmlrpc_timeout(double value)
+//{
+//	pthread_mutex_lock(&mutex_xmlrpc);
+//	if(value < DEFAULT_XMLRPC_TIMEOUT) return;
+//	xmlrpc_timeout = value;
+//	pthread_mutex_unlock(&mutex_xmlrpc);
+//}
 
 /*************************************************************
  *
  *************************************************************/
-void set_xmlrpc_timeout_default(void)
-{
-	xmlrpc_timeout = DEFAULT_XMLRPC_TIMEOUT;
-}
+//void set_xmlrpc_timeout_default(void)
+//{
+//	xmlrpc_timeout = DEFAULT_XMLRPC_TIMEOUT;
+//}
 
 
 /*************************************************************

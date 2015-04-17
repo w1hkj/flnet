@@ -1,21 +1,15 @@
 // ----------------------------------------------------------------------------
 //
+// flxmlrpc Copyright (c) 2015 by W1HKJ, Dave Freese <iam_w1hkj@w1hkj.com>
+//    
 // XmlRpc++ Copyright (c) 2002-2008 by Chris Morley
-//
-// Copyright (C) 2014
-//              David Freese, W1HKJ
 //
 // This file is part of fldigi
 //
-// fldigi is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
+// flxmlrpc is free software; you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation; either version 3 of the License, or
 // (at your option) any later version.
-//
-// fldigi is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
@@ -30,7 +24,7 @@
 #include "XmlRpcUtil.h"
 #include "XmlRpcException.h"
 #include "XmlRpc.h"
-#include "util.h"
+
 #include <stdio.h>
 
 using namespace XmlRpc;
@@ -67,14 +61,14 @@ XmlRpcServer::~XmlRpcServer()
 
 
 // Add a command to the RPC server
-void
+void 
 XmlRpcServer::addMethod(XmlRpcServerMethod* method)
 {
   _methods[method->name()] = method;
 }
 
 // Remove a command from the RPC server
-void
+void 
 XmlRpcServer::removeMethod(XmlRpcServerMethod* method)
 {
   MethodMap::iterator i = _methods.find(method->name());
@@ -83,7 +77,7 @@ XmlRpcServer::removeMethod(XmlRpcServerMethod* method)
 }
 
 // Remove a command from the RPC server by name
-void
+void 
 XmlRpcServer::removeMethod(const std::string& methodName)
 {
   MethodMap::iterator i = _methods.find(methodName);
@@ -93,7 +87,7 @@ XmlRpcServer::removeMethod(const std::string& methodName)
 
 
 // Look up a method by name
-XmlRpcServerMethod*
+XmlRpcServerMethod* 
 XmlRpcServer::findMethod(const std::string& name) const
 {
   MethodMap::const_iterator i = _methods.find(name);
@@ -105,7 +99,7 @@ XmlRpcServer::findMethod(const std::string& name) const
 
 // Create a socket, bind to the specified port, and
 // set it in listen mode to make it available for clients.
-bool
+bool 
 XmlRpcServer::bindAndListen(int port, int backlog /*= 5*/)
 {
   XmlRpcSocket::Socket fd = XmlRpcSocket::socket();
@@ -168,7 +162,7 @@ XmlRpcServer::getPort(void) const
 
 
 // Process client requests for the specified time (in seconds)
-void
+void 
 XmlRpcServer::work(double timeSeconds)
 {
   XmlRpcUtil::log(2, "XmlRpcServer::work: waiting for a connection");
@@ -231,7 +225,7 @@ XmlRpcServer::dispatchConnection(XmlRpcServerConnection* sc)
 
 
 // Remove a connection. Called by the connection when it closes down.
-void
+void 
 XmlRpcServer::removeConnection(XmlRpcServerConnection* sc)
 {
   _disp.removeSource(sc);
@@ -239,7 +233,7 @@ XmlRpcServer::removeConnection(XmlRpcServerConnection* sc)
 
 
 // Stop processing client requests
-void
+void 
 XmlRpcServer::exit()
 {
   _disp.exit();
@@ -247,7 +241,7 @@ XmlRpcServer::exit()
 
 
 // Close the server socket file descriptor and stop monitoring connections
-void
+void 
 XmlRpcServer::shutdown()
 {
   // This closes and destroys all connections as well as closing this socket
@@ -297,9 +291,9 @@ public:
   std::string help() { return std::string("Retrieve the help string for a named method"); }
 };
 
-
+    
 // Specify whether introspection is enabled or not. Default is enabled.
-void
+void 
 XmlRpcServer::enableIntrospection(bool enabled)
 {
   if (_introspectionEnabled == enabled)
@@ -346,7 +340,7 @@ XmlRpcServer::executeRequest(std::string const& request)
 {
   XmlRpcValue params, resultValue;
   std::string methodName = parseRequest(request, params);
-  XmlRpcUtil::log(2, "XmlRpcServer::executeRequest: server calling method '%s'",
+  XmlRpcUtil::log(2, "XmlRpcServer::executeRequest: server calling method '%s'", 
                     methodName.c_str());
 
   std::string response;
@@ -360,7 +354,7 @@ XmlRpcServer::executeRequest(std::string const& request)
 
   } catch (const XmlRpcException& fault) {
     XmlRpcUtil::log(2, "XmlRpcServer::executeRequest: fault %s.",
-                    fault.getMessage().c_str());
+                    fault.getMessage().c_str()); 
     response = generateFaultResponse(fault.getMessage(), fault.getCode());
   }
 
@@ -401,8 +395,8 @@ XmlRpcServer::parseRequest(std::string const& request, XmlRpcValue& params)
 
 // Execute a named method with the specified params.
 bool
-XmlRpcServer::executeMethod(const std::string& methodName,
-                            XmlRpcValue& params,
+XmlRpcServer::executeMethod(const std::string& methodName, 
+                            XmlRpcValue& params, 
                             XmlRpcValue& result)
 {
   XmlRpcServerMethod* method = findMethod(methodName);
@@ -420,8 +414,8 @@ XmlRpcServer::executeMethod(const std::string& methodName,
 
 // Execute multiple calls and return the results in an array.
 bool
-XmlRpcServer::executeMulticall(const std::string& methodName,
-                               XmlRpcValue& params,
+XmlRpcServer::executeMulticall(const std::string& methodName, 
+                               XmlRpcValue& params, 
                                XmlRpcValue& result)
 {
   if (methodName != MULTICALL) return false;
@@ -472,7 +466,7 @@ XmlRpcServer::executeMulticall(const std::string& methodName,
 std::string
 XmlRpcServer::generateResponse(std::string const& resultXml)
 {
-  const char RESPONSE_1[] =
+  const char RESPONSE_1[] = 
     "<?xml version=\"1.0\"?>\r\n"
     "<methodResponse><params><param>\r\n\t";
   const char RESPONSE_2[] =
@@ -491,7 +485,7 @@ XmlRpcServer::generateResponse(std::string const& resultXml)
 std::string
 XmlRpcServer::generateHeader(std::string const& body)
 {
-  std::string header =
+  std::string header = 
     "HTTP/1.1 200 OK\r\n"
     "Server: ";
   header += XMLRPC_VERSION;
@@ -500,7 +494,7 @@ XmlRpcServer::generateHeader(std::string const& body)
     "Content-length: ";
 
   char buffLen[40];
-  sprintf(buffLen,"%"PRIuSZ"\r\n\r\n", body.size());
+  sprintf(buffLen,"%d\r\n\r\n", static_cast<int>(body.size()));
 
   return header + buffLen;
 }
@@ -509,7 +503,7 @@ XmlRpcServer::generateHeader(std::string const& body)
 std::string
 XmlRpcServer::generateFaultResponse(std::string const& errorMsg, int errorCode)
 {
-  const char RESPONSE_1[] =
+  const char RESPONSE_1[] = 
     "<?xml version=\"1.0\"?>\r\n"
     "<methodResponse><fault>\r\n\t";
   const char RESPONSE_2[] =

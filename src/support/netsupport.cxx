@@ -103,7 +103,7 @@ void cb_mnuAbout(Fl_Menu_ *mnu, void *d)
 				 Version %s\n\
 				 Free Hamware From\n\
 				 W1HKJ\n\n\
-				 Report problems to:", flnet_VERSION);
+				 Report problems to:", FLNET_VERSION);
 		about = newAboutDialog ();
 		lblVersion->label (szVersion);
 	}

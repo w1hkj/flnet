@@ -10,21 +10,21 @@ AC_PREREQ([2.63])
 
 dnl major and minor must be integers; patch may
 dnl contain other characters or be empty
-m4_define(flnet_MAJOR,  [7])
-m4_define(flnet_MINOR,  [2])
-m4_define(flnet_PATCH,  [.2])
+m4_define(FLNET_MAJOR,  [7])
+m4_define(FLNET_MINOR,  [2])
+m4_define(FLNET_PATCH,  [.2])
 
-AC_INIT([flnet], flnet_MAJOR.flnet_MINOR[]flnet_PATCH, [w1hkj AT w1hkj DOT com])
+AC_INIT([FLNET], FLNET_MAJOR.FLNET_MINOR[]FLNET_PATCH, [w1hkj AT w1hkj DOT com])
 
-AC_SUBST([flnet_VERSION_MAJOR], [flnet_MAJOR])
-AC_SUBST([flnet_VERSION_MINOR], [flnet_MINOR])
-AC_SUBST([flnet_VERSION_PATCH], [flnet_PATCH])
-AC_SUBST([flnet_VERSION], [flnet_MAJOR.flnet_MINOR[]flnet_PATCH])
+AC_SUBST([FLNET_VERSION_MAJOR], [FLNET_MAJOR])
+AC_SUBST([FLNET_VERSION_MINOR], [FLNET_MINOR])
+AC_SUBST([FLNET_VERSION_PATCH], [FLNET_PATCH])
+AC_SUBST([FLNET_VERSION], [FLNET_MAJOR.FLNET_MINOR[]FLNET_PATCH])
 
-AC_DEFINE([flnet_VERSION_MAJOR], [flnet_MAJOR], [major version number])
-AC_DEFINE([flnet_VERSION_MINOR], [flnet_MINOR], [minor version number])
-AC_DEFINE([flnet_VERSION_PATCH], ["flnet_PATCH"], [patch/alpha version string])
-AC_DEFINE([flnet_VERSION], ["flnet_MAJOR.flnet_MINOR[]flnet_PATCH"], [version string])
+AC_DEFINE([FLNET_VERSION_MAJOR], [FLNET_MAJOR], [major version number])
+AC_DEFINE([FLNET_VERSION_MINOR], [FLNET_MINOR], [minor version number])
+AC_DEFINE([FLNET_VERSION_PATCH], ["FLNET_PATCH"], [patch/alpha version string])
+AC_DEFINE([FLNET_VERSION], ["FLNET_MAJOR.FLNET_MINOR[]FLNET_PATCH"], [version string])
 
 AC_SUBST([AC_CONFIG_ARGS], [$ac_configure_args])
 AC_CONFIG_AUX_DIR([build-aux])
@@ -124,7 +124,7 @@ AC_FL_WIN32
 # Define USE_X in config.h
 # Substitute X_CFLAGS and X_LIBS in Makefile
 if test "x$target_darwin" = "xno" && test "x$target_win32" = "xno"; then
-    AC_flnet_PKG_CHECK([x], [x11], [no], [yes])
+    AC_FLNET_PKG_CHECK([x], [x11], [no], [yes])
 fi
 
 ### FLTK
@@ -133,20 +133,22 @@ fi
 # Set HAVE_FLUID Makefile conditional
 AC_CHECK_FLTK
 
-### XML-RPC library
-# Set ac_cv_xmlrpc to yes/no
-# Substitute XMLRPC_CFLAGS and XMLRPC_LIBS in Makefile
-# Define USE_XMLRPC in config.h
-# Set ENABLE_XMLRPC Makefile conditional
-#AC_flnet_XMLRPC
-
 ### Non-POSIX compatibility (i.e. mingw32)
 # Sets various Makefile conditionals; see m4/np-compat.m4
 AC_FL_NP_COMPAT
 
+### libflxmlrpc
+# Set ac_cv_flxmlrpc to yes/no
+# Define USE_FLXMLRPC in config.h
+# Substitute FLXMLRPC_CFLAGS and FLXMLRPC_LIBS in Makefile
+
+AC_FLNET_PKG_CHECK([flxmlrpc], [flxmlrpc >= 0.1.0], 
+  [yes], [yes], [use external flxmlrpc library @<:@autodetect@:>@],
+  [ENABLE_FLXMLRPC])
+
 ### build info
 # Define various build variables in config.h
-AC_flnet_BUILD_INFO
+AC_FLNET_BUILD_INFO
 
 AC_CONFIG_FILES([Makefile src/Makefile])
 
@@ -159,6 +161,8 @@ Configuration summary:
   Version ..................... $VERSION
   
   Target OS ................... $target_os
+
+  Have flxmlrpc library ....... $ac_cv_flxmlrpc
 
   Static linking .............. $ac_cv_static
   CPU optimizations ........... $ac_cv_opt

@@ -213,7 +213,7 @@ int main(int argc, char **argv)
 	main_window = newNetControl();
 	Fl::visual (FL_DOUBLE|FL_INDEX);
 
-	sprintf (title, "flnet %s", flnet_VERSION);
+	sprintf (title, "flnet %s", FLNET_VERSION);
 	main_window->label(title);
 	main_window->callback(exit_main);
 

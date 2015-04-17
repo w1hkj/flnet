@@ -1,5 +1,5 @@
 # name, version, show-in-help?, optional?, help-text, [am-cond]
-AC_DEFUN([AC_flnet_PKG_CHECK], [
+AC_DEFUN([AC_FLNET_PKG_CHECK], [
 
 m4_define([PKG_NAME_UC], m4_translit([$1], [a-z], [A-Z]))
 

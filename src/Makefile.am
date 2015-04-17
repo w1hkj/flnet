@@ -2,11 +2,11 @@
 
 bin_PROGRAMS = flnet
 
-flnet_cxxFLAGS = @flnet_BUILD_cxxFLAGS@
-flnet_CXXFLAGS = @flnet_BUILD_CXXFLAGS@
+flnet_CPPFLAGS = @FLNET_BUILD_CPPFLAGS@
+flnet_CXXFLAGS = @FLNET_BUILD_CXXFLAGS@
 flnet_CFLAGS = $(flnet_CXXFLAGS)
-flnet_LDFLAGS = @flnet_BUILD_LDFLAGS@
-flnet_LDADD = @flnet_BUILD_LDADD@
+flnet_LDFLAGS = @FLNET_BUILD_LDFLAGS@
+flnet_LDADD = @FLNET_BUILD_LDADD@
 
 MINGW32_SRC = \
 	UI/flnet.rc \
@@ -15,11 +15,45 @@ MINGW32_SRC = \
 	include/compat.h \
 	include/compat-mingw.h
 
+# Build the xmlrpcpp source if libflxmlrpc is not found
+XMLRPCPP_SRC = \
+	xmlrpcpp/XmlRpcBase64.h \
+	xmlrpcpp/XmlRpcClient.cpp \
+	xmlrpcpp/XmlRpcClient.h \
+	xmlrpcpp/XmlRpcDispatch.cpp \
+	xmlrpcpp/XmlRpcDispatch.h \
+	xmlrpcpp/XmlRpcException.h \
+	xmlrpcpp/XmlRpc.h \
+	xmlrpcpp/XmlRpcMutex.cpp \
+	xmlrpcpp/XmlRpcMutex.h \
+	xmlrpcpp/XmlRpcServerConnection.cpp \
+	xmlrpcpp/XmlRpcServerConnection.h \
+	xmlrpcpp/XmlRpcServer.cpp \
+	xmlrpcpp/XmlRpcServer.h \
+	xmlrpcpp/XmlRpcServerMethod.cpp \
+	xmlrpcpp/XmlRpcServerMethod.h \
+	xmlrpcpp/XmlRpcSocket.cpp \
+	xmlrpcpp/XmlRpcSocket.h \
+	xmlrpcpp/XmlRpcSource.cpp \
+	xmlrpcpp/XmlRpcSource.h \
+	xmlrpcpp/XmlRpcUtil.cpp \
+	xmlrpcpp/XmlRpcUtil.h \
+	xmlrpcpp/XmlRpcValue.cpp \
+	xmlrpcpp/XmlRpcValue.h
 
 # We distribute these but do not always compile them
-EXTRA_flnet_SOURCES = $(flnet_WIN32_RES_SRC) $(MINGW32_SRC)
+EXTRA_flnet_SOURCES = $(FLMSG_WIN32_RES_SRC) $(MINGW32_SRC) $(XMLRPCPP_SRC)
 
 flnet_SOURCES =
+
+if !ENABLE_FLXMLRPC
+flnet_SOURCES += $(XMLRPCPP_SRC)
+else
+flnet_CPPFLAGS += @FLXMLRPC_CFLAGS@
+flnet_CXXFLAGS += @FLXMLRPC_CFLAGS@
+flnet_CFLAGS   += @FLXMLRPC_CFLAGS@
+flnet_LDFLAGS  += @FLXMLRPC_LIBS@
+endif
 
 if MINGW32
 if HAVE_WINDRES
@@ -30,10 +64,10 @@ endif
 ########################################################################
 
 
-flnet_VERSION_MAJOR = @flnet_VERSION_MAJOR@
-flnet_VERSION_MINOR = @flnet_VERSION_MINOR@
-flnet_VERSION_PATCH = @flnet_VERSION_PATCH@
-flnet_VERSION = @flnet_VERSION@
+flnet_VERSION_MAJOR = @FLNET_VERSION_MAJOR@
+flnet_VERSION_MINOR = @FLNET_VERSION_MINOR@
+flnet_VERSION_PATCH = @FLNET_VERSION_PATCH@
+flnet_VERSION = @FLNET_VERSION@
 
 .EXPORT_ALL_VARIABLES: nsisinst appbundle
 
@@ -133,33 +167,6 @@ flnet_SOURCES += \
 	UI/net_ui.cxx \
 	UI/netutils.cxx \
 	UI/ui_sizes.cxx \
-	xmlrpcpp/XmlRpcClient.cpp \
-	xmlrpcpp/XmlRpcDispatch.cpp	 \
-	xmlrpcpp/XmlRpcMutex.cpp \
-	xmlrpcpp/XmlRpcServer.cpp \
-	xmlrpcpp/XmlRpcServerConnection.cpp \
-	xmlrpcpp/XmlRpcServerMethod.cpp \
-	xmlrpcpp/XmlRpcSocket.cpp \
-	xmlrpcpp/XmlRpcSource.cpp \
-	xmlrpcpp/XmlRpcThread.cpp \
-	xmlrpcpp/XmlRpcThreadedServer.cpp \
-	xmlrpcpp/XmlRpcUtil.cpp \
-	xmlrpcpp/XmlRpcValue.cpp \
-	xmlrpcpp/base64.h \
-	xmlrpcpp/XmlRpc.h \
-	xmlrpcpp/XmlRpcClient.h \
-	xmlrpcpp/XmlRpcDispatch.h \
-	xmlrpcpp/XmlRpcException.h \
-	xmlrpcpp/XmlRpcMutex.h \
-	xmlrpcpp/XmlRpcServer.h \
-	xmlrpcpp/XmlRpcServerConnection.h \
-	xmlrpcpp/XmlRpcServerMethod.h \
-	xmlrpcpp/XmlRpcSocket.h \
-	xmlrpcpp/XmlRpcSource.h \
-	xmlrpcpp/XmlRpcThread.h \
-	xmlrpcpp/XmlRpcThreadedServer.h \
-	xmlrpcpp/XmlRpcUtil.h \
-	xmlrpcpp/XmlRpcValue.h \
 	include/calendar.h \
 	include/combo.h \
 	include/csvdb.h \
@@ -192,7 +199,7 @@ EXTRA_DIST = \
 	UI/big_ui.fl \
 	UI/small_ui.fl \
 	UI/netutils.fl \
-	UI/net_icon.cxx 
+	UI/net_icon.cxx
 
 # Additional non-source files that are distributed
 # Additional source files that support non-Linux cross compilation

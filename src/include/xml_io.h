@@ -42,8 +42,8 @@ extern void close_xmlrpc();
 
 extern void *xmlrpc_loop(void *d);
 
-extern void set_xmlrpc_timeout(double value);
-extern void set_xmlrpc_timeout_default(void);
+//extern void set_xmlrpc_timeout(double value);
+//extern void set_xmlrpc_timeout_default(void);
 
 extern void set_xmlrpc_port_number(char *addr);
 extern void set_xmlrpc_ip_address(char *addr);
