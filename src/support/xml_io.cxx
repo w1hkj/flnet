@@ -30,6 +30,11 @@
 //======================================================================
 
 #include <stdio.h>
+#include <unistd.h>
+
+#ifdef __WIN32__
+#include <windows.h>
+#endif
 
 #include <cstdlib>
 #include <string>
