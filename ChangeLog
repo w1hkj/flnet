@@ -1,6 +1,22 @@
+
+
+=Version 7.2.4=
+
+2015-08-13  David Freese  <iam_w1hkj@w1hkj.com>
+
+	fa21cb5: MXE update
+
+2015-06-11  Kamal Mostafa  <kamal@whence.com>
+
+	df5333d: BUILD_{DATE,USER,HOST}
+
+
+=Version 7.2.3=
+
+
 2015-04-17  David Freese  <iam_w1hkj@w1hkj.com>
 
-	de3898e: xmlrpc
+	e303bf7: xmlrpc
 	2acf736: FSF address
 	742b70a: openSUSE warning
 
