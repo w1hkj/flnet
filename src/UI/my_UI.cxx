@@ -223,7 +223,7 @@ void updateLogins ()
 			strcpy (szLine, callinlist.displine(i));
 			fprintf (fToday, "%s\n", szLine);
 			rc = callinlist.recN (i);
-			if (rc > 0 && rc < (long)netdb.numrecs()) {
+			if (rc >= 0 && rc < (long)netdb.numrecs()) {
 				netdb.get(rc, rec);
 				rec.prevdate.assign(rec.logdate);
 				n = atoi (rec.nbrlogins.c_str());
