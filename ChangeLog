@@ -1,8 +1,13 @@
 
 
-=Version 7.2.4=
+=Version 7.2.5=
 
-2015-08-13  David Freese  <iam_w1hkj@w1hkj.com>
+2015-12-01  David Freese  <iam_w1hkj@w1hkj.com>
+
+	b1c350e: Update csvdb
+
+
+=Version 7.2.4=
 
 	fa21cb5: MXE update
 
