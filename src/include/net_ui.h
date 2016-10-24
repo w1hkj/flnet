@@ -6,8 +6,10 @@
 #include <FL/Fl_Double_Window.H>
 #include "my_UI.h"
 #include <FL/Fl_Menu_Bar.H>
+#include <FL/Fl_Output.H>
 extern Fl_Menu_Bar *mnu_bar;
 extern void cb_mnuOpen(Fl_Menu_*, void*);
+extern void cb_mnuNew(Fl_Menu_*, void*);
 extern void cb_mnuExit(Fl_Menu_*, void*);
 extern void cb_mnuEditor(Fl_Menu_*, void*);
 extern void cb_mnuConfig(Fl_Menu_*, void*);
@@ -23,6 +25,7 @@ extern Fl_Box *ptr_right;
 extern Fl_Group *net_grp2;
 extern Fl_Box *txtTitles;
 extern Fl_Box *txtLine[15];
+extern Fl_Output *dbSelectLabel;
 extern Fl_Group *dbSelectGroup;
 extern Fl_Box *inpLoginSuffix;
 extern Fl_Box *inpLoginPrefix;

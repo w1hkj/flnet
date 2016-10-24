@@ -23,6 +23,7 @@ static void cb_mnuSize(Fl_Menu_*, void*) {
 Fl_Menu_Item menu_mnu_bar[] = {
  {"&Files", 0,  0, 0, 64, FL_NORMAL_LABEL, 0, 14, 0},
  {"&Open", 0,  (Fl_Callback*)cb_mnuOpen, 0, 128, FL_NORMAL_LABEL, 0, 14, 0},
+ {"&New", 0,   (Fl_Callback*)cb_mnuNew, 0, 128, FL_NORMAL_LABEL, 0, 14, 0},
  {"&Exit", 0,  (Fl_Callback*)cb_mnuExit, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
  {0,0,0,0,0,0,0,0,0},
  {"&Editor", 0,  (Fl_Callback*)cb_mnuEditor, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -51,6 +52,8 @@ Fl_Group *net_grp2=(Fl_Group *)0;
 Fl_Box *txtTitles=(Fl_Box *)0;
 
 Fl_Box *txtLine[15]={(Fl_Box *)0};
+
+Fl_Output *dbSelectLabel=(Fl_Output *)0;
 
 Fl_Group *dbSelectGroup=(Fl_Group *)0;
 
@@ -222,7 +225,12 @@ Fl_Double_Window* newNetControl() {
         } // Fl_Group* net_grp2
         net_grp1->end();
       } // Fl_Group* net_grp1
-      { dbSelectGroup = new Fl_Group(230, 45, 155, 250);
+      { 
+        dbSelectLabel = new Fl_Output(230, 27, 155, 18);
+        dbSelectLabel->color(FL_BACKGROUND_COLOR);
+        dbSelectLabel->box(FL_FLAT_BOX);
+
+        dbSelectGroup = new Fl_Group(230, 45, 155, 250);
         dbSelectGroup->box(FL_ENGRAVED_FRAME);
         dbSelectGroup->align(Fl_Align(FL_ALIGN_TOP_LEFT));
         { inpLoginSuffix = new Fl_Box(240, 75, 40, 25);

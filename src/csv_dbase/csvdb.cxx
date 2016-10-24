@@ -194,7 +194,10 @@ int csvdb::load()
 #define LINESIZE 1024
 	char buff[LINESIZE + 1];
 	fstream dbfile(dbfilename.c_str(), ios::in | ios::binary);
-	if (!dbfile) return 0;
+	if (!dbfile) {
+		dbrecs.clear();
+		return 0;
+	}
 
 	csvRecord rec;
 	dbrecs.clear();

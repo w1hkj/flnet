@@ -23,8 +23,8 @@
 \tableofcontents
 
 <center>
-\image latex flnetlogo.eps "" width=0.5in
-\image html flnetlogo.jpg ""
+\image latex flnetlogo.png "" width=0.5in
+\image html flnetlogo.png ""
 </center>
 
 <!--FLNET User Manual-->
@@ -50,14 +50,14 @@ Invoke flnet by clicking on the desktop program icon.  The main dialog
 and a file selection dialog will open:
 
 <center>
-\image latex flnet.eps "" width=3.9in
+\image latex flnet.png "" width=3.9in
 \image html flnet.png ""
 </center>
 
 <br>
 
 <center>
-\image latex Select_csvfile.eps "" width=4.9in
+\image latex Select_csvfile.png "" width=4.9in
 \image html Select_csvfile.png ""
 </center>
 
@@ -132,9 +132,13 @@ in the Call In List will be moved to the current call position.  Pressing
 HOME will put the first call entered in the current call position.
 (\ref sFuncKeys "Function Key definitions").
 
+<h3>Transferring Flnet CALL to Fldigi</h3>
+
 To assist the NET control operator the call sign and nickname can be
-transfered to FLDIGI by hitting the ENTER/RETURN key. The call sign transfered
-will be the one located between the two arrows in the Call-In list.
+transfered to FLDIGI.  Select the callsign of the next up net member
+(between the arrow indicators).  Then press the ENTER/RETURN key. The call sign 
+and the nickname will be transfered to fldigi's logging controls.  It will
+be immediately available for use in fldigi's macros.
 
 \subsubsection abortingSelection Aborting the selection process
 
@@ -165,11 +169,16 @@ multiple times during the day, the data for each session is appended
 to the previous for the day.  A blank line will appear between each
 session.  The data in this file is identical to the Call In List values.
 
-\subsection ssOpenNewDB Opening a new database
+\subsection ssOpenNewDB Opening a new or existing database
 
-You may close the current database and open a different (or create a new
-one) by selecting the menu button <b>Files / Open</b>.  All of the current
-information will be saved as when the program is closed down above.
+You may close the current database and open a different one by selecting
+the menu button <i>Files / Open</i>.
+
+You may close the current database and create a new one by selecting the
+menu butten <i>Files / New</i>.
+
+All of the current information will be saved as when the current data base
+is closed.
 
 
 \subsection ssFileLocations Files / Locations
@@ -233,7 +242,7 @@ the database.  Once the net membership has been entered into the database
 the operation as net control operator will be very simple and quick.
 
 <center>
-\image latex Editor.eps "" width=5.0in
+\image latex Editor.png "" width=5.0in
 \image html Editor.png ""
 </center>
 
@@ -260,7 +269,7 @@ The currently selected database entry can be transfer to the Call-in list
 by selecting the "Queue" button located at the bottom of the Editor Window.
 
 <center>
-\image latex BrowseCallsign.eps "" width=3.0in
+\image latex BrowseCallsign.png "" width=3.0in
 \image html BrowseCallsign.png ""
 </center>
 
@@ -270,8 +279,8 @@ changes.  You may also search for a callsign by Prefix, Area & Suffix; or
 by just Suffix alone.  The search window looks like:
 
 <center>
-\image latex SearchCallsign.eps "" width=2.0in
-\image html SearchCallsign.jpg ""
+\image latex SearchCallsign.png "" width=2.0in
+\image html SearchCallsign.png ""
 </center>
 
 You do not need to be concered about upper/lower case letters.
@@ -378,7 +387,7 @@ Execute the earlier version of flnet.  Open the desired dbf file and then
 open the Editor dialog and press the "Export" menu button:
 
 <center>
-\image latex export.eps "" width=4.5in
+\image latex export.png "" width=4.5in
 \image html export.png ""
 </center>
 
@@ -392,7 +401,7 @@ able to open and use this file.
 \section sConfigure Configuring flnet
 
 <center>
-\image latex ConfigUI.eps "" width=4.4in
+\image latex ConfigUI.png "" width=4.4in
 \image html ConfigUI.png ""
 </center>
 
@@ -410,7 +419,7 @@ Current call in is up - Every new log in will move that entry to the "up"
 position in the Call In List.
 
 <center>
-\image latex ConfigColors.eps "" width=4.4in
+\image latex ConfigColors.png "" width=4.4in
 \image html ConfigColors.png ""
 </center>
 
@@ -434,7 +443,7 @@ These are the default colors. You can modify them to suit your operation.
 
 
 <center>
-\image latex ConfigPriority.eps "" width=4.4in
+\image latex ConfigPriority.png "" width=4.4in
 \image html ConfigPriority.png ""
 </center>
 
@@ -453,8 +462,8 @@ automatic.
 \section sComError FLNET to/from FLDIGI Communication Error
 
 <center>
-\image latex ComError.eps "" width=3.0in
-\image html ComError.jpg ""
+\image latex ComError.png "" width=3.0in
+\image html ComError.png ""
 </center>
 
 The Warning Box indicates FLNET is unable to transfer data to/from FLDIGI.

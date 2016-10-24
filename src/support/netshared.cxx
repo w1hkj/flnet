@@ -233,8 +233,10 @@ void getBrwsData()
 	}
 
 	snprintf (szDispName, sizeof(szDispName), "%s (%d)", sSimpleName, (int)netdb.numrecs());
-	dbSelectGroup->label (szDispName);
-	dbSelectGroup->redraw ();
+//	dbSelectGroup->label (szDispName);
+//	dbSelectGroup->redraw ();
+	dbSelectLabel->value(szDispName);
+	dbSelectLabel->redraw();
 
 	currec = netdb.recnbr();
 	if (brwsData) {
@@ -333,6 +335,12 @@ void openDB(string fname)
 		callinlist.setPri_3 (chP3[0]);
 		if (chAuto == 'y') callinlist.AutoPriority (1);
 		getBrwsData();
+	} else {
+		snprintf (szDispName, sizeof(szDispName), "%s (%d)", sSimpleName, (int)netdb.numrecs());
+//		dbSelectGroup->label (szDispName);
+//		dbSelectGroup->redraw();
+		dbSelectLabel->value(szDispName);
+		dbSelectLabel->redraw();
 	}
 }
 
@@ -834,7 +842,7 @@ void cbGoPrevRec(Fl_Button *b, void *d)
 
 void cbGoNextRec(Fl_Button *b, void *d)
 {
-	if (!brwsData || brwsnum == (netdb.numrecs() - 1)) return;
+	if (!brwsData || (int)brwsnum == (netdb.numrecs() - 1)) return;
 	brwsnum++;
 	gotoRec (brwsData[brwsnum].recN);
 }

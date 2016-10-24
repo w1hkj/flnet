@@ -1,9 +1,63 @@
 #!/bin/bash
 #
-# A simple script for creating/archiving doxygen documentation for FLNET
+# A simple script for creating/archiving doxygen documentation for Flnet
+
+PRG_NAME="Flnet"
 
 LATEX="0"
 DOXY="0"
+BUILD_PROG_DOCS="0"
+VER_NUM="0"
+
+if [ -z $1 ]; then
+	BUILD_USER_DOCS="1"
+else
+	BUILD_USER_DOCS="0"
+fi
+
+macintosh_file_clean()
+{
+	BASE_PATH=$1
+	if [ -z $BASE_PATH ]; then
+		BASE_PATH="${PWD}"
+	fi
+
+	find $BASE_PATH -name ".DS_Store" -exec rm -rf {} \;
+}
+
+doc_version()
+{
+	if [ ! -f $1 ]; then
+		echo "Doxyfile not found ($1)"
+		echo "PWD=$PWD"
+		exit
+	fi
+
+	VER_STR=`grep -e "PROJECT_NUMBER*=*" $1`
+
+	if [ -z $VER_STR ]; then
+		VER_NUM="UNKNOWN_VERSION"
+		return
+	fi
+
+	VER_NUM="${VER_STR#*=}"
+	VER_NUM="${VER_NUM#"${VER_NUM%%[![:space:]]*}"}"
+	VER_NUM="${VER_NUM%"${VER_NUM##*[![:space:]]}"}"
+}
+
+help()
+{
+	echo ""
+	echo "Use:"
+	echo "   make_docs.sh <prog and/or user>"
+	echo "   make_docs.sh help"
+	echo ""
+	echo "default: user"
+	echo "user: Generate user documentation"
+	echo "prog: Generate programmer documentation"
+	echo "help: This message"
+	echo ""
+}
 
 rename_file()
 {
@@ -129,6 +183,28 @@ compress_html()
 	fi
 }
 
+for var in "$@"
+do
+	case "$var" in
+		prog)
+			BUILD_PROG_DOCS="1"
+			;;
+		PROG)
+			BUILD_PROG_DOCS="1"
+			;;
+		USER)
+			BUILD_USER_DOCS="1"
+			;;
+		user)
+			BUILD_USER_DOCS="1"
+			;;
+		*)
+			help
+			exit
+			;;
+	esac
+done
+
 check_doxy_exec
 
 if [ "$DOXY" != "1" ]; then
@@ -146,7 +222,6 @@ if [ "$LATEX" != "1" ]; then
 	echo "********************************************"
 fi
 
-
 SCRIPT_PATH="$PWD/make_docs.sh"
 
 echo "Looking for Script: $SCRIPT_PATH"
@@ -157,6 +232,12 @@ if [ -f "$SCRIPT_PATH" ]; then
 	make_dir "../doc/compressed_html"
 	make_dir "../doc/programmer_docs"
 	make_dir "../doc/user_docs"
+
+#  Additional files for html link references
+	make_dir "../doc/user_docs/html"
+	make_dir "../doc/user_docs/html/aux"
+	cp ./user_src_doc/aux/*.* ../doc/user_docs/html/aux
+
 else
 	echo "***********************************************************************"
 	echo "* Change Directory to the ./make_doc.sh location then execute script. *"
@@ -164,19 +245,24 @@ else
 	exit
 fi
 
-
 # User Manual
+if [ $BUILD_USER_DOCS -eq "1" ]; then
 (
 	cd user_src_doc
+	doc_version "${PWD}/Doxyfile"
 	check_doxy
-	( compress_html "FLNet_Users_Manual" "user_docs")
-	pdf_docs "../../doc/user_docs/latex" "../../pdf/FLNet_Users_Manual.pdf"
+	( compress_html "${PRG_NAME}_${VER_NUM}_Users_Manual" "user_docs")
+	pdf_docs "../../doc/user_docs/latex" "../../pdf/${PRG_NAME}_${VER_NUM}_Users_Manual.pdf"
 )
+fi
 
 # Programmers Code Reference
+if [ $BUILD_PROG_DOCS -eq "1" ]; then
 (
 	cd prog_src_doc
+	doc_version "${PWD}/Doxyfile"
 	check_doxy
-	( compress_html "FLNet_Code_Reference" "programmer_docs" )
-	pdf_docs "../../doc/programmer_docs/latex" "../../pdf/FLNet_Code_Reference.pdf"
+	( compress_html "${PRG_NAME}_${VER_NUM}_Code_Reference" "programmer_docs" )
+	pdf_docs "../../doc/programmer_docs/latex" "../../pdf/${PRG_NAME}_${VER_NUM}_Code_Reference.pdf"
 )
+fi

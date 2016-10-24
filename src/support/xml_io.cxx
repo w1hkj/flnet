@@ -335,7 +335,8 @@ std::string fldigi_online_check(void)
 		string resp = status;
 		response = resp;
 	} catch (const XmlRpc::XmlRpcException& e) {
-		LOG_ERROR("%s xmlrpc_errno = %d\n", e.getMessage().c_str(), xmlrpc_errno);
+		if (xmlrpc_errno != 111)
+			LOG_ERROR("%s xmlrpc_errno = %d\n", e.getMessage().c_str(), xmlrpc_errno);
 		response.clear();
 	}
 	pthread_mutex_unlock(&mutex_xmlrpc);

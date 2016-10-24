@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0302 
+version 1.0303 
 header_name {.h} 
 code_name {.cpp}
 decl {\#include <stdlib.h>} {private local
@@ -30,7 +30,7 @@ Function {newNetControl()} {open
 } {
   Fl_Window {} {
     label flnet open
-    xywh {541 215 390 455} type Double box BORDER_BOX
+    xywh {662 126 390 455} type Double box BORDER_BOX
     code0 {\#include "my_UI.h"} visible
   } {
     Fl_Menu_Bar mnu_bar {open
@@ -53,7 +53,7 @@ Function {newNetControl()} {open
       }
       MenuItem mnuEditor {
         label {&Editor}
-        callback cb_mnuEditor selected
+        callback cb_mnuEditor
         xywh {0 0 100 20}
       }
       MenuItem mnuConfig {
@@ -222,6 +222,10 @@ Function {newNetControl()} {open
           label Area
           xywh {320 45 40 30}
         }
+      }
+      Fl_Output {} {
+        label {output:} selected
+        xywh {230 27 155 18} box FLAT_BOX color 49 textsize 16
       }
     }
     Fl_Box txtInfo {

@@ -65,6 +65,7 @@ UI_SIZES UI_small[] = {
 	{ 20, 250, 190, 16, 4, 13}, // txtLine[12]  21
 	{ 20, 265, 190, 16, 4, 13}, // txtLine[13]  22
 	{ 20, 280, 190, 16, 4, 13}, // txtLine[14]  23
+	{ 230, 27, 155, 18, 13, 12}, // dbSelectLabel
 	{ 230, 45, 155, 250, 13, 12}, // dbSelectGroup  24
 	{ 240, 75, 40, 25, 13, 12}, // inpLoginSuffix  25
 	{ 285, 75, 30, 25, 13, 13}, // inpLoginPrefix  26
@@ -112,6 +113,7 @@ UI_SIZES UI_big[] = {
 	{ 17, 372, 240, 24, 4, 16}, // txtLine[12]
 	{ 17, 396, 240, 24, 4, 16}, // txtLine[13]
 	{ 17, 420, 240, 24, 4, 16}, // txtLine[14]
+	{ 284, 36, 185, 24, 13, 16}, // dbSelectLabel
 	{ 284, 60, 185, 380, 13, 18}, // dbSelectGroup
 	{ 291, 87, 60, 30, 13, 18}, // inpLoginSuffix
 	{ 355, 87, 60, 30, 13, 18}, // inpLoginPrefix
@@ -229,6 +231,10 @@ void change_size()
 	txtLine[14]->resize(ui->x, ui->y, ui->w, ui->h);
 	txtLine[14]->labelfont(ui->fnt);
 	txtLine[14]->labelsize(ui->size);
+	ui++;
+	dbSelectLabel->resize(ui->x, ui->y, ui->w, ui->h);
+	dbSelectLabel->textfont(ui->fnt);
+	dbSelectLabel->textsize(ui->size);
 	ui++;
 	dbSelectGroup->resize(ui->x, ui->y, ui->w, ui->h);
 	ui++;
