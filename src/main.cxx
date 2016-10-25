@@ -55,6 +55,7 @@
 #include "netversion.h"
 #include "netsupport.h"
 #include "xml_io.h"
+#include "debug.h"
 
 #ifdef WIN32
 #  include "flnetrc.h"
@@ -210,6 +211,11 @@ int main(int argc, char **argv)
 	Fl::args(argc, argv, arg_idx, parse_args);
 
 	Fl::add_handler (handle);
+
+	string debug_file = home_dir;
+	debug_file.append("flnet_debug_log.txt");
+	debug::start(debug_file.c_str());
+
 	main_window = newNetControl();
 	Fl::visual (FL_DOUBLE|FL_INDEX);
 

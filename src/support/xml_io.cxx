@@ -52,11 +52,12 @@
 #include "xml_io.h"
 #include "threads.h"
 
+#include "debug.h"
+
 using namespace std;
 using XmlRpc::XmlRpcValue;
 
 //#define DEFAULT_XMLRPC_TIMEOUT 6.0
-
 //double xmlrpc_timeout = DEFAULT_XMLRPC_TIMEOUT;
 
 // these are set only
@@ -76,10 +77,6 @@ static XmlRpc::XmlRpcClient* client;
 #define XMLRPC_RETRY_INTERVAL 2000
 
 extern int errno;
-
-#define LOG_ERROR printf
-#define LOG_DEBUG printf
-#define LOG_INFO  printf
 
 #define DEFAULT_XMLRPC_IP_ADDRESS "127.0.0.1"
 #define DEFAULT_XMLRPC_PORT_NO "7362"
@@ -184,10 +181,9 @@ static inline void execute(const char* name, const XmlRpcValue& param, XmlRpcVal
  *************************************************************/
 //void set_xmlrpc_timeout(double value)
 //{
-//	pthread_mutex_lock(&mutex_xmlrpc);
+//	guard_lock xmllock(&mutex_xmlrpc);
 //	if(value < DEFAULT_XMLRPC_TIMEOUT) return;
 //	xmlrpc_timeout = value;
-//	pthread_mutex_unlock(&mutex_xmlrpc);
 //}
 
 /*************************************************************
@@ -204,15 +200,14 @@ static inline void execute(const char* name, const XmlRpcValue& param, XmlRpcVal
  *************************************************************/
 void send_callsign(std::string data)
 {
-	pthread_mutex_lock(&mutex_xmlrpc);
 	try {
+		guard_lock xmllock(&mutex_xmlrpc);
 		XmlRpcValue call(data), res;
 		execute(fldigi_set_callsign, call, res);
 	} catch (const XmlRpc::XmlRpcException& e) {
 		LOG_ERROR("%s xmlrpc_errno = %d\n", e.getMessage().c_str(), xmlrpc_errno);
 	}
 	update_interval = XMLRPC_UPDATE_AFTER_WRITE;
-	pthread_mutex_unlock(&mutex_xmlrpc);
 }
 
 /*************************************************************
@@ -220,15 +215,14 @@ void send_callsign(std::string data)
  *************************************************************/
 void send_name(std::string data)
 {
-	pthread_mutex_lock(&mutex_xmlrpc);
 	try {
+		guard_lock xmllock(&mutex_xmlrpc);
 		XmlRpcValue call(data), res;
 		execute(fldigi_set_name, call, res);
 	} catch (const XmlRpc::XmlRpcException& e) {
 		LOG_ERROR("%s xmlrpc_errno = %d\n", e.getMessage().c_str(), xmlrpc_errno);
 	}
 	update_interval = XMLRPC_UPDATE_AFTER_WRITE;
-	pthread_mutex_unlock(&mutex_xmlrpc);
 }
 
 /*************************************************************
@@ -240,15 +234,14 @@ std::string get_callsign(void)
 	XmlRpcValue query;
 	static string response;
 
-	pthread_mutex_lock(&mutex_xmlrpc);
 	try {
+		guard_lock xmllock(&mutex_xmlrpc);
 		execute(fldigi_get_callsign, query, status);
 		string resp = status;
 		response = resp;
 	} catch (const XmlRpc::XmlRpcException& e) {
 		LOG_ERROR("%s xmlrpc_errno = %d\n", e.getMessage().c_str(), xmlrpc_errno);
 	}
-	pthread_mutex_unlock(&mutex_xmlrpc);
 
 	return response;
 }
@@ -262,15 +255,14 @@ std::string get_name(void)
 	XmlRpcValue query;
 	static string response;
 
-	pthread_mutex_lock(&mutex_xmlrpc);
 	try {
+		guard_lock xmllock(&mutex_xmlrpc);
 		execute(fldigi_get_name, query, status);
 		string resp = status;
 		response = resp;
 	} catch (const XmlRpc::XmlRpcException& e) {
 		LOG_ERROR("%s xmlrpc_errno = %d\n", e.getMessage().c_str(), xmlrpc_errno);
 	}
-	pthread_mutex_unlock(&mutex_xmlrpc);
 
 	return response;
 }
@@ -284,15 +276,14 @@ std::string get_qth(void)
 	XmlRpcValue query;
 	static string response;
 
-	pthread_mutex_lock(&mutex_xmlrpc);
 	try {
+		guard_lock xmllock(&mutex_xmlrpc);
 		execute(fldigi_get_qth, query, status);
 		string resp = status;
 		response = resp;
 	} catch (const XmlRpc::XmlRpcException& e) {
 		LOG_ERROR("%s xmlrpc_errno = %d\n", e.getMessage().c_str(), xmlrpc_errno);
 	}
-	pthread_mutex_unlock(&mutex_xmlrpc);
 
 	return response;
 }
@@ -306,15 +297,14 @@ std::string get_state(void)
 	XmlRpcValue query;
 	static string response;
 
-	pthread_mutex_lock(&mutex_xmlrpc);
 	try {
+		guard_lock xmllock(&mutex_xmlrpc);
 		execute(fldigi_get_state, query, status);
 		string resp = status;
 		response = resp;
 	} catch (const XmlRpc::XmlRpcException& e) {
 		LOG_ERROR("%s xmlrpc_errno = %d\n", e.getMessage().c_str(), xmlrpc_errno);
 	}
-	pthread_mutex_unlock(&mutex_xmlrpc);
 
 	return response;
 }
@@ -329,17 +319,15 @@ std::string fldigi_online_check(void)
 	XmlRpcValue query;
 	static string response;
 
-	pthread_mutex_lock(&mutex_xmlrpc);
 	try {
+		guard_lock xmllock(&mutex_xmlrpc);
 		execute(fldigi_online_xmlrpc, query, status);
 		string resp = status;
 		response = resp;
 	} catch (const XmlRpc::XmlRpcException& e) {
-		if (xmlrpc_errno != 111)
-			LOG_ERROR("%s xmlrpc_errno = %d\n", e.getMessage().c_str(), xmlrpc_errno);
+		LOG_DEBUG("%s xmlrpc_errno = %d\n", e.getMessage().c_str(), xmlrpc_errno);
 		response.clear();
 	}
-	pthread_mutex_unlock(&mutex_xmlrpc);
 
 	return response;
 }
@@ -351,13 +339,15 @@ void close_xmlrpc()
 {
 	void *vPtr = (void *)0;
 
+{
+	guard_lock xmllock(&mutex_xmlrpc);
 	xmlrpc_kill_flag = true;
+}
+
 	pthread_join(*xmlrpc_thread, &vPtr);
 
-	pthread_mutex_lock(&mutex_xmlrpc);
 	delete client;
 	client = NULL;
-	pthread_mutex_unlock(&mutex_xmlrpc);
 }
 
 /*************************************************************
@@ -366,19 +356,16 @@ void close_xmlrpc()
 void open_xmlrpc(void)
 {
 	fldigi_online = false;
+
+	int server_port = atoi(xmlrpc_port_no.c_str());
+	client = new XmlRpc::XmlRpcClient( xmlrpc_ip_address.c_str(), server_port );
+
 	xmlrpc_thread = new pthread_t;
 	if (pthread_create(xmlrpc_thread, NULL, xmlrpc_loop, NULL)) {
 		perror("pthread_create");
 		return;
 	}
 
-	pthread_mutex_lock(&mutex_xmlrpc);
-
-	int server_port = atoi(xmlrpc_port_no.c_str());
-
-	client = new XmlRpc::XmlRpcClient( xmlrpc_ip_address.c_str(), server_port );
-
-	pthread_mutex_unlock(&mutex_xmlrpc);
 }
 
 
@@ -403,8 +390,6 @@ void * xmlrpc_loop(void *d)
 
 		MilliSleep(update_interval);
 
-		pthread_mutex_lock(&mutex_xmlrpc);
-
 		if(data.empty()) {
 			fldigi_online = false;
 		} else if(data[0] == 'F' || data[0] == 'f') {
@@ -413,7 +398,6 @@ void * xmlrpc_loop(void *d)
 
 		if (update_interval != XMLRPC_UPDATE_INTERVAL)
 			update_interval = XMLRPC_UPDATE_INTERVAL;
-		pthread_mutex_unlock(&mutex_xmlrpc);
 	}
 	return NULL;
 }

@@ -37,6 +37,7 @@
 #include "loglist.h"
 #include "netsupport.h"
 #include "xml_io.h"
+#include "debug.h"
 
 #include "config.h"
 
@@ -82,6 +83,7 @@ void cleanExit()
 	updateLogins ();
 	closeDB();
 	close_xmlrpc();
+	debug::stop();
 	exit(0);
 }
 
@@ -125,6 +127,11 @@ void cb_mnuHelpContent (Fl_Menu_ *mnu, void *d)
 {
 	visit_URL((void*)"http://www.w1hkj.com/Net-help/index.html");
 	return;
+}
+
+void cb_mnuEventLog (Fl_Menu_ *mnu, void *d)
+{
+	debug::show();
 }
 
 //------------------------------------------------------------------------------

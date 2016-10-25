@@ -9,6 +9,7 @@
 #include "netshared.h"
 #include "config.h"
 #include "net_config.h"
+#include "debug.h"
 
 Fl_Menu_Bar *mnu_bar=(Fl_Menu_Bar *)0;
 
@@ -32,6 +33,7 @@ Fl_Menu_Item menu_mnu_bar[] = {
  {"Size", 0,  (Fl_Callback*)cb_mnuSize, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
  {"&Help", 0,  0, 0, 64, FL_NORMAL_LABEL, 0, 14, 0},
  {"Content", 0,  (Fl_Callback*)cb_mnuHelpContent, 0, 128, FL_NORMAL_LABEL, 0, 14, 0},
+ {"Event log", 0, (Fl_Callback*)cb_mnuEventLog, 0, 128, FL_NORMAL_LABEL, 0, 14, 0},
  {"About", 0,  (Fl_Callback*)cb_mnuAbout, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
  {0,0,0,0,0,0,0,0,0},
  {0,0,0,0,0,0,0,0,0}
