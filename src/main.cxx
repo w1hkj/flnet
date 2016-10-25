@@ -192,6 +192,26 @@ void exit_main(Fl_Widget *w)
 	cleanExit();
 }
 
+
+void close_main_window(void)
+{
+	if(main_window)
+		main_window->hide();
+}
+
+void check_home_directory(std::string home_dir)
+{
+	struct stat sb;
+
+	memset(&sb, 0, sizeof(sb));
+	int state = stat(home_dir.c_str(), &sb);
+
+	if((state == 0) && S_ISDIR(sb.st_mode))
+		return;
+
+	mkdir(home_dir.c_str(), 0766);
+}
+
 int main(int argc, char **argv)
 {
 	int arg_idx;
@@ -206,13 +226,16 @@ int main(int argc, char **argv)
 		home_dir = dirbuf;
 #endif
 	}
+
 	home_dir.append("flnet.files/");
+
+	check_home_directory(home_dir);
 
 	Fl::args(argc, argv, arg_idx, parse_args);
 
 	Fl::add_handler (handle);
 
-	string debug_file = home_dir;
+	std::string debug_file = home_dir;
 	debug_file.append("flnet_debug_log.txt");
 	debug::start(debug_file.c_str());
 

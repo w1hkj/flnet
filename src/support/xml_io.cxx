@@ -57,8 +57,8 @@
 using namespace std;
 using XmlRpc::XmlRpcValue;
 
-//#define DEFAULT_XMLRPC_TIMEOUT 6.0
-//double xmlrpc_timeout = DEFAULT_XMLRPC_TIMEOUT;
+#define DEFAULT_XMLRPC_TIMEOUT 6.0
+double xmlrpc_timeout = DEFAULT_XMLRPC_TIMEOUT;
 
 // these are set only
 static const char* fldigi_set_callsign  = "log.set_call";
@@ -164,7 +164,7 @@ bool numbers_and_dots_only(char *str, int expected_argc)
 static inline void execute(const char* name, const XmlRpcValue& param, XmlRpcValue& result)
 {
 	if (client) {
-		if (!client->execute(name, param, result)) { //, xmlrpc_timeout)) {
+		if (!client->execute(name, param, result, xmlrpc_timeout)) { //, xmlrpc_timeout)) {
 			xmlrpc_errno = errno;
 
 			if(client->isFault())
@@ -325,7 +325,14 @@ std::string fldigi_online_check(void)
 		string resp = status;
 		response = resp;
 	} catch (const XmlRpc::XmlRpcException& e) {
-		LOG_DEBUG("%s xmlrpc_errno = %d\n", e.getMessage().c_str(), xmlrpc_errno);
+		switch(xmlrpc_errno) {
+			case ECONNREFUSED:
+			case EPIPE:
+			case EAGAIN:
+				break;
+			default:
+				LOG_ERROR("%s xmlrpc_errno = %d\n", e.getMessage().c_str(), xmlrpc_errno);
+		}
 		response.clear();
 	}
 
@@ -339,10 +346,10 @@ void close_xmlrpc()
 {
 	void *vPtr = (void *)0;
 
-{
-	guard_lock xmllock(&mutex_xmlrpc);
-	xmlrpc_kill_flag = true;
-}
+	{
+		guard_lock xmllock(&mutex_xmlrpc);
+		xmlrpc_kill_flag = true;
+	}
 
 	pthread_join(*xmlrpc_thread, &vPtr);
 

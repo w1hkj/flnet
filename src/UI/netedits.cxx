@@ -108,6 +108,12 @@ Fl_Input *inpComment2=(Fl_Input *)0;
 
 static Fl_Window *editor = (Fl_Window *)0;
 
+void close_editor(void)
+{
+	if(editor)
+		editor->hide();
+}
+
 Fl_Window * getEditWindow()
 {
 	if(!editor) {

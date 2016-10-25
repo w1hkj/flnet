@@ -1,30 +1,30 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0303 
-header_name {.h} 
+version 1.0303
+header_name {.h}
 code_name {.cpp}
 decl {\#include <stdlib.h>} {private local
-} 
+}
 
 decl {\#include <stdio.h>} {private local
-} 
+}
 
 decl {\#include <string.h>} {private local
-} 
+}
 
 decl {\#include <FL/fl_show_colormap.H>} {private local
-} 
+}
 
 decl {\#include "netsupport.h"} {private local
-} 
+}
 
 decl {\#include "netshared.h"} {private local
-} 
+}
 
 decl {\#include "config.h"} {private local
-} 
+}
 
 decl {\#include "net_config.h"} {private local
-} 
+}
 
 Function {newNetControl()} {open
 } {
@@ -232,7 +232,7 @@ Function {newNetControl()} {open
       xywh {5 301 379 150} box DOWN_BOX color 20 selection_color 7 labelfont 5 align 21
     }
   }
-} 
+}
 
 Function {configDialog()} {} {
   Fl_Window {} {
@@ -282,14 +282,18 @@ spot in the calll in list} xywh {30 145 70 15} down_box DOWN_BOX
         Fl_Button {btnFg[1]} {
           label Fg
           callback {fgColors[1] = fl_show_colormap(fgColors[1]);
+
 txtSample[1]->textcolor(fgColors[1]);
+
 txtSample[1]->redraw();}
           xywh {195 60 45 25}
         }
         Fl_Button {btnBg[2]} {
           label Bg
           callback {bgColors[1] = fl_show_colormap(bgColors[1]);
+
 txtSample[1]->color(bgColors[1]);
+
 txtSample[1]->redraw();}
           xywh {260 60 45 25}
         }
@@ -303,14 +307,18 @@ txtSample[1]->redraw();}
         Fl_Button {btnFg[2]} {
           label Fg
           callback {fgColors[2] = fl_show_colormap(fgColors[2]);
+
 txtSample[2]->textcolor(fgColors[2]);
+
 txtSample[2]->redraw();}
           xywh {195 95 45 25}
         }
         Fl_Button {btnBg[2]} {
           label Bg
           callback {bgColors[2] = fl_show_colormap(bgColors[2]);
+
 txtSample[2]->color(bgColors[2]);
+
 txtSample[2]->redraw();}
           xywh {260 95 45 25}
         }
@@ -324,14 +332,18 @@ txtSample[2]->redraw();}
         Fl_Button {btnFg[3]} {
           label Fg
           callback {fgColors[3] = fl_show_colormap(fgColors[3]);
+
 txtSample[3]->textcolor(fgColors[3]);
+
 txtSample[3]->redraw();}
           xywh {195 130 45 25}
         }
         Fl_Button {btnBg[3]} {
           label Bg
           callback {bgColors[3] = fl_show_colormap(bgColors[3]);
+
 txtSample[3]->color(bgColors[3]);
+
 txtSample[3]->redraw();}
           xywh {260 130 45 25}
         }
@@ -345,14 +357,18 @@ txtSample[3]->redraw();}
         Fl_Button {btnFg[4]} {
           label Fg
           callback {fgColors[4] = fl_show_colormap(fgColors[4]);
+
 txtSample[4]->textcolor(fgColors[4]);
+
 txtSample[4]->redraw();}
           xywh {195 165 45 25}
         }
         Fl_Button {btnBg[4]} {
           label Bg
           callback {bgColors[4] = fl_show_colormap(bgColors[4]);
+
 txtSample[4]->color(bgColors[4]);
+
 txtSample[4]->redraw();}
           xywh {260 165 45 25}
         }
@@ -395,7 +411,7 @@ txtSample[4]->redraw();}
       xywh {355 235 75 25}
     }
   }
-} 
+}
 
 Function {Log_ins_dialog()} {} {
   Fl_Window {} {
@@ -416,4 +432,4 @@ Function {Log_ins_dialog()} {} {
       xywh {140 210 70 20}
     }
   }
-} 
+}

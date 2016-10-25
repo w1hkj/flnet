@@ -111,7 +111,10 @@ void debug::stop(void)
 {
 	delete inst;
 	inst = 0;
-	delete window;
+	if(window) {
+		delete window;
+		window = 0;
+	}
 }
 
 static char fmt[1024];
@@ -192,6 +195,8 @@ void debug::sync_text(void* arg)
 
 debug::debug(const char* filename)
 {
+	if(!filename) return;
+
 	if ((wfile = fopen(filename, "w")) == NULL)
 		throw strerror(errno);
 	setvbuf(wfile, (char*)NULL, _IOLBF, 0);
