@@ -1,6 +1,22 @@
 
 
+=Version 7.2.6=
+
+2016-10-24  David Freese  <iam_w1hkj@w1hkj.com>
+
+	1ca5144: Maintenance mods
+
+2016-07-10  Kamal Mostafa  <kamal@whence.com>
+
+	073d6fe: fix XmlRpc tm_mday comparison typo
+
+2016-07-04  Robert Cunnings  <nw8l@whitemesa.com>
+
+	e95afd5: mxe update
+
+
 =Version 7.2.5=
+
 
 2015-12-01  David Freese  <iam_w1hkj@w1hkj.com>
 
