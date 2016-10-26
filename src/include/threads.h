@@ -1,23 +1,21 @@
 // ----------------------------------------------------------------------------
-// threads.h
+// Copyright (C) 2014
+//              David Freese, W1HKJ
 //
-// Copyright (C) 2007-2009
-//		Stelios Bounanos, M0GLD
+// This file is part of flmsg
 //
-// This file is part of fldigi.
-//
-// Fldigi is free software: you can redistribute it and/or modify
+// flrig is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
+// the Free Software Foundation; either version 3 of the License, or
 // (at your option) any later version.
 //
-// Fldigi is distributed in the hope that it will be useful,
+// flrig is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with fldigi.  If not, see <http://www.gnu.org/licenses/>.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // ----------------------------------------------------------------------------
 
 #ifndef THREADS_H_
@@ -39,8 +37,10 @@ int pthread_cond_timedwait_rel(pthread_cond_t* cond, pthread_mutex_t* mutex, dou
 
 enum {
 	INVALID_TID = -1,
-	TRX_TID, QRZ_TID, RIGCTL_TID, NORIGCTL_TID, EQSL_TID, ADIF_RW_TID,
+	TRX_TID, QRZ_TID, RIGCTL_TID, NORIGCTL_TID,
+#if USE_XMLRPC
 	XMLRPC_TID,
+#endif
 	ARQ_TID, ARQSOCKET_TID,
 	FLMAIN_TID,
 	NUM_THREADS, NUM_QRUNNER_THREADS = NUM_THREADS - 1
@@ -66,20 +66,41 @@ void linux_log_tid(void);
 #endif // USE_TLS
 extern THREAD_ID_TYPE thread_id_;
 
+
+#ifndef NDEBUG
+#  include "debug.h"
+bool thread_in_list(int id, const int* list);
+#  define ENSURE_THREAD(...)						\
+	do {								\
+		int id_ = GET_THREAD_ID();				\
+		int t_[] = { __VA_ARGS__, INVALID_TID };		\
+		if (!thread_in_list(id_, t_))				\
+			LOG_ERROR("bad thread context: %d", id_);	\
+	} while (0)
+#  define ENSURE_NOT_THREAD(...)					\
+	do {								\
+		int id_ = GET_THREAD_ID();				\
+		int t_[] = { __VA_ARGS__, INVALID_TID };		\
+		if (thread_in_list(id_, t_))				\
+			LOG_ERROR("bad thread context: %d", id_);	\
+	} while (0)
+#else
 #  define ENSURE_THREAD(...) ((void)0)
 #  define ENSURE_NOT_THREAD(...) ((void)0)
+#endif // ! NDEBUG
+
 
 // On POSIX systems we cancel threads by sending them SIGUSR2,
 // which will also interrupt blocking calls.  On woe32 we use
 // pthread_cancel and there is no good/sane way to interrupt.
 #ifndef __WOE32__
 #  define SET_THREAD_CANCEL()					\
-do {							\
-sigset_t usr2;					\
-sigemptyset(&usr2);				\
-sigaddset(&usr2, SIGUSR2);			\
-pthread_sigmask(SIG_UNBLOCK, &usr2, NULL);	\
-} while (0)
+	do {							\
+		sigset_t usr2;					\
+		sigemptyset(&usr2);				\
+		sigaddset(&usr2, SIGUSR2);			\
+		pthread_sigmask(SIG_UNBLOCK, &usr2, NULL);	\
+	} while (0)
 #  define TEST_THREAD_CANCEL() /* nothing */
 #  define CANCEL_THREAD(t__) pthread_kill(t__, SIGUSR2)
 #else
@@ -89,6 +110,7 @@ pthread_sigmask(SIG_UNBLOCK, &usr2, NULL);	\
 #  define CANCEL_THREAD(t__) pthread_cancel(t__);
 #endif
 
+#include "fl_lock.h"
 
 /// This ensures that a mutex is always unlocked when leaving a function or block.
 class guard_lock
@@ -98,6 +120,20 @@ public:
 	~guard_lock(void);
 private:
 	pthread_mutex_t* mutex;
+};
+
+/// This wraps together a mutex and a condition variable which are used
+/// together very often for queues etc...
+class syncobj
+{
+	pthread_mutex_t m_mutex ;
+	pthread_cond_t m_cond ;
+public:
+	syncobj();
+	~syncobj();
+	pthread_mutex_t * mtxp(void) { return & m_mutex; }
+	void signal();
+	bool wait( double seconds );
 };
 
 #endif // !THREADS_H_

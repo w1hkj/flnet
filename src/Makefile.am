@@ -156,10 +156,15 @@ flnet_SOURCES += \
 	support/config.cxx \
 	csv_dbase/csvdb.cxx \
 	support/date.cxx \
+	support/debug.cxx \
+	support/icons.cxx \
 	support/loglist.cxx \
 	support/netshared.cxx \
 	support/netsupport.cxx \
+	support/pixmaps.cxx \
+	support/pixmaps_tango.cxx \
 	support/qrzlib.cxx \
+	support/threads.cxx \
 	support/timeops.cxx \
 	support/xml_io.cxx \
 	UI/my_UI.cxx \
@@ -172,6 +177,9 @@ flnet_SOURCES += \
 	include/csvdb.h \
 	include/net_config.h \
 	include/date.h \
+	include/debug.h \
+	include/gettext.h \
+	include/icons.h \
 	include/loglist.h \
 	include/my_UI.h \
 	include/netedits.h \
@@ -182,6 +190,7 @@ flnet_SOURCES += \
 	include/net_ui.h \
 	include/netutils.h \
 	include/netversion.h \
+	include/pixmaps.h \
 	include/qrzlib.h \
 	include/timeops.h \
 	include/util.h \

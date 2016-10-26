@@ -73,6 +73,14 @@ Fl_Window	*NetNbrSearch = NULL,
 *CallsignSearch = NULL,
 *CallsignBrowse = NULL;
 
+void close_misc_dialogs(void)
+{
+	if(NetNbrSearch)   NetNbrSearch->hide();
+	if(NetNbrBrowse)   NetNbrBrowse->hide();
+	if(CallsignSearch) CallsignSearch->hide();
+	if(CallsignBrowse) CallsignBrowse->hide();
+}
+
 char *uppercase (const char *s)
 {
 	static char ucase[128];

@@ -47,6 +47,7 @@
 #include "net_ui.h"
 #include "timeops.h"
 #include "xml_io.h"
+#include "debug.h"
 
 #include "csvdb.h"
 

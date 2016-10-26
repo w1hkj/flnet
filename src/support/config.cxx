@@ -106,6 +106,12 @@ void writeConfig ()
 
 static Fl_Window *cfgDialog = 0;
 
+void close_config(void)
+{
+	if(cfgDialog)
+		cfgDialog->hide();
+}
+
 void cbConfig ()
 {
 	if (!cfgDialog)

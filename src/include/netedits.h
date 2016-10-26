@@ -102,4 +102,6 @@ extern Fl_Menu_Item menu_mbarMain[];
 #define mnuBrowseCallsign (menu_mbarMain+10)
 #define mnuBrowseNetNbr (menu_mbarMain+11)
 
+extern void close_editor(void);
+
 #endif

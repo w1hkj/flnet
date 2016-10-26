@@ -37,6 +37,7 @@
 #include "loglist.h"
 #include "netsupport.h"
 #include "xml_io.h"
+#include "debug.h"
 
 #include "config.h"
 
@@ -77,11 +78,30 @@ void cb_mnuEditor(Fl_Menu_ *mnu, void *d)
 	cbEditor ();
 }
 
-void cleanExit()
+void close_about(void)
+{
+	if(about)
+		about->hide();
+}
+
+extern void	close_main_window(void);
+extern void	close_config(void);
+extern void close_editor(void);
+extern void close_login_list(void);
+extern void close_misc_dialogs(void);
+
+void cleanExit(void)
 {
 	updateLogins ();
 	closeDB();
 	close_xmlrpc();
+	debug::stop();
+	close_config();
+	close_about();
+	close_editor();
+	close_login_list();
+	close_misc_dialogs();
+	close_main_window();
 	exit(0);
 }
 
@@ -104,19 +124,21 @@ void cb_mnuMigrate (Fl_Menu_ *m, void *d)
 {
 }
 
-char szVersion[80];
+static char szVersion[128];
 
 void cb_mnuAbout(Fl_Menu_ *mnu, void *d)
 {
 	if (!about) {
-		sprintf (szVersion, "\
-				 Net control program\n\
-				 Version %s\n\
-				 Free Hamware From\n\
-				 W1HKJ\n\n\
-				 Report problems to:", FLNET_VERSION);
+		memset(szVersion, 0, sizeof(szVersion));
+		snprintf (szVersion, sizeof(szVersion) - 1,
+					"Net control program\n"
+					"Version %s\n"
+					"Free Hamware From\n"
+					"W1HKJ\n\n"
+					"Report problems to:", FLNET_VERSION);
 		about = newAboutDialog ();
 		lblVersion->label (szVersion);
+		lblVersion->align(Fl_Align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE));
 	}
 	about->show ();
 }
@@ -127,11 +149,22 @@ void cb_mnuHelpContent (Fl_Menu_ *mnu, void *d)
 	return;
 }
 
+void cb_mnuEventLog (Fl_Menu_ *mnu, void *d)
+{
+	debug::show();
+}
+
 //------------------------------------------------------------------------------
 // support of log-in list viewer
 //------------------------------------------------------------------------------
 Fl_Double_Window *login_list = (Fl_Double_Window *)0;
 string copy_list;
+
+void close_login_list(void)
+{
+	if(login_list)
+		login_list->hide();
+}
 
 void open_log_ins()
 {

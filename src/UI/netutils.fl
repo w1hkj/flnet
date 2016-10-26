@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0109 
+version 1.0303 
 header_name {.h} 
 code_name {.cpp}
 Function {winCallsignBrowse()} {} {
@@ -102,21 +102,21 @@ Function {newSearchNetNbrDialog()} {} {
 Function {newAboutDialog()} {
   callback cb_mnuAbout open
 } {
-  Fl_Window dlgAbout {open
-    xywh {363 200 185 180} type Double color 53 modal visible
+  Fl_Window dlgAbout {open selected
+    xywh {363 200 320 184} type Double color 53 modal visible
   } {
     Fl_Group lblVersion {
-      label {xxx:} open selected
-      xywh {0 5 180 110} box ENGRAVED_FRAME align 16
+      label {xxx:} open
+      xywh {5 5 310 105} box ENGRAVED_FRAME align 16
     } {}
     Fl_Return_Button {} {
       label Thanks
       callback {dlgAbout->hide ();}
-      xywh {40 150 100 25}
+      xywh {100 150 100 25}
     }
     Fl_Group {} {
       label {w1hkj@@w1hkj.com}
-      xywh {0 115 180 30} box ENGRAVED_FRAME align 16
+      xywh {5 115 310 30} box ENGRAVED_FRAME align 16
     } {}
   }
 } 
