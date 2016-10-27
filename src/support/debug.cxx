@@ -74,6 +74,7 @@ static void clear_cb(Fl_Widget *w, void*);
 
 static char fmt[1024];
 static char sztemp[1024];
+static string slines = "";
 
 void debug::start(const char* filename)
 {
@@ -118,17 +119,19 @@ void debug::log(level_e level, const char* func, const char* srcf, int line, con
 	if (!inst) return;
 	if (level > debug::level) return;
 
-	snprintf(fmt, sizeof(fmt), "%c: %s: %s", *prefix[level], func, format);
+	snprintf(fmt, sizeof(fmt), "%c: %s: %s\n", *prefix[level], func, format);
 
 {
 	guard_lock text_lock(&debug_mutex);
 	va_list args;
 	va_start(args, format);
+	sztemp[0] = 0;
 	vsnprintf(sztemp, sizeof(sztemp), fmt, args);
 	va_end(args);
 
 	fprintf(wfile, "%s", sztemp);
 	fflush(wfile);
+	slines.append(sztemp);
 }
 	Fl::awake(sync_text);
 }
@@ -138,8 +141,7 @@ void debug::slog(level_e level, const char* func, const char* srcf, int line, co
 	if (!inst) return;
 	if (level > debug::level) return;
 
-	snprintf(fmt, sizeof(fmt), "%c:%s", *prefix[level], format);
-
+	snprintf(fmt, sizeof(fmt), "%c:%s\n", *prefix[level], format);
 {
 	guard_lock text_lock(&debug_mutex);
 	va_list args;
@@ -147,6 +149,7 @@ void debug::slog(level_e level, const char* func, const char* srcf, int line, co
 	vsnprintf(sztemp, sizeof(sztemp), fmt, args);
 	va_end(args);
 	fflush(wfile);
+	slines.append(sztemp);
 }
 	Fl::awake(sync_text);
 }
@@ -164,8 +167,15 @@ void debug::show(void)
 void debug::sync_text(void* arg)
 {
 	guard_lock text_lock(&debug_mutex);
-	btext->insert(1, sztemp);
+	size_t p = string::npos;
+	while (!slines.empty()) {
+		p = slines.find('\n');
+		btext->add(slines.substr(0, p).c_str());
+		slines.erase(0, p + 1);
+	}
+	if (btext->size()) btext->show(btext->size());
 	btext->redraw();
+	slines.clear();
 	return;
 }
 

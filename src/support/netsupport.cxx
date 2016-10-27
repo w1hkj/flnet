@@ -49,10 +49,14 @@ extern void updateLogins ();
 
 void cb_mnuOpen(Fl_Menu_*mnu, void *d)
 {
-	char *p = fl_file_chooser ("Select .csv file", "*.csv", "", 0);//selected_file.c_str(), 0);
+	string open_dir = home_dir;
+	char *p = fl_file_chooser (
+		"Select .csv file", "*.csv", 
+		open_dir.c_str(), 0);
 	if (!p) return;
 	selected_file = p;
 	updateLogins ();
+	LOG_INFO("Open database %s", selected_file.c_str());
 	openDB (selected_file.c_str());
 }
 
@@ -64,6 +68,7 @@ void cb_mnuNew(Fl_Menu_*mnu, void *d)
 	if (!p) return;
 	selected_file = p;
 	updateLogins ();
+	LOG_INFO("New database %s", selected_file.c_str());
 	openDB (selected_file.c_str());
 }
 

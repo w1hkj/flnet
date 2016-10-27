@@ -323,6 +323,7 @@ std::string fldigi_online_check(void)
 		string resp = status;
 		response = resp;
 	} catch (const XmlRpc::XmlRpcException& e) {
+#ifndef __WIN32__
 		switch(xmlrpc_errno) {
 			case ECONNREFUSED:
 			case EPIPE:
@@ -331,6 +332,7 @@ std::string fldigi_online_check(void)
 			default:
 				LOG_ERROR("%s xmlrpc_errno = %d", e.getMessage().c_str(), xmlrpc_errno);
 		}
+#endif
 		response.clear();
 	}
 

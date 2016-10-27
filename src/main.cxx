@@ -214,7 +214,7 @@ void check_home_directory(std::string home_dir)
 
 int main(int argc, char **argv)
 {
-Fl::lock();
+	Fl::lock();
 	int arg_idx;
 
 	{
@@ -239,7 +239,6 @@ Fl::lock();
 	std::string debug_file = home_dir;
 	debug_file.append("flnet_debug_log.txt");
 	debug::start(debug_file.c_str());
-	LOG(debug::INFO_LEVEL, debug::LOG_OTHER, "flnet debug log");
 
 	main_window = newNetControl();
 	Fl::visual (FL_DOUBLE|FL_INDEX);
@@ -258,6 +257,8 @@ Fl::lock();
 #else
 	main_window->show(argc, argv);
 #endif
+
+	LOG_INFO("flnet debug log");
 
 	strcpy (progdir, argv[0]);
 	char *p = strrchr(progdir,'/');
@@ -293,11 +294,10 @@ Fl::lock();
 			memset(buff, 0, LINESIZE + 1);
 			dbfile.getline(buff, LINESIZE);
 			selected_file = buff;
-			size_t p = selected_file.rfind('\n');
-			while (p != string::npos) {
-				selected_file.erase(p,1);
-				p = selected_file.rfind('\n');
-			}
+			size_t p = selected_file.find('\r');
+			if (p != string::npos) selected_file.erase(p);
+			p = selected_file.rfind('\n');
+			if (p != string::npos) selected_file.erase(p);
 			last_filename = selected_file;
 			dbfile.close();
 		} else {
@@ -309,6 +309,7 @@ Fl::lock();
 			selected_file = p;
 		}
 		openDB (selected_file);
+		LOG_INFO("Opened: %s", selected_file.c_str());
 	}
 
 	open_xmlrpc();

@@ -113,7 +113,7 @@ UI_SIZES UI_big[] = {
 	{ 17, 372, 240, 24, 4, 16}, // txtLine[12]
 	{ 17, 396, 240, 24, 4, 16}, // txtLine[13]
 	{ 17, 420, 240, 24, 4, 16}, // txtLine[14]
-	{ 284, 36, 185, 24, 13, 16}, // dbSelectLabel
+	{ 284, 36, 185, 24, 13, 14}, // dbSelectLabel
 	{ 284, 60, 185, 380, 13, 18}, // dbSelectGroup
 	{ 291, 87, 60, 30, 13, 18}, // inpLoginSuffix
 	{ 355, 87, 60, 30, 13, 18}, // inpLoginPrefix
