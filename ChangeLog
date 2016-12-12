@@ -1,10 +1,15 @@
 
 
+=Version 7.3.2=
+
+2016-12-12  David Freese  <iam_w1hkj@w1hkj.com>
+
+	cbea7d2: Fix for bogus csv files
+
+
 =Version 7.3.1=
 
-2016-10-27  David Freese  <iam_w1hkj@w1hkj.com>
-
-	a2ba487: Default dir
+	75d3c68: Default dir
 
 
 =Version 7.3.0=
