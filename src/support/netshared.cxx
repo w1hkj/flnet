@@ -241,8 +241,6 @@ void getBrwsData()
 	}
 
 	snprintf (szDispName, sizeof(szDispName), "%s (%d)", sSimpleName, (int)netdb.numrecs());
-//	dbSelectGroup->label (szDispName);
-//	dbSelectGroup->redraw ();
 	dbSelectLabel->value(szDispName);
 	dbSelectLabel->redraw();
 
@@ -257,10 +255,14 @@ void getBrwsData()
 	for (int n = 0; n < netdb.numrecs(); n++) {
 		netdb.get(n, rec);
 		brwsData[n].recN = n;
-		strcpy (brwsData[n].netnbr, rec.netnbr.c_str());
-		strcpy (brwsData[n].prefix, rec.prefix.c_str());
-		strcpy (brwsData[n].area, rec.area.c_str());
-		strcpy (brwsData[n].suffix, rec.suffix.c_str());
+		memset(brwsData[n].netnbr, 0, 5);
+		memset(brwsData[n].prefix, 0, 4);
+		memset(brwsData[n].area, 0, 2);
+		memset(brwsData[n].suffix, 0, 4);
+		strncpy (brwsData[n].netnbr, rec.netnbr.c_str(), 4);
+		strncpy (brwsData[n].prefix, rec.prefix.c_str(), 3);
+		strncpy (brwsData[n].area, rec.area.c_str(), 1);
+		strncpy (brwsData[n].suffix, rec.suffix.c_str(), 3);
 		while (strlen(brwsData[n].suffix) < 3)
 			strcat (brwsData[n].suffix, " ");
 	}

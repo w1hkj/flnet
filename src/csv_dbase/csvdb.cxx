@@ -209,10 +209,11 @@ int csvdb::load()
 
 	// header passes test, read rest of file
 	string sbuff;
-	while (dbfile) {
+	while (!dbfile.eof()) {
 		memset(buff, 0, LINESIZE + 1);
 		dbfile.getline(buff, LINESIZE);
-		if (dbfile && strlen(buff)) {
+//		if (dbfile && strlen(buff)) {
+		if (strlen(buff)) {
 			sbuff = buff;
 			if (split(buff, rec)) dbrecs.push_back(rec);
 		}
