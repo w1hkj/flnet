@@ -22,9 +22,8 @@
 //
 //======================================================================
 
-#define NET_MAJOR_VERSION "5"
-#define NET_MINOR_VERSION "5"
-#define NET_PATCH_VERSION "0"
-
-#define NET_VERSION (NET_MAJOR_VERSION"."NET_MINOR_VERSION"."NET_PATCH_VERSION)
+#define NET_MAJOR_VERSION "7"
+#define NET_MINOR_VERSION "3"
+#define NET_PATCH_VERSION "3"
+#define NET_VERSION (NET_MAJOR_VERSION "." NET_MINOR_VERSION "." NET_PATCH_VERSION)
 

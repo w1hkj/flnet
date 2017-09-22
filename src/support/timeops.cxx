@@ -23,7 +23,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // ----------------------------------------------------------------------------
 
-#include <config.h>
+#include "config.h"
 
 #include "timeops.h"
 #ifdef __MINGW32__
@@ -179,7 +179,7 @@ bool operator==(const struct timeval &t0, const struct timeval &t1)
 
 
 #if !HAVE_GMTIME_R
-#include <pthread.h>
+#include "threads.h"
 
 static pthread_mutex_t gmtime_r_mutex = PTHREAD_MUTEX_INITIALIZER;
 
