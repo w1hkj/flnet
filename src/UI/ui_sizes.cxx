@@ -44,48 +44,43 @@ UI_SIZES UI_small[] = {
 	{ 0, 0, 390, 455, 0, 12}, // window  0
 	{ 0, 0, 390, 25, 0, 12}, // menu_ bar 1
 	{ 0, 25, 390, 430, 0, 12}, // myUI 2
-	{ 125, 25, 74, 20, 1, 14}, // txtNcallins  3
-	{ 0, 45, 225, 255, 1, 14}, // net_grp1  4
+	{ 125, 25, 74, 20, 0, 14}, // txtNcallins  3
+	{ 0, 45, 225, 255, 0, 14}, // net_grp1  4
 	{ 5, 125, 15, 25, 0, 12}, // ptr_left  4
 	{ 210, 125, 15, 25, 0, 12}, // ptr_right  6
 	{ 17, 45, 196, 256, 0, 12}, // net_grp2  7
-	{ 20, 47, 190, 26, 4, 13}, // txtTitles  8
-	{ 20, 70, 190, 16, 4, 13}, // txtLine[0]  9
-	{ 20, 85, 190, 16, 4, 13}, // txtLine[1]  10
-	{ 20, 100, 190, 16, 4, 13}, // txtLine[2]  11
-	{ 20, 115, 190, 16, 4, 13}, // txtLine[3]  12
-	{ 20, 130, 190, 16, 4, 13}, // txtLine[4]  13
-	{ 20, 145, 190, 16, 4, 13}, // txtLine[5]  14
-	{ 20, 160, 190, 16, 4, 13}, // txtLine[6]  15
-	{ 20, 175, 190, 16, 4, 13}, // txtLine[7]  16
-	{ 20, 190, 190, 16, 4, 13}, // txtLine[8]  17
-	{ 20, 205, 190, 16, 4, 13}, // txtLine[9]  18
-	{ 20, 220, 190, 16, 4, 13}, // txtLine[10]  19
-	{ 20, 235, 190, 16, 4, 13}, // txtLine[11]  20
-	{ 20, 250, 190, 16, 4, 13}, // txtLine[12]  21
-	{ 20, 265, 190, 16, 4, 13}, // txtLine[13]  22
-	{ 20, 280, 190, 16, 4, 13}, // txtLine[14]  23
-	{ 230, 27, 155, 18, 13, 12}, // dbSelectLabel
-	{ 230, 45, 155, 250, 13, 12}, // dbSelectGroup  24
-	{ 240, 75, 40, 25, 13, 12}, // inpLoginSuffix  25
-	{ 285, 75, 30, 25, 13, 13}, // inpLoginPrefix  26
-	{ 320, 75, 40, 25, 13, 13}, // inpLoginArea  27
-	{ 240, 115, 75, 160, 0, 12}, // net_grp3  28
-	{ 240, 115, 75, 16, 13, 12}, // txtPick[0]   29
-	{ 240, 131, 75, 16, 13, 12}, // txtPick[1]  30
-	{ 240, 147, 75, 16, 13, 12}, // txtPick[2]  31
-	{ 240, 163, 75, 16, 13, 12}, // txtPick[3]  32
-	{ 240, 179, 75, 16, 13, 12}, // txtPick[4]  33
-	{ 240, 195, 75, 16, 13, 12}, // txtPick[5]  34
-	{ 240, 211, 75, 16, 13, 12}, // txtPick[6]  35
-	{ 240, 227, 75, 16, 13, 12}, // txtPick[7]  36
-	{ 240, 243, 75, 16, 13, 12}, // txtPick[8]  37
-	{ 240, 259, 75, 16, 13, 12}, // txtPick[9]  38
-	{ 320, 135, 25, 120, 0, 12}, // txtPickArrows  39
-	{ 235, 45, 40, 30, 0, 12}, // bx_suffix  40
-	{ 280, 45, 40, 30, 0, 12}, // bx_prefix  41
-	{ 320, 45, 40, 30, 0, 12}, // bx_area  42
-	{ 5, 301, 379, 150, 5, 14}, // txtInfo  43
+	{ 20, 47, 190, 26, 0, 13}, // txtTitles  8
+	{ 20, 70, 190, 16, 0, 13}, // txtLine[0]  9
+	{ 20, 85, 190, 16, 0, 13}, // txtLine[1]  10
+	{ 20, 100, 190, 16, 0, 13}, // txtLine[2]  11
+	{ 20, 115, 190, 16, 0, 13}, // txtLine[3]  12
+	{ 20, 130, 190, 16, 0, 13}, // txtLine[4]  13
+	{ 20, 145, 190, 16, 0, 13}, // txtLine[5]  14
+	{ 20, 160, 190, 16, 0, 13}, // txtLine[6]  15
+	{ 20, 175, 190, 16, 0, 13}, // txtLine[7]  16
+	{ 20, 190, 190, 16, 0, 13}, // txtLine[8]  17
+	{ 20, 205, 190, 16, 0, 13}, // txtLine[9]  18
+	{ 20, 220, 190, 16, 0, 13}, // txtLine[10]  19
+	{ 20, 235, 190, 16, 0, 13}, // txtLine[11]  20
+	{ 20, 250, 190, 16, 0, 13}, // txtLine[12]  21
+	{ 20, 265, 190, 16, 0, 13}, // txtLine[13]  22
+	{ 20, 280, 190, 16, 0, 13}, // txtLine[14]  23
+	{ 230, 27, 155, 18, 0, 12}, // dbSelectLabel
+
+	{ 230, 45, 155, 255, 0, 12}, // dbSelectGroup  24
+	{ 240, 65, 40, 25, 0, 12}, // inpLoginSuffix  25
+	{ 285, 65, 30, 25, 0, 12}, // inpLoginPrefix  26
+	{ 320, 65, 40, 25, 0, 12}, // inpLoginArea  27
+
+	{ 235, 95, 146, (NPICKITEMS/2)*12+8, 0, 12}, // net_grp3  28
+	{ 238, 98, 70, 12, 0, 12}, // txtPick[0]   29
+	{ 308, 98, 70, 12, 0, 12}, // txtPick[12]  39
+
+	{ 320, 135, 25, 120, 0, 12}, // txtPickArrows  49
+	{ 235, 40, 40, 30, 0, 12}, // bx_suffix  50
+	{ 280, 40, 40, 30, 0, 12}, // bx_prefix  51
+	{ 320, 40, 40, 30, 0, 12}, // bx_area  52
+	{ 5, 301, 379, 150, 0, 14}, // txtInfo  53
 };
 
 UI_SIZES UI_big[] = {
@@ -118,25 +113,19 @@ UI_SIZES UI_big[] = {
 	{ 291, 87, 60, 30, 13, 18}, // inpLoginSuffix
 	{ 355, 87, 60, 30, 13, 18}, // inpLoginPrefix
 	{ 419, 87, 40, 30, 13, 18}, // inpLoginArea
-	{ 291, 125, 170, 300, 0, 18}, // net_grp3
-	{ 291, 125, 170, 30, 4, 18}, //  txtPick[0]
-	{ 291, 155, 170, 30, 4, 18}, //  txtPick[1]
-	{ 291, 185, 170, 30, 4, 18}, //  txtPick[2]
-	{ 291, 215, 170, 30, 4, 18}, //  txtPick[3]
-	{ 291, 245, 170, 30, 4, 18}, //  txtPick[4]
-	{ 291, 275, 170, 30, 4, 18}, //  txtPick[5]
-	{ 291, 305, 170, 30, 4, 18}, //  txtPick[6]
-	{ 291, 335, 170, 30, 4, 18}, //  txtPick[7]
-	{ 291, 365, 170, 30, 4, 18}, //  txtPick[8]
-	{ 291, 395, 170, 30, 4, 18}, //  txtPick[9]
+
+	{ 291, 125, 170, (NPICKITEMS/2)*16+4, 0, 16}, // net_grp3  28
+	{ 293, 127, 83, 16, 0, 16}, // txtPick[0]   29
+	{ 376, 127, 83, 16, 0, 16}, // txtPick[12]  39
+
 	{ 374, 195, 25, 180, 0, 18}, // txtPickArrows
 	{ 291, 60, 60, 25, 0, 16}, // bx_suffix
 	{ 355, 60, 61, 25, 0, 16}, // bx_prefix
 	{ 419, 60, 40, 25, 0, 16}, // bx_area
-	{ 5, 449, 465, 180, 5, 16}, // txtInfo
+	{ 5, 449, 465, 180, 0, 16}, // txtInfo
 };
 
-UI_SIZES *ui_last = UI_small;
+UI_SIZES *ui_last = UI_big;
 
 void change_size()
 {
@@ -253,45 +242,17 @@ void change_size()
 	net_grp3->resize(ui->x, ui->y, ui->w, ui->h);
 	net_grp3->labelsize(ui->size);
 	ui++;
-	txtPick[0]->resize(ui->x, ui->y, ui->w, ui->h);
-	txtPick[0]->labelfont(ui->fnt);
-	txtPick[0]->labelsize(ui->size);
+	for (int i = 0; i < NPICKITEMS/2; i++) {
+		txtPick[i]->resize(ui->x, ui->y + i * ui->size, ui->w, ui->h);
+		txtPick[i]->labelfont(ui->fnt);
+		txtPick[i]->labelsize(ui->size);
+	}
 	ui++;
-	txtPick[1]->resize(ui->x, ui->y, ui->w, ui->h);
-	txtPick[1]->labelfont(ui->fnt);
-	txtPick[1]->labelsize(ui->size);
-	ui++;
-	txtPick[2]->resize(ui->x, ui->y, ui->w, ui->h);
-	txtPick[2]->labelfont(ui->fnt);
-	txtPick[2]->labelsize(ui->size);
-	ui++;
-	txtPick[3]->resize(ui->x, ui->y, ui->w, ui->h);
-	txtPick[3]->labelfont(ui->fnt);
-	txtPick[3]->labelsize(ui->size);
-	ui++;
-	txtPick[4]->resize(ui->x, ui->y, ui->w, ui->h);
-	txtPick[4]->labelfont(ui->fnt);
-	txtPick[4]->labelsize(ui->size);
-	ui++;
-	txtPick[5]->resize(ui->x, ui->y, ui->w, ui->h);
-	txtPick[5]->labelfont(ui->fnt);
-	txtPick[5]->labelsize(ui->size);
-	ui++;
-	txtPick[6]->resize(ui->x, ui->y, ui->w, ui->h);
-	txtPick[6]->labelfont(ui->fnt);
-	txtPick[6]->labelsize(ui->size);
-	ui++;
-	txtPick[7]->resize(ui->x, ui->y, ui->w, ui->h);
-	txtPick[7]->labelfont(ui->fnt);
-	txtPick[7]->labelsize(ui->size);
-	ui++;
-	txtPick[8]->resize(ui->x, ui->y, ui->w, ui->h);
-	txtPick[8]->labelfont(ui->fnt);
-	txtPick[8]->labelsize(ui->size);
-	ui++;
-	txtPick[9]->resize(ui->x, ui->y, ui->w, ui->h);
-	txtPick[9]->labelfont(ui->fnt);
-	txtPick[9]->labelsize(ui->size);
+	for (int i = 0; i < NPICKITEMS/2; i++) {
+		txtPick[i + NPICKITEMS/2]->resize(ui->x, ui->y + i * ui->size, ui->w, ui->h);
+		txtPick[i + NPICKITEMS/2]->labelfont(ui->fnt);
+		txtPick[i + NPICKITEMS/2]->labelsize(ui->size);
+	}
 	ui++;
 	txtPickArrows->resize(ui->x, ui->y, ui->w, ui->h);
 	ui++;

@@ -32,7 +32,7 @@ extern Fl_Box *inpLoginSuffix;
 extern Fl_Box *inpLoginPrefix;
 extern Fl_Box *inpLoginArea;
 extern Fl_Group *net_grp3;
-extern Fl_Box *txtPick[10];
+extern Fl_Box *txtPick[NPICKITEMS];
 extern Fl_Box *txtPickArrows;
 extern Fl_Box *bx_suffix;
 extern Fl_Box *bx_prefix;

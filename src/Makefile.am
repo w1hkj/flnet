@@ -204,9 +204,6 @@ EXTRA_DIST = \
 	include/threads.h \
 	include/fl_lock.h \
 	UI/flnet.rc \
-	UI/net_ui.fl \
-	UI/big_ui.fl \
-	UI/small_ui.fl \
 	UI/netutils.fl \
 	UI/net_icon.cxx
 

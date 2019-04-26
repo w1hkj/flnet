@@ -241,6 +241,7 @@ int main(int argc, char **argv)
 	debug::start(debug_file.c_str());
 
 	main_window = newNetControl();
+	change_size();
 	Fl::visual (FL_DOUBLE|FL_INDEX);
 
 	sprintf (title, "flnet %s", FLNET_VERSION);

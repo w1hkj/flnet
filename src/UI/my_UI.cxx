@@ -78,8 +78,6 @@ char szInfo[1024];
 
 bool updateFldigi = true;
 
-// do not change this unless you also change txtPick[]
-#define NPICKITEMS 10
 struct _pick {
 	long recN;
 	char	callsign[10];
@@ -274,7 +272,9 @@ void my_UI::clearPickList ()
 {
 	for (int i = 0; i < NPICKITEMS; i++ ) {
 		Pick[i].callsign[0] = 0;
-		txtPick[i]->label ("");//Pick[i].callsign);
+		txtPick[i]->label ("");
+		txtPick[i]->labelcolor (FL_BLACK);
+		txtPick[i]->redraw_label();
 	}
 	nbrPicked = 0;
 }
@@ -307,8 +307,7 @@ void my_UI::fillPickList ()
 			txtPick[i]->label (Pick[i].callsign);
 			if (i == 0)
 				txtPick[i]->labelcolor (FL_RED);
-			else
-				txtPick[i]->labelcolor (FL_BLACK);
+			txtPick[i]->redraw_label();
 			i++;
 		}
 		rc++;
@@ -324,7 +323,7 @@ void my_UI::PickedColors ()
 			txtPick[i]->labelcolor(FL_RED);
 		else
 			txtPick[i]->labelcolor(FL_BLACK);
-		txtPick[i]->redraw ();
+		txtPick[i]->redraw_label ();
 	}
 }
 

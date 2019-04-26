@@ -32,6 +32,8 @@ extern int WhoIsUp;
 extern void updateCallins (bool);
 extern loglist callinlist;
 
+#define NPICKITEMS 32
+
 enum MYGUI_STATUS {LOGLIST, SUFFIX, PREFIX, AREA, PICKLIST};
 
 class my_UI : public Fl_Group
