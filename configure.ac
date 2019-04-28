@@ -146,6 +146,14 @@ AC_FLNET_PKG_CHECK([flxmlrpc], [flxmlrpc >= 0.1.0],
   [yes], [yes], [use external flxmlrpc library @<:@autodetect@:>@],
   [ENABLE_FLXMLRPC])
 
+### libmbedtls
+# Set ac_cv_mbedtls to yes/no
+# Define USE_LIBMBEDTLS in config.h
+# Substitute LIBMBEDTLS_CFLAGS and LIBMBEDTLS_LIBS in Makefile
+AC_FLNET_PKG_CHECK([libmbedtls], [libmbedtls >= 2.16.0], 
+  [yes], [yes], [use mbedtls libraries @<:@autodetect@:>@],
+  [ENABLE_LIBMBEDTLS])
+
 ### build info
 # Define various build variables in config.h
 AC_FLNET_BUILD_INFO
@@ -159,6 +167,9 @@ ac_xmlrpc_report="internal lib";
 if test "x$ac_cv_flxmlrpc" = "xyes"; then
   ac_xmlrpc_report="external lib";
 fi
+
+ac_mbedtls_report="internal lib";
+
  ### summary
 AC_MSG_RESULT([
 Configuration summary:
@@ -167,7 +178,8 @@ Configuration summary:
   
   Target OS ................... $target_os
 
-  Have flxmlrpc library ....... $ac_xmlrpc_report
+  flxmlrpc library ............ $ac_xmlrpc_report
+  libmbedtls .................. $ac_mbedtls_report
 
   Static linking .............. $ac_cv_static
   CPU optimizations ........... $ac_cv_opt

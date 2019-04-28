@@ -12,9 +12,16 @@ AC_DEFUN([AC_FLNET_BUILD_INFO], [
   if test "x$target_win32" = "xyes"; then
       FLNET_BUILD_CPPFLAGS="$FLNET_BUILD_CPPFLAGS -D_WINDOWS"
   fi
+  if test "x$ac_cv_libmbedtls" != "xyes"; then
+    FLNET_BUILD_CPPFLAGS="$FLNET_BUILD_CPPFLAGS -I\$(srcdir)/mbedtls"
+  fi
 # CXXFLAGS
   FLNET_BUILD_CXXFLAGS="$FLTK_CFLAGS -I\$(srcdir) -I\$(srcdir)/include  \
-$X_CFLAGS -pipe -Wall -fexceptions $OPT_CFLAGS $DEBUG_CFLAGS $PTW32_CFLAGS"
+$X_CFLAGS -pipe -Wall -fexceptions $OPT_CFLAGS $DEBUG_CFLAGS $PTW32_CFLAGS \
+$LIBMBEDTLS_CFLAGS"
+
+  FLNET_BUILD_CFLAGS="$LIBMBEDTLS_CFLAGS -pipe -Wall -fexceptions"
+
   if test "x$ac_cv_flxmlrpc" != "xyes"; then
     FLNET_BUILD_CXXFLAGS="-I\$(srcdir)/xmlrpcpp $FLNET_BUILD_CXXFLAGS"
   fi
@@ -24,7 +31,12 @@ $X_CFLAGS -pipe -Wall -fexceptions $OPT_CFLAGS $DEBUG_CFLAGS $PTW32_CFLAGS"
 # LDFLAGS
   FLNET_BUILD_LDFLAGS=
 # LDADD
-  FLNET_BUILD_LDADD="$FLTK_LIBS $X_LIBS $EXTRA_LIBS $PTW32_LIBS $FLXMLRPC_LIBS"
+  FLNET_BUILD_LDADD="$FLTK_LIBS $X_LIBS $EXTRA_LIBS $PTW32_LIBS $FLXMLRPC_LIBS \
+		$LIBMBEDTLS_LIBS"
+
+  if test "x$ac_cv_libmbedtls" == "xyes"; then
+    FLNET_BUILD_LDADD="$FLNET_BUILD_LDADD $LIBMBEDTLS_LDFLAGS"
+  fi
 
   if test "x$ac_cv_debug" = "xyes"; then
       FLNET_BUILD_CXXFLAGS="$FLNET_BUILD_CXXFLAGS -UNDEBUG"
