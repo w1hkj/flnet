@@ -356,7 +356,15 @@ flnet_SOURCES += \
 	include/util.h \
 	include/xmlreader.h \
 	include/xmlrpc.h \
-	include/xml_io.h
+	include/xml_io.h \
+	include/CXMLReaderImpl.h \
+	include/fast_atof.h \
+	include/heapsort.h \
+	include/irrArray.h \
+	include/irrString.h \
+	include/irrTypes.h \
+	include/irrXML.h \
+	irrxml/irrXML.cpp
 
 # Additional source files that are distributed
 EXTRA_DIST = \
