@@ -67,7 +67,7 @@ debug* debug::inst = 0;
 debug::level_e debug::level = debug::INFO_LEVEL;
 uint32_t debug::mask = ~0u;
 
-const char* prefix[] = { _("Quiet"), _("Error"), _("Warning"), _("Info"), _("Debug") };
+const char* prefix[] = { "Quiet", "Error", "Warning", "Info", "Debug" };
 
 static void slider_cb(Fl_Widget* w, void*);
 static void clear_cb(Fl_Widget *w, void*);
@@ -81,10 +81,10 @@ void debug::start(const char* filename)
 	if (debug::inst) return;
 	inst = new debug(filename);
 
-	window = new Fl_Double_Window(600, 256, _("Event log"));
+	window = new Fl_Double_Window(600, 256, "Event log");
 
 	Fl_Slider* slider = new Fl_Slider(2, 2, 128, 20, prefix[level]);
-	slider->tooltip(_("Change log level"));
+	slider->tooltip("Change log level");
 	slider->align(FL_ALIGN_RIGHT);
 	slider->type(FL_HOR_NICE_SLIDER);
 	slider->range(0.0, LOG_NLEVELS - 1);

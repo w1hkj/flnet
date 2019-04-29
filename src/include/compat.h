@@ -1,3 +1,23 @@
+// ----------------------------------------------------------------------------
+// Copyright (C) 2014
+//              David Freese, W1HKJ
+//
+// This file is part of fldigi
+//
+// fldigi is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
+//
+// fldigi is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// ----------------------------------------------------------------------------
+
 #ifndef COMPAT_H
 #define COMPAT_H
 
@@ -25,43 +45,31 @@
 #include <limits.h>
 #include <sys/param.h>
 #include <sys/types.h>
+
+// this tests depends on a modified FL/filename.H in the Fltk-1.3.0
+// change
+//#  if defined(WIN32) && !defined(__CYGWIN__) && !defined(__WATCOMC__)
+// to
+//#  if defined(WIN32) && !defined(__CYGWIN__) && !defined(__WATCOMC__) && !defined(__WOE32__)
+
+#ifdef __MINGW32__
+#	if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR < 3
+#		undef dirent
+#		include <dirent.h>
+#	else
+#		include <dirent.h>
+#	endif
+#define WSA_MAJOR 2
+#define WSA_MINOR 0
+#else
+#	include <dirent.h>
+#endif
+
 #include <sys/time.h>
 #include <time.h>
 #include <signal.h>
 #include <assert.h>
 
-#ifdef __WIN32__
-#  define dirent fl_dirent_no_thanks
-#  else
-#  include <dirent.h>
-#  include <sys/utsname.h>
-#  include <sys/ipc.h>
-#  include <sys/msg.h>
-#endif
-
-#include "compat-mingw.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#if defined(__WOE32__) && (!defined(__GNUC__) || __GNUC__ < 4)
-#  define SNPRINTF_RETURNS_BOGUS 1
-#else
-#  define SNPRINTF_RETURNS_BOGUS 0
-#endif
-
-#if SNPRINTF_RETURNS_BOGUS
-#define snprintf git_snprintf
-	extern int git_snprintf(char *str, size_t maxsize,
-							const char *format, ...);
-#define vsnprintf git_vsnprintf
-	extern int git_vsnprintf(char *str, size_t maxsize,
-							 const char *format, va_list ap);
-#endif
-
-#ifdef __cplusplus
-}
-#endif
+#include "compat/mingw.h"
 
 #endif // MINGW32_H

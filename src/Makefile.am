@@ -11,9 +11,7 @@ flnet_LDADD = @FLNET_BUILD_LDADD@
 MINGW32_SRC = \
 	UI/flnet.rc \
 	include/flnetrc.h \
-	support/mingw.c \
-	include/compat.h \
-	include/compat-mingw.h
+	include/compat.h compat/getsysinfo.c compat/mingw.c compat/mingw.h
 
 # Build the xmlrpcpp source if libflxmlrpc is not found
 XMLRPCPP_SRC = \
@@ -202,7 +200,9 @@ LIBMBEDTLS_SRC = \
 	include/mbedtls/xtea.h
 
 # We distribute these but do not always compile them
-EXTRA_flnet_SOURCES = $(FLMSG_WIN32_RES_SRC) $(MINGW32_SRC) $(XMLRPCPP_SRC)
+EXTRA_flnet_SOURCES = \
+	$(FLMSG_WIN32_RES_SRC) $(MINGW32_SRC) \
+	$(XMLRPCPP_SRC) $(LIBMBEDTLS_SRC)
 
 flnet_SOURCES =
 
@@ -213,6 +213,15 @@ flnet_CPPFLAGS += @FLXMLRPC_CFLAGS@
 flnet_CXXFLAGS += @FLXMLRPC_CFLAGS@
 flnet_CFLAGS   += @FLXMLRPC_CFLAGS@
 flnet_LDFLAGS  += @FLXMLRPC_LIBS@
+endif
+
+if !ENABLE_LIBMBEDTLS
+flnet_SOURCES += $(LIBMBEDTLS_SRC)
+else
+flnet_CPPFLAGS += @LIBMBEDTLS_CFLAGS@
+flnet_CXXFLAGS += @LIBMBEDTLS_CFLAGS@
+flnet_CFLAGS   += @LIBMBEDTLS_CFLAGS@
+flnet_LDFLAGS  += @LIBMBEDTLS_LIBS@
 endif
 
 if MINGW32
@@ -311,6 +320,9 @@ clean-local:
 # Sources that we build. It is OK to have headers here.
 flnet_SOURCES += \
 	main.cxx \
+	network/ca_cert.cxx \
+	network/network.cxx \
+	network/socket.cxx \
 	support/calendar.cxx \
 	support/combo.cxx \
 	support/config.cxx \
@@ -325,6 +337,7 @@ flnet_SOURCES += \
 	support/pixmaps_tango.cxx \
 	support/threads.cxx \
 	support/timeops.cxx \
+	support/util.cxx \
 	support/xml_io.cxx \
 	UI/my_UI.cxx \
 	UI/netedits.cxx \
@@ -334,6 +347,7 @@ flnet_SOURCES += \
 	include/calendar.h \
 	include/combo.h \
 	include/csvdb.h \
+	include/estrings.h \
 	include/net_config.h \
 	include/date.h \
 	include/debug.h \
@@ -349,7 +363,9 @@ flnet_SOURCES += \
 	include/net_ui.h \
 	include/netutils.h \
 	include/netversion.h \
+	include/network.h \
 	include/pixmaps.h \
+	include/socket.h \
 	include/timeops.h \
 	include/util.h \
 	include/xmlreader.h \
@@ -366,6 +382,11 @@ flnet_SOURCES += \
 
 # Additional source files that are distributed
 EXTRA_DIST = \
+	compat/mingw.c \
+	compat/mingw.h \
+	compat/getsysinfo.c \
+	compat/regex.c \
+	compat/regex.h \
 	icons/calendar.xpm \
 	include/threads.h \
 	include/fl_lock.h \
@@ -385,5 +406,8 @@ EXTRA_DIST += \
 	$(srcdir)/../data/mac/Info.plist.in \
 	$(srcdir)/../data/mac/flnet.icns \
 	$(srcdir)/../scripts/mkappbundle.sh \
+	$(srcdir)/mbedtls/libmbedtls.pc \
+	$(srcdir)/mbedtls/LICENSE \
+	$(srcdir)/mbedtls/gpl-2.0.txt \
 	$(flnet_WIN32_SRC) \
 	$(flnet_FL_SRC)

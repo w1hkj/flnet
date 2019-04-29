@@ -39,6 +39,8 @@ extern void cb_mnuSearchNetNbr(Fl_Menu_*, void*);
 extern void cb_mnuBrowseCallsign(Fl_Menu_*, void*);
 extern void cb_mnuBrowseNetNbr(Fl_Menu_*, void*);
 extern void cb_mnuFldigiEditor(Fl_Menu_*, void*);
+extern void cb_LookupCall(Fl_Menu_*, void*);
+
 #include <FL/Fl_Input.H>
 extern Fl_Input *inpPrefix;
 extern Fl_Input *inpArea;
@@ -52,12 +54,13 @@ extern Fl_Input *inpCity;
 extern Fl_Input *inpState;
 extern Fl_Input *inpZip;
 extern Fl_Input *inpPhone;
-//extern Fl_Input *inpBirthday;
 extern Fl_DateInput *inpBirthday;
 extern Fl_Input *inpSpouse;
 extern Fl_Input *inpSpBirthday;
+
 #include <FL/Fl_Output.H>
 extern Fl_DateInput *txtLogDate;
+
 #include <FL/Fl_Button.H>
 extern void cbGoFirstRec(Fl_Button*, void*);
 extern Fl_Button *btnFirst;

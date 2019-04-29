@@ -64,6 +64,7 @@ Fl_Menu_Item menu_mbarMain[] = {
 	{"&Callsign", 0,  (Fl_Callback*)cb_mnuBrowseCallsign, 0, 0, 0, 0, 14, 56},
 	{"&NetNbr", 0,  (Fl_Callback*)cb_mnuBrowseNetNbr, 0, 0, 0, 0, 14, 56},
 	{0},
+	{"Lookup", 0, (Fl_Callback*)cb_LookupCall, 0, 0, 0, 0, 14, 56},
 	{"Fldigi", 0,  (Fl_Callback*)cb_mnuFldigiEditor, 0, 0, 0, 0, 14, 56},
 	{0}
 };

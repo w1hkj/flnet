@@ -908,3 +908,22 @@ void cb_btnNewSave(Fl_Button *b, void *d)
 	}
 	toggleState ();
 }
+
+void cb_LookupCall (Fl_Menu_ *m, void *d)
+{
+	string tcall = trim(uppercase(inpPrefix->value()));
+	tcall.append(trim(uppercase(inpArea->value())));
+	tcall.append(trim(uppercase(inpSuffix->value())));
+
+std::cout << tcall << std::endl;
+
+//	inpFname->value (buff);
+//	inpLname->value (buff);
+//	inpAddress->value (buff);
+//	inpCity->value (buff);
+//	inpState->value (buff);
+//	inpZip->value (buff);
+
+	return;
+}
+
