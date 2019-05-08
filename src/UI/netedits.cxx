@@ -65,7 +65,6 @@ Fl_Menu_Item menu_mbarMain[] = {
 	{"&NetNbr", 0,  (Fl_Callback*)cb_mnuBrowseNetNbr, 0, 0, 0, 0, 14, 56},
 	{0},
 	{"Fldigi", 0,  (Fl_Callback*)cb_mnuFldigiEditor, 0, 0, 0, 0, 14, 56},
-	{"QRZ", 0,  (Fl_Callback*)cb_mnuQRZ, 0, 0, 0, 0, 14, 56},
 	{0}
 };
 

@@ -323,7 +323,6 @@ flnet_SOURCES += \
 	support/netsupport.cxx \
 	support/pixmaps.cxx \
 	support/pixmaps_tango.cxx \
-	support/qrzlib.cxx \
 	support/threads.cxx \
 	support/timeops.cxx \
 	support/xml_io.cxx \
@@ -351,7 +350,6 @@ flnet_SOURCES += \
 	include/netutils.h \
 	include/netversion.h \
 	include/pixmaps.h \
-	include/qrzlib.h \
 	include/timeops.h \
 	include/util.h \
 	include/xmlreader.h \

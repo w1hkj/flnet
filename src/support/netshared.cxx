@@ -41,7 +41,6 @@
 #include "netshared.h"
 #include "my_UI.h"
 #include "loglist.h"
-#include "qrzlib.h"
 #include "netsupport.h"
 #include "config.h"
 #include "net_config.h"
@@ -909,46 +908,3 @@ void cb_btnNewSave(Fl_Button *b, void *d)
 	}
 	toggleState ();
 }
-
-void cb_mnuQRZ (Fl_Menu_ *m, void *d)
-{
-	QRZ *qCall = new QRZ ((char*)"callbkc");
-	if (qCall->getQRZvalid() == 0) {
-		fl_alert ("Could not open QRZ database");
-		return;
-	}
-	char tcall[7];
-	char buff[256];
-	strcpy (tcall, trim(uppercase(inpPrefix->value())));
-	strcat (tcall, trim(uppercase(inpArea->value())));
-	strcat (tcall, trim(uppercase(inpSuffix->value())));
-	if (qCall->FindRecord (tcall) == 1) {
-		memset (buff, 0, 256);
-		strncpy (buff, qCall->GetFname (), 10);
-		inpFname->value (buff);
-		memset (buff, 0, 256);
-		strncpy (buff, qCall->GetLname (), 20);
-		inpLname->value (buff);
-		memset (buff, 0, 256);
-		strncpy (buff, qCall->GetStreet (), 30);
-		inpAddress->value (buff);
-		memset (buff, 0, 256);
-		strncpy (buff, qCall->GetCity (), 25);
-		inpCity->value (buff);
-		memset (buff, 0, 256);
-		strncpy (buff, qCall->GetState (), 2);
-		inpState->value (buff);
-		memset (buff, 0, 256);
-		strncpy (buff, qCall->GetZIP (),5);
-		inpZip->value (buff);
-#ifdef HAVE_EMAIL
-		if (inpEmail) {
-			strcpy (buff, szEmail(qCall->GetCall()));
-			inpEmail->value (buff);
-		}
-#endif
-	}
-	delete qCall;
-	return;
-}
-
