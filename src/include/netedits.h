@@ -38,6 +38,7 @@ extern void cb_mnuSearchCallsign(Fl_Menu_*, void*);
 extern void cb_mnuSearchNetNbr(Fl_Menu_*, void*);
 extern void cb_mnuBrowseCallsign(Fl_Menu_*, void*);
 extern void cb_mnuBrowseNetNbr(Fl_Menu_*, void*);
+extern void cb_mnuHamcall(Fl_Menu_*, void*);
 extern void cb_mnuFldigiEditor(Fl_Menu_*, void*);
 extern void cb_LookupCall(Fl_Menu_*, void*);
 

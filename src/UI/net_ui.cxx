@@ -33,6 +33,7 @@
 #include "config.h"
 #include "net_config.h"
 #include "debug.h"
+#include "lookupcall.h"
 
 Fl_Menu_Bar *mnu_bar=(Fl_Menu_Bar *)0;
 
@@ -281,18 +282,133 @@ static void cb_btnBg3(Fl_Button*, void*) {
 	txtSample[4]->redraw();
 }
 
-Fl_Group *tabGroupPriority=(Fl_Group *)0;
-Fl_Input *cfgP1=(Fl_Input *)0;
-Fl_Input *inpStatesList1=(Fl_Input *)0;
-Fl_Input *cfgP2=(Fl_Input *)0;
-Fl_Input *inpStatesList2=(Fl_Input *)0;
-Fl_Input *cfgP3=(Fl_Input *)0;
-Fl_Input *inpStatesList3=(Fl_Input *)0;
-Fl_Check_Button *chkAutoPriority=(Fl_Check_Button *)0;
-Fl_Return_Button *btnConfigOK=(Fl_Return_Button *)0;
+Fl_Group *tabGroupPriority = (Fl_Group *)0;
+Fl_Input *cfgP1 = (Fl_Input *)0;
+Fl_Input *inpStatesList1 = (Fl_Input *)0;
+Fl_Input *cfgP2 = (Fl_Input *)0;
+Fl_Input *inpStatesList2 = (Fl_Input *)0;
+Fl_Input *cfgP3 = (Fl_Input *)0;
+Fl_Input *inpStatesList3 = (Fl_Input *)0;
+Fl_Check_Button *chkAutoPriority = (Fl_Check_Button *)0;
+
+Fl_Group *tabGroupLookup = (Fl_Group *)0;
+Fl_Input *inp_myLocator = (Fl_Input *)0;
+Fl_Input *inp_user_name = (Fl_Input *)0;
+Fl_Input *inp_user_password = (Fl_Input *)0;
+Fl_Check_Button *chk_pwd = (Fl_Check_Button *)0;
+
+Fl_Check_Button *chk_callook = (Fl_Check_Button *)0;
+Fl_Input *inp_callookurl = (Fl_Input *)0;
+
+Fl_Check_Button *chk_hamqth = (Fl_Check_Button *)0;
+Fl_Input *inp_hamqthurl = (Fl_Input *)0;
+
+Fl_Check_Button *chk_hamcall = (Fl_Check_Button *)0;
+Fl_Input *inp_hamcallurl = (Fl_Input *)0;
+
+Fl_Check_Button *chk_qrz = (Fl_Check_Button *)0;
+Fl_Input *inp_qrzurl = (Fl_Input *)0;
+
+Fl_Return_Button *btnConfigOK = (Fl_Return_Button *)0;
+
+static void cb_myLocator(Fl_Input *, void *)
+{
+	progdefaults.myLocator = inp_myLocator->value();
+}
+
+static void cb_user_name(Fl_Input *, void *)
+{
+	progdefaults.user_name = inp_user_name->value();
+}
+
+static void cb_user_password(Fl_Input *, void *)
+{
+	progdefaults.user_password = inp_user_password->value();
+}
+
+static void cb_chk_pwd(Fl_Check_Button *btn, void *)
+{
+	if (btn->value())
+		inp_user_password->type(FL_NORMAL_INPUT);
+	else
+		inp_user_password->type(FL_SECRET_INPUT);
+	inp_user_password->redraw();
+}
+
+static void cb_chk_callook(Fl_Check_Button *, void *)
+{
+	chk_callook->value(1);
+	chk_hamcall->value(0);
+	chk_hamqth->value(0);
+	chk_qrz->value(0);
+	chk_callook->redraw();
+	chk_hamcall->redraw();
+	chk_hamqth->redraw();
+	chk_qrz->redraw();
+	progdefaults.QRZXML = CALLOOK;
+}
+
+static void cb_callookurl(Fl_Input *, void *)
+{
+	progdefaults.callookurl = inp_callookurl->value();
+}
+
+static void cb_chk_hamqth(Fl_Check_Button *, void *)
+{
+	chk_callook->value(0);
+	chk_hamcall->value(0);
+	chk_hamqth->value(1);
+	chk_qrz->value(0);
+	chk_callook->redraw();
+	chk_hamcall->redraw();
+	chk_hamqth->redraw();
+	chk_qrz->redraw();
+	progdefaults.QRZXML = HAMQTH;
+}
+
+static void cb_hamqthurl(Fl_Input *, void *)
+{
+	progdefaults.hamqthurl = inp_hamcallurl->value();
+}
+
+static void cb_chk_hamcall(Fl_Check_Button *, void *)
+{
+	chk_callook->value(0);
+	chk_hamcall->value(1);
+	chk_hamqth->value(0);
+	chk_qrz->value(0);
+	chk_callook->redraw();
+	chk_hamcall->redraw();
+	chk_hamqth->redraw();
+	chk_qrz->redraw();
+	progdefaults.QRZXML = HAMCALLNET;
+}
+
+static void cb_hamcallurl(Fl_Input *, void *)
+{
+	progdefaults.hamcallurl = inp_hamcallurl->value();
+}
+
+static void cb_chk_qrz(Fl_Check_Button *, void *)
+{
+	chk_callook->value(0);
+	chk_hamcall->value(0);
+	chk_hamqth->value(0);
+	chk_qrz->value(1);
+	chk_callook->redraw();
+	chk_hamcall->redraw();
+	chk_hamqth->redraw();
+	chk_qrz->redraw();
+	progdefaults.QRZXML = QRZNET;
+}
+
+static void cb_hamqrzurl(Fl_Input *, void *)
+{
+	progdefaults.qrzurl = inp_qrzurl->value();
+}
 
 Fl_Double_Window* configDialog() {
-	Fl_Double_Window* w = new Fl_Double_Window(440, 275, "Net Configuration");
+	Fl_Double_Window* w = new Fl_Double_Window(440, 250, "Net Configuration");
 
 	tabsConfig = new Fl_Tabs(5, 10, 430, 210);
 	tabsConfig->color((Fl_Color)44);
@@ -303,7 +419,7 @@ Fl_Double_Window* configDialog() {
 			btn_new_login_is_up->callback((Fl_Callback*)cb_btn_new_login_is_up);
 			btn_new_login_is_up->value(disp_new_login);
 
-			btnOpenEditor = new Fl_Check_Button(60, 102, 70, 15, "Open editor for new login");
+			btnOpenEditor = new Fl_Check_Button(30, 102, 70, 15, "Open editor for new login");
 			btnOpenEditor->tooltip("Open editor for new call in\nNew login is up must be enabled");
 			btnOpenEditor->down_box(FL_DOWN_BOX);
 			btnOpenEditor->callback((Fl_Callback*)cb_btnOpenEditor);
@@ -317,54 +433,54 @@ Fl_Double_Window* configDialog() {
 
 		g1->end();
 
-		tabGroupColors = new Fl_Group(5, 45, 430, 160, "Colors");
+		tabGroupColors = new Fl_Group(5, 35, 430, 185, "Colors");
 		tabGroupColors->hide();
-			txtSample[1] = new Fl_Output(135, 60, 45, 25, "Logged In");
+			txtSample[1] = new Fl_Output(145, 60, 45, 25, "Logged In");
 			txtSample[1]->textfont(0);
 			txtSample[1]->value("Text");
 			txtSample[1]->color(bgColors[1]);
 			txtSample[1]->textcolor(fgColors[1]);
 
-			btnFg[1] = new Fl_Button(195, 60, 45, 25, "Fg");
+			btnFg[1] = new Fl_Button(205, 60, 45, 25, "Fg");
 			btnFg[1]->callback((Fl_Callback*)cb_btnFg);
 
-			btnBg[2] = new Fl_Button(260, 60, 45, 25, "Bg");
+			btnBg[2] = new Fl_Button(270, 60, 45, 25, "Bg");
 			btnBg[2]->callback((Fl_Callback*)cb_btnBg);
 
-			txtSample[2] = new Fl_Output(135, 95, 45, 25, "First Response");
+			txtSample[2] = new Fl_Output(145, 95, 45, 25, "First Response");
 			txtSample[2]->textfont(0);
 			txtSample[2]->value("Text");
 			txtSample[2]->color(bgColors[2]);
 			txtSample[2]->textcolor(fgColors[2]);
 
-			btnFg[2] = new Fl_Button(195, 95, 45, 25, "Fg");
+			btnFg[2] = new Fl_Button(205, 95, 45, 25, "Fg");
 			btnFg[2]->callback((Fl_Callback*)cb_btnFg1);
 
-			btnBg[2] = new Fl_Button(260, 95, 45, 25, "Bg");
+			btnBg[2] = new Fl_Button(270, 95, 45, 25, "Bg");
 			btnBg[2]->callback((Fl_Callback*)cb_btnBg1);
 
-			txtSample[3] = new Fl_Output(135, 130, 45, 25, "Second Response");
+			txtSample[3] = new Fl_Output(145, 130, 45, 25, "Second Response");
 			txtSample[3]->textfont(0);
 			txtSample[3]->value("Text");
 			txtSample[3]->color(bgColors[3]);
 			txtSample[3]->textcolor(fgColors[3]);
 
-			btnFg[3] = new Fl_Button(195, 130, 45, 25, "Fg");
+			btnFg[3] = new Fl_Button(205, 130, 45, 25, "Fg");
 			btnFg[3]->callback((Fl_Callback*)cb_btnFg2);
 
-			btnBg[3] = new Fl_Button(260, 130, 45, 25, "Bg");
+			btnBg[3] = new Fl_Button(270, 130, 45, 25, "Bg");
 			btnBg[3]->callback((Fl_Callback*)cb_btnBg2);
 
-			txtSample[4] = new Fl_Output(135, 165, 45, 25, "Logged Out");
+			txtSample[4] = new Fl_Output(145, 165, 45, 25, "Logged Out");
 			txtSample[4]->textfont(0);
 			txtSample[4]->value("Text");
 			txtSample[4]->color(bgColors[4]);
 			txtSample[4]->textcolor(fgColors[4]);
 
-			btnFg[4] = new Fl_Button(195, 165, 45, 25, "Fg");
+			btnFg[4] = new Fl_Button(205, 165, 45, 25, "Fg");
 			btnFg[4]->callback((Fl_Callback*)cb_btnFg3);
 
-			btnBg[4] = new Fl_Button(260, 165, 45, 25, "Bg");
+			btnBg[4] = new Fl_Button(270, 165, 45, 25, "Bg");
 			btnBg[4]->callback((Fl_Callback*)cb_btnBg3);
 
 		tabGroupColors->end();
@@ -392,9 +508,63 @@ Fl_Double_Window* configDialog() {
 
 		tabGroupPriority->end();
 
+		tabGroupLookup = new Fl_Group(5, 35, 430, 185, "Lookup");
+		tabGroupLookup->hide();
+
+			inp_myLocator = new Fl_Input(70, 50, 120, 24, "My Loc:");
+			inp_myLocator->value(progdefaults.myLocator.c_str());
+			inp_myLocator->callback((Fl_Callback*)cb_myLocator);
+
+			inp_user_name = new Fl_Input(70, 80, 120, 24, "Id:");
+			inp_user_name->value(progdefaults.user_name.c_str());
+			inp_user_name->callback((Fl_Callback*)cb_user_name);
+
+			inp_user_password = new Fl_Input(230, 80, 120, 24, "Pwd:");
+			inp_user_password->value(progdefaults.user_password.c_str());
+			inp_user_password->callback((Fl_Callback*)cb_user_password);
+			inp_user_password->type(FL_SECRET_INPUT);
+
+			chk_pwd = new Fl_Check_Button(363, 80, 40, 18, "Show");
+			chk_pwd->value(false);
+			chk_pwd->callback((Fl_Callback*)cb_chk_pwd);
+
+			chk_callook = new Fl_Check_Button(23, 115, 50, 18, "callook.info:");
+			chk_callook->value(progdefaults.QRZXML == CALLOOK);
+			chk_callook->callback((Fl_Callback*)cb_chk_callook);
+
+			inp_callookurl = new Fl_Input(140, 115, 280, 24, "");
+			inp_callookurl->value(progdefaults.callookurl.c_str());
+			inp_callookurl->callback((Fl_Callback*)cb_callookurl);
+
+			chk_hamqth = new Fl_Check_Button(23, 140, 50, 18, "hamqth.com:");
+			chk_hamqth->value(progdefaults.QRZXML == HAMQTH);
+			chk_hamqth->callback((Fl_Callback*)cb_chk_hamqth);
+
+			inp_hamqthurl = new Fl_Input(140, 140, 280, 24, "");
+			inp_hamqthurl->value(progdefaults.hamqthurl.c_str());
+			inp_hamqthurl->callback((Fl_Callback*)cb_hamqthurl);
+
+			chk_hamcall = new Fl_Check_Button(23, 165, 50, 18, "hamcall.net:");
+			chk_hamcall->value(progdefaults.QRZXML == HAMCALLNET);
+			chk_hamcall->callback((Fl_Callback*)cb_chk_hamcall);
+
+			inp_hamcallurl = new Fl_Input(140, 165, 280, 24, "");
+			inp_hamcallurl->value(progdefaults.hamcallurl.c_str());
+			inp_hamcallurl->callback((Fl_Callback*)cb_hamcallurl);
+
+			chk_qrz = new Fl_Check_Button(23, 190, 50, 18, "qrz.com:");
+			chk_qrz->value(progdefaults.QRZXML == QRZNET);
+			chk_qrz->callback((Fl_Callback*)cb_chk_qrz);
+
+			inp_qrzurl = new Fl_Input(140, 190, 180, 24, "");
+			inp_qrzurl->value(progdefaults.qrzurl.c_str());
+			inp_qrzurl->callback((Fl_Callback*)cb_hamqrzurl);
+
+		tabGroupLookup->end();
+
 	tabsConfig->end();
 
-	btnConfigOK = new Fl_Return_Button(355, 235, 75, 25, "OK");
+	btnConfigOK = new Fl_Return_Button(355, w->h() - 26, 75, 24, "OK");
 	btnConfigOK->callback((Fl_Callback*)cb_btnCloseConfig);
 
 	return w;

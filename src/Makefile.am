@@ -331,6 +331,8 @@ flnet_SOURCES += \
 	support/debug.cxx \
 	support/icons.cxx \
 	support/loglist.cxx \
+	support/locator.cxx \
+	support/lookupcall.cxx \
 	support/netshared.cxx \
 	support/netsupport.cxx \
 	support/pixmaps.cxx \
@@ -348,6 +350,7 @@ flnet_SOURCES += \
 	include/combo.h \
 	include/csvdb.h \
 	include/estrings.h \
+	include/lookupcall.h \
 	include/net_config.h \
 	include/date.h \
 	include/debug.h \
@@ -358,6 +361,7 @@ flnet_SOURCES += \
 	include/netedits.h \
 	include/net_icon.h \
 	include/flnetrc.h \
+	include/locator.h \
 	include/netshared.h \
 	include/netsupport.h \
 	include/net_ui.h \

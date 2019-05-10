@@ -64,8 +64,10 @@ Fl_Menu_Item menu_mbarMain[] = {
 	{"&Callsign", 0,  (Fl_Callback*)cb_mnuBrowseCallsign, 0, 0, 0, 0, 14, 56},
 	{"&NetNbr", 0,  (Fl_Callback*)cb_mnuBrowseNetNbr, 0, 0, 0, 0, 14, 56},
 	{0},
-	{"Lookup", 0, (Fl_Callback*)cb_LookupCall, 0, 0, 0, 0, 14, 56},
+	{"&Lookup", 0, 0, 0, 64, 0, 0, 14, 56},
+	{"On-line", 0, (Fl_Callback*)cb_LookupCall, 0, 0, 0, 0, 14, 56},
 	{"Fldigi", 0,  (Fl_Callback*)cb_mnuFldigiEditor, 0, 0, 0, 0, 14, 56},
+	{0},
 	{0}
 };
 
@@ -157,16 +159,18 @@ Fl_Window * newEditWindow(bool new_window_flag)
 	inpAddress = new Fl_Input(80, 235, 280, 25, "Address:");
 	inpCity = new Fl_Input(80, 265, 190, 25, "City/St/Zip:");
 	inpState = new Fl_Input(275, 265, 35, 25);
-	inpZip = new Fl_Input(320, 265, 50, 25);
+	inpZip = new Fl_Input(320, 265, 60, 25);
+
 	inpPhone = new Fl_Input(385, 265, 135, 25, "Phone:");
 	inpPhone->align(FL_ALIGN_TOP_LEFT);
 
-	inpBirthday = new Fl_DateInput(385, 205, 110, 25, (char*)"Birthday:");
+	inpBirthday = new Fl_DateInput(385, 205, 120, 25, (char*)"Birthday:");
 	inpBirthday->align(FL_ALIGN_TOP_LEFT);
 	inpBirthday->format(1);
 
 	inpSpouse = new Fl_Input(80, 325, 85, 25, "Spouse:");
 	inpSpBirthday = new Fl_Input(235, 325, 75, 25, "Birthday:");
+
 	txtLogDate = new Fl_DateInput(80, 140, 110, 25, (char*)"Log Date:");
 	txtLogDate->format(2);
 
@@ -229,13 +233,13 @@ Fl_Window * newEditWindow(bool new_window_flag)
 	inpNbrLogins->align(FL_ALIGN_TOP_LEFT);
 
 	inpStatus = new Fl_Input(80, 175, 25, 25, "Status:");
-	inpJoined = new Fl_DateInput(180, 175, 110, 25, (char*)"Joined:");
+	inpJoined = new Fl_DateInput(180, 175, 120, 25, (char*)"Joined:");
 	inpJoined->format(2);
+
 	inpEmail = new Fl_Input(80, 295, 440, 25, "Email:");
 	inpComment1 = new Fl_Input(80, 355, 440, 25, "Comments");
 	inpComment2 = new Fl_Input(80, 385, 440, 25);
-	
-	dlgNetEdit->set_modal();
+
 	dlgNetEdit->end();
 	
 	return dlgNetEdit;

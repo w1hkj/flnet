@@ -18,45 +18,49 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // ----------------------------------------------------------------------------
 
-#include <string>
+#ifndef LOOKUPCALL_H
+#define LOOKUPCALL_H
 
-#include "irrXML.h"
+#include <cstring>
 
-using namespace irr;
-using namespace io;
+extern std::string lookup_latd;
+extern std::string lookup_lond;
+extern std::string lookup_addr1;
+extern std::string lookup_addr2;
+extern std::string lookup_qth;
+extern std::string lookup_state;
+extern std::string lookup_province;
+extern std::string lookup_zip;
+extern std::string lookup_country;
 
-class IIrrXMLStringReader: public IFileReadCallBack {
-  const char *s;
-  int len;
-  int p;
+extern void clear_Lookup();
 
-public:
+extern void CALLSIGNquery(std::string inpCall);
 
-  IIrrXMLStringReader(const char *szStr) {
-    s = szStr;
-    len = strlen(s);
-    p=0;
-  }
+enum qrz_xmlquery_t { 
+QRZXML_EXIT = -1, 
+QRZXMLNONE, 
+QRZNET,
+HAMCALLNET,
+CALLOOK, 
+HAMQTH };
 
-  IIrrXMLStringReader(const std::string &str) {
-    s=str.c_str();
-    len = strlen(s);
-    p=0;
-  }
+//enum qrz_webquery_t { 
+//QRZWEB_EXIT = -1, 
+//QRZWEBNONE, 
+//QRZHTML, HAMCALLHTML, HAMQTHHTML, CALLOOKHTML };
 
-  int read(void * buffer, int sizeToRead) {
-    char *sss = (char *)buffer;
-    if (p >= len) return 0;
-    int j = 0;
-    for (int i = p; i < len && j < sizeToRead; ) {
-      sss[j++] = s[i++];
-    }
-    return 1;
-  }
-    
-  int getSize() {
-    return len-p;
-  }
-
+struct PROGDEFAULTS {
+	std::string myLocator;
+	std::string user_name;
+	std::string user_password;
+	std::string callookurl;
+	std::string hamqthurl;
+	std::string hamcallurl;
+	std::string qrzurl;
+	int QRZXML;
 };
 
+extern PROGDEFAULTS progdefaults;
+
+#endif

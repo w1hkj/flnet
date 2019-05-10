@@ -27,7 +27,7 @@
 
 #include <FL/Fl.H>
 
-#define LOG_QRZ_DEBUG 1
+#define SOCKET_DEBUG 0
 
 #ifndef __MINGW32__
 #  include <sys/socket.h>
@@ -414,11 +414,12 @@ const addr_info_t* Address::get(size_t n) const
 	struct addrinfo* p = info;
 	for (size_t i = 0; i < n; i++)
 		p = p->ai_next;
-#  ifndef NDEBUG
-	if (LOG_QRZ_DEBUG)
+
+	if (SOCKET_DEBUG)
 		printf("Found address %s\n", get_str(p).c_str());
-#  endif
+
 	return p;
+
 #else
 	if (!host_entry.h_addr_list)
 		return NULL;
@@ -437,10 +438,10 @@ const addr_info_t* Address::get(size_t n) const
 #endif
 	addr.ai_addrlen = sizeof(saddr);
 	addr.ai_addr = (struct sockaddr*)&saddr;
-#  ifndef NDEBUG
-	if (LOG_QRZ_DEBUG)
+
+	if (SOCKET_DEBUG)
 		printf("Found address %s\n", get_str(&addr).c_str());
-#  endif
+
 	return &addr;
 #endif
 }
@@ -632,34 +633,30 @@ void Socket::open(const Address& addr)
 	address = addr;
 	size_t n = address.size();
 	const addr_info_t* info = (addr_info_t *)0;
-	ainfo = info;
+	ainfo = (addr_info_t *)0;
 
 	for (anum = 0; anum < n; anum++) {
 		info = address.get(anum);
-if (LOG_QRZ_DEBUG)
-	printf("\
+		if (SOCKET_DEBUG)
+		printf("Trying:\n\
    Address    %s\n\
    Family     %s\n\
    Sock type  %s\n\
    Protocol   %s\n",
-address.get_str(info).c_str(),
-(info->ai_family == AF_INET6 ? "AF_INET6" :\
-(info->ai_family == AF_INET ? "AF_INET" : "unknown")),
-(info->ai_socktype == SOCK_STREAM ? "stream" : "dgram"),
-(info->ai_protocol == IPPROTO_TCP ? "tcp" :
-(info->ai_protocol == IPPROTO_UDP ? "udp" : "unknown protocol")));
+			address.get_str(info).c_str(),
+			(info->ai_family == AF_INET6 ? "AF_INET6" :\
+			(info->ai_family == AF_INET ? "AF_INET" : "unknown")),
+			(info->ai_socktype == SOCK_STREAM ? "stream" : "dgram"),
+			(info->ai_protocol == IPPROTO_TCP ? "tcp" :
+			(info->ai_protocol == IPPROTO_UDP ? "udp" : "unknown protocol")));
 
+		if ((sockfd = socket(info->ai_family, info->ai_socktype, info->ai_protocol)) != -1) {
+			ainfo = info;
+			set_close_on_exec(true);
+			return;
+		}
 	}
-
-	if (ainfo == (addr_info_t *)0) {
-		printf("Cannot find IPv4 address\n");
-		throw SocketException("Cannot find IPv4 address");
-	}
-
-	printf("Trying %s\n", address.get_str(ainfo).c_str());
-	if ((sockfd = socket(ainfo->ai_family, ainfo->ai_socktype, ainfo->ai_protocol)) == -1) { //!= -1) {
-		throw SocketException(errno, "Open socket");
-	}
+	throw SocketException(errno, "Cannot open socket");
 	set_close_on_exec(true);
 }
 
@@ -967,10 +964,9 @@ int Socket::connect(void)
 bool Socket::connect1(void)
 {
     connected_flag = false;
-#ifndef NDEBUG
-	if (LOG_QRZ_DEBUG)
+	if (SOCKET_DEBUG)
 		printf("Connecting to %s\n", address.get_str(ainfo).c_str());
-#endif
+
 	if (::connect(sockfd, ainfo->ai_addr, ainfo->ai_addrlen) == -1) {
 		return false;
 	}

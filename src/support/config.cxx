@@ -35,6 +35,7 @@
 #include "net_ui.h"
 #include "loglist.h"
 #include "netshared.h"
+#include "lookupcall.h"
 
 extern loglist callinlist;
 
@@ -55,6 +56,7 @@ int callin_is_up = 0;
 
 void readConfig ()
 {
+	char line[200];
 	std::string filename = selected_file;
 	FILE *cfgFile;
 	int fg1,fg2,fg3,fg4, bg1,bg2,bg3,bg4;
@@ -63,20 +65,42 @@ void readConfig ()
 	filename.append(".cfg");
 	cfgFile = fopen (filename.c_str(), "r");
 	if (cfgFile) {
-		fscanf (cfgFile,
+		if (fscanf (cfgFile,
 				"%c%c%c%c\t%s\t%s\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n",
 				chP1, chP2, chP3, &chAuto,
 				szP1, szP2, szP3,
-				&fg1, &fg2, &fg3, &fg4, &bg1, &bg2, &bg3, &bg4);
-		fgColors[1] = (Fl_Color)fg1;
-		fgColors[2] = (Fl_Color)fg2;
-		fgColors[3] = (Fl_Color)fg3;
-		fgColors[4] = (Fl_Color)fg4;
-		bgColors[1] = (Fl_Color)bg1;
-		bgColors[2] = (Fl_Color)bg2;
-		bgColors[3] = (Fl_Color)bg3;
-		bgColors[4] = (Fl_Color)bg4;
-		fscanf (cfgFile, "%d\t%d\t%d\n", &disp_new_login, &open_editor, &callin_is_up);
+				&fg1, &fg2, &fg3, &fg4, &bg1, &bg2, &bg3, &bg4) > 0) {
+			fgColors[1] = (Fl_Color)fg1;
+			fgColors[2] = (Fl_Color)fg2;
+			fgColors[3] = (Fl_Color)fg3;
+			fgColors[4] = (Fl_Color)fg4;
+			bgColors[1] = (Fl_Color)bg1;
+			bgColors[2] = (Fl_Color)bg2;
+			bgColors[3] = (Fl_Color)bg3;
+			bgColors[4] = (Fl_Color)bg4;
+		}
+		if (fscanf (cfgFile, "%d\t%d\t%d\n", &disp_new_login, &open_editor, &callin_is_up) != 3) {
+			disp_new_login = false;
+			open_editor = false;
+			callin_is_up = false;
+		}
+		if (fscanf(cfgFile, "%s\n", line) == 1)
+			progdefaults.myLocator = line;
+		if (fscanf(cfgFile, "%s\n", line) == 1)
+			progdefaults.user_name = line;;
+		if (fscanf(cfgFile, "%s\n", line) == 1)
+			progdefaults.user_password = line;
+		if (fscanf(cfgFile, "%s\n", line) == 1)
+			progdefaults.callookurl = line;
+		if (fscanf(cfgFile, "%s\n", line) == 1)
+			progdefaults.hamqthurl = line;
+		if (fscanf(cfgFile, "%s\n", line) == 1)
+			progdefaults.hamcallurl = line;
+		if (fscanf(cfgFile, "%s\n", line) == 1)
+			progdefaults.qrzurl = line;
+		int n;
+		if (fscanf(cfgFile, "%d\n", &n) == 1)
+			progdefaults.QRZXML = n;
 		fclose (cfgFile);
 	}
 }
@@ -100,6 +124,14 @@ void writeConfig ()
 				 fgColors[1], fgColors[2], fgColors[3], fgColors[4],
 				 bgColors[1], bgColors[2], bgColors[3], bgColors[4]);
 		fprintf(cfgFile,"%d\t%d\t%d\n", disp_new_login, open_editor, callin_is_up);
+		fprintf(cfgFile, "%s\n", progdefaults.myLocator.c_str());
+		fprintf(cfgFile, "%s\n", progdefaults.user_name.c_str());
+		fprintf(cfgFile, "%s\n", progdefaults.user_password.c_str());
+		fprintf(cfgFile, "%s\n", progdefaults.callookurl.c_str());
+		fprintf(cfgFile, "%s\n", progdefaults.hamqthurl.c_str());
+		fprintf(cfgFile, "%s\n", progdefaults.hamcallurl.c_str());
+		fprintf(cfgFile, "%s\n", progdefaults.qrzurl.c_str());
+		fprintf(cfgFile, "%d\n", progdefaults.QRZXML);
 		fclose(cfgFile);
 	}
 }

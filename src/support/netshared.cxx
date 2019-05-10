@@ -41,6 +41,7 @@
 #include "netshared.h"
 #include "my_UI.h"
 #include "loglist.h"
+#include "lookupcall.h"
 #include "netsupport.h"
 #include "config.h"
 #include "net_config.h"
@@ -911,19 +912,14 @@ void cb_btnNewSave(Fl_Button *b, void *d)
 
 void cb_LookupCall (Fl_Menu_ *m, void *d)
 {
-	string tcall = trim(uppercase(inpPrefix->value()));
-	tcall.append(trim(uppercase(inpArea->value())));
-	tcall.append(trim(uppercase(inpSuffix->value())));
+	string inpCall;
+	inpCall.assign(trim(uppercase(inpPrefix->value())));
+	inpCall.append(trim(uppercase(inpArea->value())));
+	inpCall.append(trim(uppercase(inpSuffix->value())));
 
-std::cout << tcall << std::endl;
-
-//	inpFname->value (buff);
-//	inpLname->value (buff);
-//	inpAddress->value (buff);
-//	inpCity->value (buff);
-//	inpState->value (buff);
-//	inpZip->value (buff);
+	CALLSIGNquery(inpCall);
 
 	return;
 }
+
 
