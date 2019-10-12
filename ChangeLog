@@ -1,8 +1,22 @@
 
 
-=Version 7.3.2=
+=Version 7.3.3=
 
-2016-12-12  David Freese  <iam_w1hkj@w1hkj.com>
+2019-05-10  David Freese  <w1hkj@bellsouth.net>
+
+	d0f16d5: hamcall
+	e978cc1: qrzlib
+	130a950: network
+	4fb2084: irrXML
+	b16bb51: mbedtls
+	53fdd73: pick-list
+	daa21b9: OSX build script
+	82a122c: mingw-win
+	7d0dc60: flxmlrpc config
+	d2d7fd3: INSTALL
+
+
+=Version 7.3.2=
 
 	cbea7d2: Fix for bogus csv files
 
