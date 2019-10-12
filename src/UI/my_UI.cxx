@@ -446,6 +446,18 @@ int my_UI::handle (int e)
 	if (e == FL_KEYUP) {
 		k = Fl::event_key();
 		if (k) {
+
+			if ((Fl::event_state() & FL_ALT) == FL_ALT &&
+				 k == FL_F + 4 ) 
+					cleanExit();
+					
+#ifdef __APPLE__
+			if ( ((Fl::event_state() & FL_META) == FL_META)  &&
+				(k == 'Q' || k == 'q') )
+					cleanExit();
+#endif
+
+
 			if (k == FL_Escape && my_status != LOGLIST) {
 				clearSAP ();
 				clearPickList ();
@@ -611,6 +623,7 @@ int my_UI::handle (int e)
 					keyval[0] = toupper(k);
 				else
 					keyval[0] = k;
+
 				switch (my_status) {
 					case LOGLIST :
 						szSuffix.clear();
