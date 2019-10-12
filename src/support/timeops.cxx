@@ -30,6 +30,7 @@
 #  include "compat.h"
 #endif
 
+/*
 #if !HAVE_CLOCK_GETTIME
 #  ifdef __APPLE__
 #    include <mach/mach_time.h>
@@ -69,6 +70,7 @@ int clock_gettime(clockid_t clock_id, struct timespec* tp)
 	return 0;
 }
 #endif // !HAVE_CLOCK_GETTIME
+*/
 
 struct timespec operator+(const struct timespec &t0, const double &t)
 {

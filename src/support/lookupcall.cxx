@@ -552,8 +552,6 @@ void QRZclose(void)
 	if (!QRZ_thread)
 		return;
 
-	CANCEL_THREAD(*QRZ_thread);
-
 	DB_XML_query = QRZXML_EXIT;
 
 	pthread_mutex_lock(&qrz_mutex);
