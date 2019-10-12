@@ -55,6 +55,7 @@
 #include "netversion.h"
 #include "netsupport.h"
 #include "xml_io.h"
+#include "status.h"
 #include "debug.h"
 
 #ifdef WIN32
@@ -195,6 +196,8 @@ void exit_main(Fl_Widget *w)
 
 void close_main_window(void)
 {
+	progStatus.saveLastState();
+
 	if(main_window)
 		main_window->hide();
 }
@@ -236,17 +239,21 @@ int main(int argc, char **argv)
 
 	Fl::add_handler (handle);
 
+	progStatus.loadLastState();
+
 	std::string debug_file = home_dir;
 	debug_file.append("flnet_debug_log.txt");
 	debug::start(debug_file.c_str());
 
 	main_window = newNetControl();
-	change_size();
+
 	Fl::visual (FL_DOUBLE|FL_INDEX);
 
 	sprintf (title, "flnet %s", FLNET_VERSION);
 	main_window->label(title);
 	main_window->callback(exit_main);
+
+	ui_size(progStatus.ui_size, progStatus.mainX, progStatus.mainY);
 
 #ifdef WIN32
 	main_window->icon((char*)LoadIcon(fl_display, MAKEINTRESOURCE(IDI_ICON)));
@@ -326,14 +333,16 @@ int parse_args(int argc, char **argv, int& idx)
 			   "\t--version\n" \
 			   "\tdatabase.csv\n" \
 			   "\topen 'named' database file.\n"
-			   "\t--xmlrpc-server-address <ip_addess> default:"DEFAULT_XMLRPC_IP_ADDRESS"\n" \
-			   "\t--xmlrpc-server-port <port> default:"DEFAULT_XMLRPC_PORT_NO"\n\n\n" \
+			   "\t--xmlrpc-server-address <ip_addess> default: %s\n" \
+			   "\t--xmlrpc-server-port <port> default: %s\n\n\n", \
+			   DEFAULT_XMLRPC_IP_ADDRESS,
+			   DEFAULT_XMLRPC_PORT_NO
 			   );
 		exit(0);
 	}
 
 	if (strcasecmp("--version", argv[idx]) == 0) {
-		printf("Version: "VERSION"\n");
+		printf("Version: %s\n", VERSION);
 		exit (0);
 	}
 	

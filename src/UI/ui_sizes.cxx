@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "netshared.h"
+#include "status.h"
 
 extern Fl_Window *main_window;
 
@@ -125,21 +126,16 @@ UI_SIZES UI_big[] = {
 	{ 5, 449, 465, 180, 0, 16}, // txtInfo
 };
 
-UI_SIZES *ui_last = UI_big;
+int last_size = SMALL;
 
-void change_size()
+void ui_size(int sz, int X, int Y)
 {
-	UI_SIZES *ui = ui_last;
-
-	if (ui == UI_small)
-		ui = ui_last = UI_big;
-	else
-		ui = ui_last = UI_small;
-
-	int X = main_window->x();
-	int Y = main_window->y();
+	UI_SIZES *ui = UI_small;
+	if (sz == BIG) ui = UI_big;
+	last_size = progStatus.ui_size = sz;
 
 	main_window->resize(X, Y, ui->w, ui->h);
+
 	ui++;
 	mnu_bar->resize(ui->x, ui->y, ui->w, ui->h);
 	ui++;
@@ -272,3 +268,11 @@ void change_size()
 	main_window->redraw();
 }
 
+void change_size()
+{
+	if (last_size == BIG) {
+		ui_size(SMALL, main_window->x(), main_window->y());
+	} else {
+		ui_size(BIG, main_window->x(), main_window->y());
+	}
+}

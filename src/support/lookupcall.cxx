@@ -418,7 +418,7 @@ void QRZ_disp_result(void *)
 		//    if fname is "ABC" then display "ABC"
 		// or if fname is "A BCD" then display "A BCD"
 		if (spacePos == string::npos || (spacePos == 1)) {
-if (DISP_DEBUG) std::cout << "Name: " << query.fname << std::endl;
+			if (DISP_DEBUG) std::cout << "Name: " << query.fname << std::endl;
 			inpFname->value(query.fname.c_str());
 			inpFname->redraw();
 		}
@@ -426,20 +426,20 @@ if (DISP_DEBUG) std::cout << "Name: " << query.fname << std::endl;
 		else if (spacePos > 2) {
 			string fname;
 			fname.assign(query.fname, 0, spacePos);
-if (DISP_DEBUG) std::cout << "Name: " << query.fname << std::endl;
+			if (DISP_DEBUG) std::cout << "Name: " << query.fname << std::endl;
 			inpFname->value(fname.c_str());
 			inpFname->redraw();
 		}
 		// fname must be "ABC DEF" so display "ABC DEF"
 		else {
-if (DISP_DEBUG) std::cout << "Name: " << query.fname << std::endl;
+			if (DISP_DEBUG) std::cout << "Name: " << query.fname << std::endl;
 			inpFname->value(query.fname.c_str());
 			inpFname->redraw();
 		}
 	}
 	if (query.name.length() > 0) {
 		// only name is set; don't know first/last, so just show all
-if (DISP_DEBUG) std::cout << "Name: " << query.name << std::endl;
+		if (DISP_DEBUG) std::cout << "Name: " << query.name << std::endl;
 		inpLname->value(query.name.c_str());
 		inpLname->redraw();
 	}
@@ -448,17 +448,17 @@ if (DISP_DEBUG) std::cout << "Name: " << query.name << std::endl;
 		inpNickname->redraw();
 	}
 
-if (DISP_DEBUG) std::cout << "Qth: " << query.qth << std::endl;
+		if (DISP_DEBUG) std::cout << "Qth: " << query.qth << std::endl;
 //	inpQth->value(query.qth.c_str());
 //	inpQth->position (0);
 
-if (DISP_DEBUG) std::cout << "State: " << query.state << std::endl;
+		if (DISP_DEBUG) std::cout << "State: " << query.state << std::endl;
 	if (!query.state.empty()) {
 		inpState->value(query.state.c_str());
 		inpState->position (0);
 		inpState->redraw();
 	} else if (!query.province.empty()) {
-if (DISP_DEBUG) std::cout << "Prov: " << query.province << std::endl;
+		if (DISP_DEBUG) std::cout << "Prov: " << query.province << std::endl;
 		inpState->value(query.province.c_str());
 		inpState->position (0);
 		inpState->redraw();
@@ -467,33 +467,33 @@ if (DISP_DEBUG) std::cout << "Prov: " << query.province << std::endl;
 	std::string comment1 = inpComment1->value();
 
 	if (!query.country.empty()) {
-if (DISP_DEBUG) std::cout << "Country: " << query.country << std::endl;
+		if (DISP_DEBUG) std::cout << "Country: " << query.country << std::endl;
 		if (!comment1.empty()) comment1.append("; ");
 		comment1.append(query.country);
 	}
 
 	if (!query.addr1.empty()) {
-if (DISP_DEBUG) std::cout << "Address-1: " << query.addr1 << std::endl;
+		if (DISP_DEBUG) std::cout << "Address-1: " << query.addr1 << std::endl;
 		inpAddress->value (query.addr1.c_str());
 		inpAddress->redraw();
 	}
 	if (!query.addr2.empty()) {
-if (DISP_DEBUG) std::cout << "Address-2: " << query.addr2 << std::endl;
+		if (DISP_DEBUG) std::cout << "Address-2: " << query.addr2 << std::endl;
 		inpCity->value (query.addr2.c_str());
 		inpCity->redraw();
 	}
 	if (!query.zip.empty()) {
-if (DISP_DEBUG) std::cout << "Zip: " << query.zip << std::endl;
+		if (DISP_DEBUG) std::cout << "Zip: " << query.zip << std::endl;
 		inpZip->value (query.zip.c_str());
 		inpZip->redraw();
 	}
 	if (inpBirthday->value()[0] == 0) {
-if (DISP_DEBUG) std::cout << "Born: " << query.born << std::endl;
+		if (DISP_DEBUG) std::cout << "Born: " << query.born << std::endl;
 		inpBirthday->value(query.born.c_str());
 		inpBirthday->redraw();
 	}
 	if (inpEmail->value()[0] == 0) {
-if (DISP_DEBUG) std::cout << "Email: " << query.email << std::endl;
+		if (DISP_DEBUG) std::cout << "Email: " << query.email << std::endl;
 		inpEmail->value(query.email.c_str());
 		inpEmail->redraw();
 	}
@@ -512,9 +512,9 @@ if (DISP_DEBUG) std::cout << "Email: " << query.email << std::endl;
 				QRB::qrb(lon[0], lat[0], lon[1], lat[1], &distance, &azimuth) == QRB::QRB_OK) {
 				snprintf(buf, sizeof(buf), "%03.0f", round(azimuth));
 				snprintf(dist, sizeof(dist), "%.0f", distance);
-if (DISP_DEBUG) std::cout << "Locator:  " << query.grid << std::endl;
-if (DISP_DEBUG) std::cout << "Azimuth:  " << buf << std::endl;
-if (DISP_DEBUG) std::cout << "Distance: " << distance << " km" << std::endl;
+				if (DISP_DEBUG) std::cout << "Locator:  " << query.grid << std::endl;
+				if (DISP_DEBUG) std::cout << "Azimuth:  " << buf << std::endl;
+				if (DISP_DEBUG) std::cout << "Distance: " << distance << " km" << std::endl;
 				comment1.append(" Az: ").append(buf);
 				comment1.append(" Dis: ").append(dist).append(" km");
 			}
@@ -524,7 +524,8 @@ if (DISP_DEBUG) std::cout << "Distance: " << distance << " km" << std::endl;
 
 	std::string comment2 = inpComment2->value();
 	if (!query.notes.empty()) {
-if (DISP_DEBUG) std::cout << "Notes: " << query.notes << std::endl;
+
+		if (DISP_DEBUG) std::cout << "Notes: " << query.notes << std::endl;
 		if (!comment2.empty()) comment2.append("; ");
 		comment2.append(query.notes);
 	}

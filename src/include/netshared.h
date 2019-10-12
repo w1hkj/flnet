@@ -46,6 +46,7 @@ struct brwsStruct {
 	char netnbr[5];
 };
 
+enum sizes {SMALL, BIG};
 enum State {NEW, UPDATE, ADD, MODIFY};
 enum schema {ORIG, EXTENDED};
 
@@ -99,6 +100,7 @@ extern void cbCloseEditor ();
 extern void cbConfig ();
 extern void cbCloseConfig ();
 
+extern void ui_size(int, int, int);
 extern void change_size();
 extern bool split_call(std::string src, std::string &p, std::string &a, std::string &s);
 

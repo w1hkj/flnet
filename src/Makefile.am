@@ -337,6 +337,7 @@ flnet_SOURCES += \
 	support/netsupport.cxx \
 	support/pixmaps.cxx \
 	support/pixmaps_tango.cxx \
+	support/status.cxx \
 	support/threads.cxx \
 	support/timeops.cxx \
 	support/util.cxx \
@@ -370,6 +371,7 @@ flnet_SOURCES += \
 	include/network.h \
 	include/pixmaps.h \
 	include/socket.h \
+	include/status.h \
 	include/timeops.h \
 	include/util.h \
 	include/xmlreader.h \
