@@ -111,7 +111,7 @@ signature="$(echo $PACKAGE_TARNAME | sed 's/[aeiouAEIOU]//g; s/\(^....\).*/\1/')
 signature="$PACKAGE_TARNAME"
 binary="$PACKAGE_TARNAME"
 icon="$flnet_icon"
-version="${flnet_VERSION_MAJOR}.${flnet_VERSION_MINOR}"
+version="${flnet_VERSION_MAJOR}.${flnet_VERSION_MINOR}.{flnet_VERSION_PATCH}"
 appversion="$flnet_VERSION"
 
 bundle
