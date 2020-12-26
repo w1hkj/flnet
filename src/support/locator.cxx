@@ -91,7 +91,7 @@ namespace QRB {
  * begin dph
  */
 /*
- * These are the constants used when converting between Maidenhead grid
+ * These are the constants used when converting between Maidenhead locator
  * locators and longitude/latitude values. MAX_LOCATOR_PAIRS is the maximum
  * number of locator character pairs to convert. This number MUST NOT exceed
  * the number of pairs of values in loc_char_range[].
@@ -324,17 +324,17 @@ int dec2dmmm(double dec, int *degrees, double *minutes, int *sw) {
 }
 
 /**
- * \brief Convert Maidenhead grid locator to Longitude/Latitude
+ * \brief Convert Maidenhead locator locator to Longitude/Latitude
  * \param longitude	Pointer for the calculated Longitude
  * \param latitude	Pointer for the calculated Latitude
- * \param locator	The Maidenhead grid locator--2 through 12 char + nul string
+ * \param locator	The Maidenhead locator locator--2 through 12 char + nul string
  *
- *  Convert Maidenhead grid locator to Longitude/Latitude (decimal degrees).
+ *  Convert Maidenhead locator locator to Longitude/Latitude (decimal degrees).
  *  The locator should be in 2 through 12 chars long format.
  *  \a locator2longlat is case insensitive, however it checks for
  *  locator validity.
  *
- *  Decimal long/lat is computed to center of grid square, i.e. given
+ *  Decimal long/lat is computed to center of locator square, i.e. given
  *  EM19 will return coordinates equivalent to the southwest corner
  *  of EM19mm.
  *
@@ -402,13 +402,13 @@ int locator2longlat(double *longitude, double *latitude, const char *locator) {
 /* end dph */
 
 /**
- * \brief Convert longitude/latitude to Maidenhead grid locator
+ * \brief Convert longitude/latitude to Maidenhead locator locator
  * \param longitude	Longitude, decimal degrees
  * \param latitude	Latitude, decimal degrees
  * \param locator	Pointer for the Maidenhead Locator
  * \param pair_count	Precision expressed as lon/lat pairs in the locator
  *
- *  Convert longitude/latitude (decimal degrees) to Maidenhead grid locator.
+ *  Convert longitude/latitude (decimal degrees) to Maidenhead locator locator.
  *  \a locator must point to an array at least \a pair_count * 2 char + '\\0'.
  *
  * \retval -QRB_EINVAL if \a locator is NULL or \a pair_count exceeds

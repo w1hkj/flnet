@@ -47,7 +47,7 @@
 #include "netedits.h"
 #include "status.h"
 
-#define DISP_DEBUG 1
+#define DISP_DEBUG 0
 
 using namespace std;
 
@@ -69,7 +69,7 @@ struct LOOKUP {
 	string born;
 	string fname;
 	string qth;
-	string grid;
+	string locator;
 	string latd;
 	string lond;
 	string email;
@@ -77,17 +77,6 @@ struct LOOKUP {
 } query;
 
 qrz_xmlquery_t DB_XML_query = QRZXMLNONE;
-
-PROGDEFAULTS progdefaults = {
-	"",							// std::string myLocator;
-	"",							// std::string user_name;
-	"",							// std::string user_password;
-	"https://callook.info/",	// std::string callookurl;
-	"https://www.hamqth.com/",	// std::string hamqthurl;
-	"http://www.hamcall.net/",	// std::string hamcallurl;
-	"https://www.qrz.com/",		// std::string qrzurl;
-	QRZNET,						// int QRZXML;
-};
 
 enum TAG {
 	QRZ_IGNORE,	QRZ_KEY,	QRZ_ALERT,	QRZ_ERROR,	QRZ_CALL,
@@ -189,7 +178,7 @@ void clear_Lookup()
 	query.born.clear();
 	query.fname.clear();
 	query.qth.clear();
-	query.grid.clear();
+	query.locator.clear();
 	query.latd.clear();
 	query.lond.clear();
 	query.notes.clear();
@@ -323,7 +312,7 @@ bool parse_xml(const string& xmlpage)
 						query.lond =  xml->getNodeData();
 						break;
 					case QRZ_GRID:
-						query.grid =  xml->getNodeData();
+						query.locator =  xml->getNodeData();
 						break;
 					case QRZ_EMAIL:
 						query.email = xml->getNodeData();
@@ -409,6 +398,40 @@ bool QRZGetXML(string& xmlpage)
 	return get_http(html, xmlpage, 5.0);
 }
 
+// ---------------------------------------------------------------------
+// compute azimute and distance between to grid locations
+// ---------------------------------------------------------------------
+
+void compute()
+{
+	if (!inpLocator) return;
+
+	char az[10], dist[20];
+	az[0] = '\0';
+	dist[0] = '\0';
+	double distance, azimuth, lon[2], lat[2];
+	if (QRB::locator2longlat(
+			&lon[0], &lat[0],
+			progStatus.myLocator.c_str()) == QRB::QRB_OK &&
+		QRB::locator2longlat(
+			&lon[1], &lat[1],
+			inpLocator->value()) == QRB::QRB_OK &&
+		QRB::qrb(
+			lon[0], lat[0], lon[1], lat[1],
+			&distance, &azimuth) == QRB::QRB_OK) {
+		snprintf(az, sizeof(az), "%03.0f", round(azimuth));
+		snprintf(dist, sizeof(dist), "%.0f %s",
+				 distance,
+				 (progStatus.arc_conversion == 0 ? " km" :
+				 (progStatus.arc_conversion == 1 ? " nm" : " mi") ) );
+		outAzimuth->value(az);
+		outDistance->value(dist);
+		if (DISP_DEBUG) std::cout << "Locator:  " << query.locator << std::endl;
+		if (DISP_DEBUG) std::cout << "Azimuth:  " << az << std::endl;
+		if (DISP_DEBUG) std::cout << "Distance: " << dist << std::endl;
+	}
+}
+
 void QRZ_disp_result(void *)
 {
 	if (query.fname.length() > 0) {
@@ -467,8 +490,7 @@ void QRZ_disp_result(void *)
 
 	if (!query.country.empty()) {
 		if (DISP_DEBUG) std::cout << "Country: " << query.country << std::endl;
-		if (!comment1.empty()) comment1.append("; ");
-		comment1.append(query.country);
+		inpCountry->value (query.country.c_str());
 	}
 
 	if (!query.addr1.empty()) {
@@ -497,29 +519,17 @@ void QRZ_disp_result(void *)
 		inpEmail->redraw();
 	}
 
-	if (!query.grid.empty()) {
-		if (!comment1.empty()) comment1.append("; ");
-		comment1.append("Loc: ").append(query.grid);
+	if (!query.locator.empty()) {
 
-		if (!progStatus.myLocator.empty()) {
-			char buf[10], dist[10];
-			buf[0] = '\0';
-			dist[0] = '\0';
-			double distance, azimuth, lon[2], lat[2];
-			if (QRB::locator2longlat(&lon[0], &lat[0], progStatus.myLocator.c_str()) == QRB::QRB_OK &&
-				QRB::locator2longlat(&lon[1], &lat[1], query.grid.c_str()) == QRB::QRB_OK &&
-				QRB::qrb(lon[0], lat[0], lon[1], lat[1], &distance, &azimuth) == QRB::QRB_OK) {
-				snprintf(buf, sizeof(buf), "%03.0f", round(azimuth));
-				snprintf(dist, sizeof(dist), "%.0f", distance);
-				if (DISP_DEBUG) std::cout << "Locator:  " << query.grid << std::endl;
-				if (DISP_DEBUG) std::cout << "Azimuth:  " << buf << std::endl;
-				if (DISP_DEBUG) std::cout << "Distance: " << distance << 
-				(progStatus.arc_conversion == 0 ? " km" :
-				 (progStatus.arc_conversion == 1 ? " nm" : " mi")) << std::endl;
-				comment1.append(" Az: ").append(buf);
-				comment1.append(" Dis: ").append(dist).append(" km");
-			}
+		if (inpLocator->value()[0] == 0) {
+			if (DISP_DEBUG) std::cout << "Locator: " << query.locator << std::endl;
+			inpLocator->value(query.locator.c_str());
+			inpLocator->redraw();
 		}
+
+		if (!progStatus.myLocator.empty())
+			compute();
+
 		inpComment1->value(comment1.c_str());
 	}
 
@@ -666,7 +676,7 @@ void QRZquery()
 	<location>
 		<latitude>32.92178</latitude>
 		<longitude>-94.9185</longitude>
-		<gridsquare>EM22mw</gridsquare>
+		<locatorsquare>EM22mw</locatorsquare>
 	</location>
 	<otherinfo>
 		<grantdate>04/24/2014</grantdate>
@@ -739,7 +749,7 @@ void parse_callook(string& xmlpage)
 	if (!nodestr.empty()) {
 		query.lond = node_data(nodestr, "longitude");
 		query.latd = node_data(nodestr, "latitude");
-		query.grid = node_data(nodestr, "gridsquare");
+		query.locator = node_data(nodestr, "locatorsquare");
 	}
 
 	p = query.addr2.find(",");
@@ -795,7 +805,7 @@ void CALLOOKquery()
 #define HAMCALL_FIRST  "184"
 #define HAMCALL_CITY   "191"
 #define HAMCALL_STATE  "192"
-#define HAMCALL_GRID   "202"
+#define HAMCALL_LOCATOR   "202"
 #define HAMCALL_DOB    "194"
 
 void parse_html(const string& htmlpage)
@@ -822,10 +832,10 @@ void parse_html(const string& htmlpage)
 		while ((unsigned char)htmlpage[p] < 128 && p < htmlpage.length())
 			query.state += htmlpage[p++];
 	}
-	if ((p = htmlpage.find(HAMCALL_GRID)) != string::npos) {
+	if ((p = htmlpage.find(HAMCALL_LOCATOR)) != string::npos) {
 		p++;
 		while ((unsigned char)htmlpage[p] < 128 && p < htmlpage.length())
-			query.grid += htmlpage[p++];
+			query.locator += htmlpage[p++];
 	}
 	if ((p = htmlpage.find(HAMCALL_DOB)) != string::npos) {
 		p++;
@@ -900,38 +910,38 @@ static string HAMQTH_reply = "";
  * response:
 	<?xml version="1.0"?>
 	<HamQTH version="2.7" xmlns="https://www.hamqth.com">
-	<search> 
-	<callsign>ok7an</callsign> 
-	<nick>Petr</nick> 
-	<qth>Neratovice</qth> 
+	<search>
+	<callsign>ok7an</callsign>
+	<nick>Petr</nick>
+	<qth>Neratovice</qth>
 	<country>Czech Republic</country>
 	<adif>503</adif>
-	<itu>28</itu> 
-	<cq>15</cq> 
-	<grid>jo70gg</grid> 
-	<adr_name>Petr Hlozek</adr_name> 
-	<adr_street1>17. listopadu 1065</adr_street1> 
-	<adr_city>Neratovice</adr_city> 
-	<adr_zip>27711</adr_zip> 
-	<adr_country>Czech Republic</adr_country> 
+	<itu>28</itu>
+	<cq>15</cq>
+	<locator>jo70gg</locator>
+	<adr_name>Petr Hlozek</adr_name>
+	<adr_street1>17. listopadu 1065</adr_street1>
+	<adr_city>Neratovice</adr_city>
+	<adr_zip>27711</adr_zip>
+	<adr_country>Czech Republic</adr_country>
 	<adr_adif>503</adr_adif>
 	<district>GZL</district>
-	<lotw>Y</lotw> 
-	<qsl>Y</qsl> 
-	<qsldirect>Y</qsldirect> 
-	<eqsl>Y</eqsl> 
+	<lotw>Y</lotw>
+	<qsl>Y</qsl>
+	<qsldirect>Y</qsldirect>
+	<eqsl>Y</eqsl>
 	<email>petr@ok7an.com</email>
 	<jabber>petr@ok7an.com</jabber>
-	<skype>PetrHH</skype> 
-	<birth_year>1982</birth_year> 
-	<lic_year>1998</lic_year> 
+	<skype>PetrHH</skype>
+	<birth_year>1982</birth_year>
+	<lic_year>1998</lic_year>
 	<web>https://www.ok7an.com</web>
 	<latitude>50.07</latitude>
 	<longitude>14.42</longitude>
 	<continent>EU</continent>
 	<utc_offset>-1</utc_offset>
 	<picture>https://www.hamqth.com/userfiles/o/ok/ok7an/_profile/ok7an_nove.jpg</picture>
-	</search> 
+	</search>
 	</HamQTH>
 */
 bool HAMQTH_get_session_id()
@@ -994,7 +1004,7 @@ void parse_HAMQTH_html(const string& htmlpage)
 	query.fname.clear();
 	query.qth.clear();
 	query.state.clear();
-	query.grid.clear();
+	query.locator.clear();
 	query.notes.clear();
 	query.country.clear();
 
@@ -1077,11 +1087,11 @@ void parse_HAMQTH_html(const string& htmlpage)
 			query.state = htmlpage.substr(p, p1 - p);
 	}
 
-	if ((p = htmlpage.find("<grid>")) != string::npos) {
+	if ((p = htmlpage.find("<locator>")) != string::npos) {
 		p += 6;
-		p1 = htmlpage.find("</grid>", p);
+		p1 = htmlpage.find("</locator>", p);
 		if (p1 != string::npos)
-			query.grid = htmlpage.substr(p, p1 - p);
+			query.locator = htmlpage.substr(p, p1 - p);
 	}
 
 	if ((p = htmlpage.find("<email>")) != string::npos) {

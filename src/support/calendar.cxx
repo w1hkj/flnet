@@ -562,7 +562,7 @@ void btnDateInput_cb (Fl_Widget *v, void *d)
 }
 
 
-Fl_DateInput::Fl_DateInput (int X,int Y,int W,int H, char *L)
+Fl_DateInput::Fl_DateInput (int X,int Y,int W,int H, const char *L)
 : Fl_Group (X, Y, W, H, 0)
 {
 	Btn = new Fl_Button (X + W - H + 1, Y + 1, H - 2, H - 2);

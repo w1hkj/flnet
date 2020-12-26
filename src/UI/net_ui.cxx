@@ -23,12 +23,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // =====================================================================
+
 #include "net_ui.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <FL/fl_show_colormap.H>
-#include <FL/Fl_Choice.H>
 #include "netsupport.h"
 #include "netshared.h"
 #include "config.h"
@@ -75,6 +74,31 @@ Fl_Choice *combo_arc_conversion = (Fl_Choice *)0;
 
 Fl_Return_Button *btnConfigOK = (Fl_Return_Button *)0;
 
+//----------------------------------------------------------------------
+// main dialog
+//----------------------------------------------------------------------
+
+my_UI *myUI=(my_UI *)0;
+Fl_Group *net_grp1=(Fl_Group *)0;
+Fl_Box *ptr_left=(Fl_Box *)0;
+Fl_Box *ptr_right=(Fl_Box *)0;
+Fl_Group *net_grp2=(Fl_Group *)0;
+Fl_Box *txtTitles=(Fl_Box *)0;
+Fl_Box *txtLine[15]={(Fl_Box *)0};
+Fl_Output *dbSelectLabel=(Fl_Output *)0;
+Fl_Group *dbSelectGroup=(Fl_Group *)0;
+Fl_Box *inpLoginSuffix=(Fl_Box *)0;
+Fl_Box *inpLoginPrefix=(Fl_Box *)0;
+Fl_Box *inpLoginArea=(Fl_Box *)0;
+Fl_Group *net_grp3=(Fl_Group *)0;
+Fl_Box *txtPick[NPICKITEMS]={(Fl_Box *)0};
+Fl_Box *txtPickArrows=(Fl_Box *)0;
+Fl_Box *bx_suffix=(Fl_Box *)0;
+Fl_Box *bx_prefix=(Fl_Box *)0;
+Fl_Box *bx_area=(Fl_Box *)0;
+Fl_Box *txtInfo=(Fl_Box *)0;
+
+
 static void cb_mnuLogIns(Fl_Menu_*, void*) {
 	open_log_ins();
 }
@@ -100,26 +124,6 @@ Fl_Menu_Item menu_mnu_bar[] = {
 	{0,0,0,0,0,0,0,0,0},
 	{0,0,0,0,0,0,0,0,0}
 };
-
-my_UI *myUI=(my_UI *)0;
-Fl_Group *net_grp1=(Fl_Group *)0;
-Fl_Box *ptr_left=(Fl_Box *)0;
-Fl_Box *ptr_right=(Fl_Box *)0;
-Fl_Group *net_grp2=(Fl_Group *)0;
-Fl_Box *txtTitles=(Fl_Box *)0;
-Fl_Box *txtLine[15]={(Fl_Box *)0};
-Fl_Output *dbSelectLabel=(Fl_Output *)0;
-Fl_Group *dbSelectGroup=(Fl_Group *)0;
-Fl_Box *inpLoginSuffix=(Fl_Box *)0;
-Fl_Box *inpLoginPrefix=(Fl_Box *)0;
-Fl_Box *inpLoginArea=(Fl_Box *)0;
-Fl_Group *net_grp3=(Fl_Group *)0;
-Fl_Box *txtPick[NPICKITEMS]={(Fl_Box *)0};
-Fl_Box *txtPickArrows=(Fl_Box *)0;
-Fl_Box *bx_suffix=(Fl_Box *)0;
-Fl_Box *bx_prefix=(Fl_Box *)0;
-Fl_Box *bx_area=(Fl_Box *)0;
-Fl_Box *txtInfo=(Fl_Box *)0;
 
 Fl_Double_Window* newNetControl() {
 	Fl_Double_Window* w = new Fl_Double_Window(390, 455, "flnet");
@@ -420,6 +424,8 @@ static void cb_left_justify(Fl_Check_Button *, void *)
 static void cb_arc_conversion (Fl_Choice *w, void *)
 {
 	progStatus.arc_conversion = combo_arc_conversion->value();
+	compute();
+	updateCallins(false);
 }
 
 Fl_Double_Window* configDialog() {

@@ -32,6 +32,7 @@
 #include <string.h>
 #include "netshared.h"
 #include "netutils.h"
+#include "lookupcall.h"
 #include "date.h"
 #include "calendar.h"
 
@@ -108,6 +109,11 @@ Fl_Input *inpEmail=(Fl_Input *)0;
 Fl_Input *inpComment1=(Fl_Input *)0;
 Fl_Input *inpComment2=(Fl_Input *)0;
 
+Fl_Input *inpCountry = (Fl_Input *)0;
+Fl_Input *inpLocator = (Fl_Input *)0;
+Fl_Output *outAzimuth = (Fl_Output *)0;
+Fl_Output *outDistance = (Fl_Output *)0;
+
 static Fl_Window *editor = (Fl_Window *)0;
 
 void close_editor(void)
@@ -122,6 +128,11 @@ Fl_Window * getEditWindow()
 		editor = newEditWindow(false);
 	}
 	return editor;
+}
+
+void cb_locator(Fl_Input *, void *)
+{
+	compute();
 }
 
 Fl_Window * newEditWindow(bool new_window_flag)
@@ -139,40 +150,75 @@ Fl_Window * newEditWindow(bool new_window_flag)
 	mbarMain = new Fl_Menu_Bar(0, 0, 535, 25);
 	mbarMain->menu(menu_mbarMain);
 
-	inpPrefix = new Fl_Input(35, 75, 35, 25, "Prefix");
+	inpPrefix = new Fl_Input(10, 75, 35, 24, "Prefix");
 	inpPrefix->align(FL_ALIGN_TOP_LEFT);
 
-	inpArea = new Fl_Input(80, 75, 30, 25, "Area");
+	inpArea = new Fl_Input(55, 75, 30, 24, "Area");
 	inpArea->align(FL_ALIGN_TOP_LEFT);
 
-	inpSuffix = new Fl_Input(125, 75, 45, 25, "Suffix");
+	inpSuffix = new Fl_Input(95, 75, 45, 24, "Suffix");
 	inpSuffix->align(FL_ALIGN_TOP_LEFT);
 
-	inpNickname = new Fl_Input(230, 75, 125, 25, "Nickname");
+	inpNickname = new Fl_Input(155, 75, 150, 24, "Nickname");
 	inpNickname->align(FL_ALIGN_TOP_LEFT);
 
-	inpNetNbr = new Fl_Input(385, 75, 60, 25, "Net #");
+	inpNetNbr = new Fl_Input(305, 75, 60, 24, "Net #");
 	inpNetNbr->align(FL_ALIGN_TOP_LEFT);
 
-	inpFname = new Fl_Input(80, 205, 105, 25, "Name:");
+	inpCountry = new Fl_Input(375, 75, 155, 24, "Country");
+	inpCountry->align(FL_ALIGN_TOP_LEFT);
+
+	inpCallsign = new Fl_Input(10, 120, 85, 24, "Callsign");
+	inpCallsign->align(FL_ALIGN_TOP_LEFT);
+
+	inpPrevDate = new Fl_DateInput(125, 120, 110, 24, "Prev Date");
+	inpPrevDate->format(2);
+	inpPrevDate->align(FL_ALIGN_TOP_LEFT);
+
+	txtLogDate = new Fl_DateInput(245, 120, 110, 24, "Log Date");
+	txtLogDate->format(2);
+	txtLogDate->align(FL_ALIGN_TOP_LEFT);
+
+	inpJoined = new Fl_DateInput(365, 120, 110, 24, "Joined");
+	inpJoined->format(2);
+	inpJoined->align(FL_ALIGN_TOP_LEFT);
+
+	inpNbrLogins = new Fl_Input(10, 165, 80, 24, "Nbr Logins");
+	inpNbrLogins->align(FL_ALIGN_TOP_LEFT);
+
+	inpStatus = new Fl_Input(105, 165, 24, 24, "Status");
+	inpStatus->align(FL_ALIGN_TOP);
+
+	inpLocator = new Fl_Input(155, 165, 80, 24, "Locator");
+	inpLocator->align(FL_ALIGN_TOP_LEFT);
+	inpLocator->callback((Fl_Callback *)cb_locator);
+	inpLocator->when(FL_WHEN_CHANGED);
+
+	outAzimuth = new Fl_Output(245, 165, 80, 24, "Azimuth");
+	outAzimuth->align(FL_ALIGN_TOP_LEFT);
+	outAzimuth->color((Fl_Color)20);
+
+	outDistance = new Fl_Output(335, 165, 100, 24, "Distance");
+	outDistance->align(FL_ALIGN_TOP_LEFT);
+	outDistance->color((Fl_Color)20);
+
+//----------------------------------------------------------------------
+	inpFname = new Fl_Input(80, 205, 105, 24, "Name:");
 	inpLname = new Fl_Input(190, 205, 170, 25);
-	inpAddress = new Fl_Input(80, 235, 280, 25, "Address:");
-	inpCity = new Fl_Input(80, 265, 190, 25, "City/St/Zip:");
+	inpAddress = new Fl_Input(80, 235, 280, 24, "Address:");
+	inpCity = new Fl_Input(80, 265, 190, 24, "");
 	inpState = new Fl_Input(275, 265, 35, 25);
 	inpZip = new Fl_Input(320, 265, 60, 25);
 
-	inpPhone = new Fl_Input(385, 265, 135, 25, "Phone:");
+	inpPhone = new Fl_Input(385, 265, 135, 24, "Phone:");
 	inpPhone->align(FL_ALIGN_TOP_LEFT);
 
-	inpBirthday = new Fl_DateInput(385, 205, 120, 25, (char*)"Birthday:");
+	inpBirthday = new Fl_DateInput(385, 217, 120, 24, "Birthday:");
 	inpBirthday->align(FL_ALIGN_TOP_LEFT);
 	inpBirthday->format(1);
 
-	inpSpouse = new Fl_Input(80, 325, 85, 25, "Spouse:");
-	inpSpBirthday = new Fl_Input(235, 325, 75, 25, "Birthday:");
-
-	txtLogDate = new Fl_DateInput(80, 140, 110, 25, (char*)"Log Date:");
-	txtLogDate->format(2);
+	inpSpouse = new Fl_Input(80, 324, 85, 24, "Spouse:");
+	inpSpBirthday = new Fl_Input(235, 324, 75, 24, "Birthday:");
 
 	int xpos = 45;
 	int ypos = 420;
@@ -215,33 +261,20 @@ Fl_Window * newEditWindow(bool new_window_flag)
 	btnClose = new Fl_Button(xpos, ypos, width, height, "Close");
 	btnClose->callback((Fl_Callback*)cb_CloseEditor);
 
-	lblFileName = new Fl_Output(25, 30, 410, 25);
+	lblFileName = new Fl_Output(25, 30, 410, 24);
 	lblFileName->box(FL_BORDER_BOX);
 	lblFileName->color(52);
 
-	lblNumRecs = new Fl_Output(440, 30, 85, 25);
+	lblNumRecs = new Fl_Output(440, 30, 85, 24);
 	lblNumRecs->box(FL_BORDER_BOX);
 	lblNumRecs->color(53);
 
-	inpCallsign = new Fl_Input(80, 105, 85, 25, "Callsign:");
-
-	inpPrevDate = new Fl_DateInput(200, 140, 110, 25, (char*)"Prev Date:");
-	inpPrevDate->format(2);
-	inpPrevDate->align(FL_ALIGN_TOP_LEFT);
-
-	inpNbrLogins = new Fl_Input(315, 140, 85, 25, "Nbr Logins:");
-	inpNbrLogins->align(FL_ALIGN_TOP_LEFT);
-
-	inpStatus = new Fl_Input(80, 175, 25, 25, "Status:");
-	inpJoined = new Fl_DateInput(180, 175, 120, 25, (char*)"Joined:");
-	inpJoined->format(2);
-
-	inpEmail = new Fl_Input(80, 295, 440, 25, "Email:");
-	inpComment1 = new Fl_Input(80, 355, 440, 25, "Comments");
-	inpComment2 = new Fl_Input(80, 385, 440, 25);
+	inpEmail = new Fl_Input(80, 295, 440, 24, "Email:");
+	inpComment1 = new Fl_Input(80, 355, 440, 24, "Comments");
+	inpComment2 = new Fl_Input(80, 385, 440, 24);
 
 	dlgNetEdit->end();
-	
+
 	return dlgNetEdit;
 }
 

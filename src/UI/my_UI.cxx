@@ -33,6 +33,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <cmath>
 
 #include <FL/Fl.H>
 #include <FL/Fl_Input.H>
@@ -52,6 +53,8 @@
 #include "debug.h"
 #include "csvdb.h"
 #include "status.h"
+
+#include "locator.h"
 
 char emptyline[] = "";
 
@@ -75,6 +78,9 @@ string szComment1;
 string szComment2;
 string szFirstName;
 string szCallSign;
+string szCountry;
+string szAzimuth;
+string szDistance;
 
 bool updateFldigi = true;
 
@@ -98,6 +104,10 @@ char *fmtDate(char *d)
 	return date;
 }
 
+void updateInfo()
+{
+}
+
 void updateCallins (bool fldigi_flag)
 {
 	int i,j;
@@ -118,9 +128,11 @@ void updateCallins (bool fldigi_flag)
 	szQTH.clear();
 	szFirstName.clear();
 	szCallSign.clear();
+	szCountry.clear();
+	szAzimuth.clear();
+	szDistance.clear();
 
 	static std::stringstream checkins;
-	static std::string ssInfo;
 
 	static char lbl[50];
 	checkins.seekp(ios::beg);
@@ -164,78 +176,89 @@ void updateCallins (bool fldigi_flag)
 		size_t pat = szEmail.find("@");
 		if (pat != string::npos) szEmail.insert(pat, "@");
 
-		ssInfo.assign("Name:  ").append(szFullName).append("\n");
+		szCountry = trim(rec.country.c_str());
 
-		ssInfo.append("Nbr:   ").append(szNetNbr);
-		if (8 + szNetNbr.length() < 25)
-			ssInfo.append(17 - szNetNbr.length(), ' ');
-		ssInfo.append("Last:   ").append(szLogDate).append("\n");
+		{
+		char az[10], dist[20];
+		az[0] = '\0';
+		dist[0] = '\0';
+		double distance, azimuth, lon[2], lat[2];
+		if (QRB::locator2longlat(
+				&lon[0], &lat[0],
+				progStatus.myLocator.c_str()) == QRB::QRB_OK &&
+			QRB::locator2longlat(
+				&lon[1], &lat[1],
+				rec.locator.c_str()) == QRB::QRB_OK &&
+			QRB::qrb(
+				lon[0], lat[0], lon[1], lat[1],
+				&distance, &azimuth) == QRB::QRB_OK) {
 
-		ssInfo.append("Birth: ").append(szBirthday);
-		if (8 + szBirthday.length() < 25)
-			ssInfo.append(17 - szBirthday.length(), ' ');
-		ssInfo.append("Spouse: ").append(szSpouse).append("\n");
+				snprintf(az, sizeof(az), "%03.0f", round(azimuth));
+				snprintf(dist, sizeof(dist), "%.0f %s",
+					distance,
+					(progStatus.arc_conversion == 0 ? " km" :
+					(progStatus.arc_conversion == 1 ? " nm" : " mi") ) );
 
-		ssInfo.append("QTH:   ").append(szQTH);
-		if (szQTH.length() > 25) szQTH.erase(25);
-		if (8 + szQTH.length() < 25)
-			ssInfo.append(17 - szQTH.length(), ' ');
-		ssInfo.append("Phone:  ").append(szPhone).append("\n");
+				szAzimuth = az;
+				szDistance = dist;
+			}
+		}
 
-		ssInfo.append("Email: ").append(szEmail).append("\n");
-		std::string info = "Info:  ";
-		info.append(rec.comment1).append("; ").append(rec.comment2);
-		size_t incr = 0;
-		if (info.length() > 46) {
+//----------------------------------------------------------------------
+		static std::string ssInfo;
+		std::string line;
+
+		ssInfo.assign("Name:   ").append(szFullName).append("\n");
+
+		line.assign("Nbr:    ").append(szNetNbr);
+		if (line.length() < 25) line.append(25 - line.length(), ' ');
+		line.append("Last:   ").append(szLogDate).append("\n");
+		ssInfo.append(line);
+
+		line.assign("Birth:  ").append(szBirthday);
+		if (line.length() < 25) line.append(25 - line.length(), ' ');
+		line.append("Spouse: ").append(szSpouse).append("\n");
+		ssInfo.append(line);
+
+		line.assign("QTH:    ").append(szQTH);
+		if (line.length() > 25) line.erase(25);
+		if (line.length() < 25) line.append(25 - line.length(), ' ');
+		line.append("Phone:  ").append(szPhone).append("\n");
+		ssInfo.append(line);
+
+		line.assign("Country:").append(szCountry).append("\n");
+		ssInfo.append(line);
+
+		line.assign("Loc     ").append(rec.locator);
+		if (line.length() > 20) line.erase(20);
+		if (line.length() < 20) line.append(20 - line.length(), ' ');
+		line.append("Az: ").append(szAzimuth);
+		line.append("  Dist: ").append(szDistance).append("\n");
+		ssInfo.append(line);
+
+		line.assign("Email:  ").append(szEmail).append("\n");
+		ssInfo.append(line);
+
+		line.assign("Info:   ").append(rec.comment1);
+		if (line.length() > 46) {
 			bool ok = false;
-			for (int i = 0; i < 8; i++) {
-				if (info[45 - i] == ' ') {
-					info.replace(45 - i, 1, "\n");
+			for (size_t n = 46; n > 30; n--) {
+				if (line[n] == ' ') {
+					line[n] = '\n';
 					ok = true;
 					break;
 				}
 			}
-			if (!ok) {
-				info.insert(45, "\n");
-				if (info[46] == ' ') info.erase(46,1);
-				else incr++;
-			}
+			if (!ok) line.insert(46, "\n");
 		}
-		if (info.length() > 91 + incr) {
-			bool ok = false;
-			for (int i = 0; i < 8; i++) {
-				if (info[90 + incr- i] == ' ') {
-					info.replace(90 + incr - i, 1, "\n");
-					ok = true;
-					break;
-				}
-			}
-			if (!ok) {
-				info.insert(90 + incr, "\n");
-				if (info[91 + incr] == ' ') info.erase(91 + incr,1);
-				else incr++;
-			}
-		}
-		if (info.length() > 135 + incr) {
-			bool ok = false;
-			for (int i = 0; i < 8; i++) {
-				if (info[135 + incr - i] == ' ') {
-					info.replace(135 + incr - i, 1, "\n");
-					ok = true;
-					break;
-				}
-			}
-			if (!ok) {
-				info.insert(135 + incr, "\n");
-				if (info[136 + incr] == ' ') info.erase(136 + incr,1);
-				else incr++;
-			}
-		}
-		if (info.length() > 190 + incr) info.erase(190 + incr);
-		ssInfo.append(info);
+		line.append(rec.comment2);
+		if (line.length() > 92) line.erase(92);
+		ssInfo.append(line);
+
 		txtInfo->label (ssInfo.c_str());
 	} else
 		txtInfo->label ("");
+
 }
 
 void updateLogins ()

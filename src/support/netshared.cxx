@@ -392,6 +392,12 @@ void dispRec ()
 	inpEmail->value (trim (rec.email.c_str()));
 	inpPrevDate->value (trim (rec.prevdate.c_str()));
 
+	inpLocator->value (trim (rec.locator.c_str()));
+	inpCountry->value (trim (rec.country.c_str()));
+
+	outAzimuth->value("");
+	outDistance->value("");
+	compute();
 }
 
 void clearEditForm ()
@@ -420,6 +426,10 @@ void clearEditForm ()
 	inpComment2->value ("");
 	inpPrevDate->value ("");
 	inpEmail->value ("");
+	inpCountry->value ("");
+	inpLocator->value ("");
+	outAzimuth->value ("");
+	outDistance->value ("");
 }
 
 void setFields (csvRecord &rec)
@@ -448,6 +458,8 @@ void setFields (csvRecord &rec)
 	rec.comment2 = inpComment2->value ();
 	rec.email = inpEmail->value ();
 	rec.prevdate = inpPrevDate->value();
+	rec.locator = inpLocator->value();
+	rec.country = inpCountry->value();
 
 }
 
@@ -528,6 +540,8 @@ int add_fldigi_record(void)
 		rec.comment2  = "";
 		rec.email     = "";
 		rec.prevdate  = "";
+		rec.country   = "";
+		rec.locator      = "";
 
 		netdb.add(rec);
 		getBrwsData ();

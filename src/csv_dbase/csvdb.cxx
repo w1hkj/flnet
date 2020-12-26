@@ -24,11 +24,6 @@
 
 #include "csvdb.h"
 
-enum FIELDS {
-	PREFIX,AREA,SUFFIX,CALLSIGN,NAME,NETNBR,LOGDATE,NBRLOGINS,STATUS,JOINED,
-	FNAME,LNAME,ADDR,CITY,STATE,ZIP,PHONE,BIRTHDATE,SPOUSE,SP_BIRTH,
-	COMMENT1,COMMENT2,EMAIL,PREVDATE };
-
 //szFields on 10 char spacing
 static string szFields = "\
 PREFIX    AREA      SUFFIX    CALLSIGN  \
@@ -36,20 +31,21 @@ NAME      NETNBR    LOGDATE   NBRLOGINS \
 STATUS    JOINED    FNAME     LNAME     \
 ADDR      CITY      STATE     ZIP       \
 PHONE     BIRTHDATE SPOUSE    SP_BIRTH  \
-COMMENT1  COMMENT2  EMAIL     PREVDATE  ";
+COMMENT1  COMMENT2  EMAIL     PREVDATE  \
+LOCATOR   COUNTRY   ";
 
 const char *csvdb::csvFields = "\
 PREFIX,AREA,SUFFIX,CALLSIGN,NAME,NETNBR,LOGDATE,NBRLOGINS,STATUS,JOINED,\
 FNAME,LNAME,ADDR,CITY,STATE,ZIP,PHONE,BIRTHDATE,SPOUSE,SP_BIRTH,\
-COMMENT1,COMMENT2,EMAIL,PREVDATE";
+COMMENT1,COMMENT2,EMAIL,PREVDATE,LOCATOR,COUNTRY";
 
 bool csvdb::mapheader(string header)
 {
 	bool ok = false;
 	size_t p;
 	string hfield;
-	for (int i = 0; i < 24; fpos[i++] = -1);
-	for (int i = 0; i < 24; i++) {
+	for (int i = PREFIX; i < LAST_FIELD; fpos[i++] = -1);
+	for (int i = PREFIX; i < LAST_FIELD; i++) {
 		if (header.empty()) break;
 		field( header, hfield);
 		p = szFields.find(hfield);
@@ -153,7 +149,7 @@ bool csvdb::split(string s, csvRecord &rec)
 	if (s[0] == ',')
 		s.insert(0,","); // first field is empty !
 
-	for (int i = 0; i < 24; i++) {
+	for (int i = PREFIX; i < LAST_FIELD; i++) {
 		switch (fpos[i]) {
 			case -1 : break;
 			case PREFIX :		field(s, rec.prefix); break;
@@ -179,7 +175,9 @@ bool csvdb::split(string s, csvRecord &rec)
 			case COMMENT1 :		field(s, rec.comment1); break;
 			case COMMENT2 :		field(s, rec.comment2); break;
 			case EMAIL :		field(s, rec.email); break;
-			case PREVDATE :		field(s, rec.prevdate);
+			case PREVDATE :		field(s, rec.prevdate); break;
+			case LOCATOR :		field(s, rec.locator); break;
+			case COUNTRY :		field(s, rec.country); break;
 		}
 	}
 	if (rec.prefix.empty() && rec.area.empty() && rec.suffix.empty())
@@ -191,7 +189,7 @@ bool csvdb::split(string s, csvRecord &rec)
 
 int csvdb::load()
 {
-#define LINESIZE 1024
+#define LINESIZE 2048
 	char buff[LINESIZE + 1];
 	fstream dbfile(dbfilename.c_str(), ios::in | ios::binary);
 	if (!dbfile) {
@@ -287,7 +285,9 @@ void csvdb::join(csvRecord &rec, string &str)
 	str.append(delimit(rec.comment1)).append(",");
 	str.append(delimit(rec.comment2)).append(",");
 	str.append(delimit(rec.email)).append(",");
-	str.append(delimit(rec.prevdate));
+	str.append(delimit(rec.prevdate)).append(",");
+	str.append(delimit(rec.locator)).append(",");
+	str.append(delimit(rec.country));
 }
 
 int csvdb::save()
@@ -352,6 +352,8 @@ void csvdb::clearrec(csvRecord &rec)
 	rec.comment2.clear();
 	rec.email.clear();
 	rec.prevdate.clear();
+	rec.locator.clear();
+	rec.country.clear();
 }
 
 int csvdb::get(size_t n, csvRecord &rec)
@@ -360,16 +362,17 @@ int csvdb::get(size_t n, csvRecord &rec)
 	rec.netnbr = rec.logdate = rec.nbrlogins = rec.status = rec.joined =
 	rec.fname = rec.lname = rec.addr = rec.city = rec.state =
 	rec.zip = rec.phone = rec.birthdate = rec.spouse = rec.sp_birth =
-	rec.comment1 = rec.comment2 = rec.email = rec.prevdate = "";
+	rec.comment1 = rec.comment2 = rec.email = rec.prevdate =
+	rec.locator = rec.country = "";
 
 	if (n < 0 || n >= dbrecs.size()) return -1;
 
 	if (!dbrecs.size()) return -2;
 
 	rec = dbrecs[n];
-	
+
 	cur_recnbr = n;
-	
+
 	return 0;
 }
 

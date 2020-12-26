@@ -26,13 +26,17 @@
 #define netedits_h
 #include <FL/Fl.H>
 #include <FL/Fl_Window.H>
+#include <FL/Fl_Menu_Bar.H>
+#include <FL/Fl_Input.H>
+#include <FL/Fl_Output.H>
+#include <FL/Fl_Button.H>
+
 #include "date.h"
 #include "calendar.h"
 
 Fl_Window *newEditWindow(bool);
 Fl_Window *getEditWindow(void);
 
-#include <FL/Fl_Menu_Bar.H>
 extern Fl_Menu_Bar *mbarMain;
 extern void cb_mnuSearchCallsign(Fl_Menu_*, void*);
 extern void cb_mnuSearchNetNbr(Fl_Menu_*, void*);
@@ -42,7 +46,6 @@ extern void cb_mnuHamcall(Fl_Menu_*, void*);
 extern void cb_mnuFldigiEditor(Fl_Menu_*, void*);
 extern void cb_LookupCall(Fl_Menu_*, void*);
 
-#include <FL/Fl_Input.H>
 extern Fl_Input *inpPrefix;
 extern Fl_Input *inpArea;
 extern Fl_Input *inpSuffix;
@@ -59,10 +62,14 @@ extern Fl_DateInput *inpBirthday;
 extern Fl_Input *inpSpouse;
 extern Fl_Input *inpSpBirthday;
 
-#include <FL/Fl_Output.H>
+extern Fl_Input *inpCountry;
+extern Fl_Input *inpLocator;
+extern Fl_Output *outAzimuth;
+extern Fl_Output *outDistance;
+extern Fl_Button *recompute;
+
 extern Fl_DateInput *txtLogDate;
 
-#include <FL/Fl_Button.H>
 extern void cbGoFirstRec(Fl_Button*, void*);
 extern Fl_Button *btnFirst;
 extern void cbGoPrevRec(Fl_Button*, void*);

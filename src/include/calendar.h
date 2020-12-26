@@ -134,7 +134,7 @@ protected:
 	void makepopcal();
 
 public:
-	Fl_DateInput (int x, int y, int w, int h, char * = 0);
+	Fl_DateInput (int x, int y, int w, int h, const char * = 0);
 
 	void format (int);
 	const char *value ();

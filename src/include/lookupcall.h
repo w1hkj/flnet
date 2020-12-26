@@ -34,6 +34,7 @@ extern std::string lookup_zip;
 extern std::string lookup_country;
 
 extern void clear_Lookup();
+extern void compute();
 
 extern void CALLSIGNquery(std::string inpCall);
 
