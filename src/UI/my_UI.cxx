@@ -31,6 +31,8 @@
 #include <time.h>
 
 #include <string>
+#include <iostream>
+#include <sstream>
 
 #include <FL/Fl.H>
 #include <FL/Fl_Input.H>
@@ -48,8 +50,8 @@
 #include "timeops.h"
 #include "xml_io.h"
 #include "debug.h"
-
 #include "csvdb.h"
+#include "status.h"
 
 char emptyline[] = "";
 
@@ -73,8 +75,6 @@ string szComment1;
 string szComment2;
 string szFirstName;
 string szCallSign;
-
-char szInfo[1024];
 
 bool updateFldigi = true;
 
@@ -103,8 +103,8 @@ void updateCallins (bool fldigi_flag)
 	int i,j;
 
 	for (i = WhoIsUp - 4, j = 0; i < WhoIsUp + 11; i++, j++) {
-		txtLine[j]->labelcolor (fgColors[callinlist.status(i)]);
-		txtLine[j]->color (bgColors[callinlist.status(i)]);
+		txtLine[j]->labelcolor (progStatus.fgColors[callinlist.status(i)]);
+		txtLine[j]->color (progStatus.bgColors[callinlist.status(i)]);
 		txtLine[j]->label (callinlist.displine(i));
 	}
 
@@ -119,13 +119,18 @@ void updateCallins (bool fldigi_flag)
 	szFirstName.clear();
 	szCallSign.clear();
 
-	static char szInList[13];
-	sprintf (szInList, "%3d callins", callinlist.numlist ());
-	txtNcallins->label (szInList);
+	static std::stringstream checkins;
+	static std::string ssInfo;
+
+	static char lbl[50];
+	checkins.seekp(ios::beg);
+	checkins << "Check-ins: " << callinlist.numlist();
+	strncpy(lbl, checkins.str().c_str(), 18);
+	net_grp2->label(lbl);
+	net_grp2->redraw_label();
 
 	long rc = callinlist.recN(WhoIsUp);
-	static string sInfo;
-	sInfo.clear();
+
 	if (rc >= 0 && rc < (long)netdb.numrecs()) {
 		csvRecord rec;
 		netdb.get(rc, rec);
@@ -159,37 +164,78 @@ void updateCallins (bool fldigi_flag)
 		size_t pat = szEmail.find("@");
 		if (pat != string::npos) szEmail.insert(pat, "@");
 
-		szInfo[0] = 0;
-		snprintf (szInfo, sizeof(szInfo), "Name:   %s", szFullName.c_str());
-		while (strlen(szInfo) < 28) strcat(szInfo, " ");
-		sInfo.assign(szInfo);
+		ssInfo.assign("Name:  ").append(szFullName).append("\n");
 
-		snprintf (szInfo, sizeof(szInfo), "Nbr: %s\n", szNetNbr.c_str());
-		sInfo.append(szInfo);
+		ssInfo.append("Nbr:   ").append(szNetNbr);
+		if (8 + szNetNbr.length() < 25)
+			ssInfo.append(17 - szNetNbr.length(), ' ');
+		ssInfo.append("Last:   ").append(szLogDate).append("\n");
 
-		snprintf (szInfo, sizeof(szInfo), "Birth:  %s", szBirthday.c_str());
-		while (strlen(szInfo) < 28) strcat(szInfo, " ");
-		sInfo.append(szInfo).append("Last: ").append(szLogDate).append("\n");
+		ssInfo.append("Birth: ").append(szBirthday);
+		if (8 + szBirthday.length() < 25)
+			ssInfo.append(17 - szBirthday.length(), ' ');
+		ssInfo.append("Spouse: ").append(szSpouse).append("\n");
 
-		snprintf (szInfo, sizeof(szInfo), "Spouse: %s", szSpouse.c_str());
-		while (strlen(szInfo) < 28) strcat(szInfo, " ");
-		sInfo.append(szInfo).append("Phone:\n");
+		ssInfo.append("QTH:   ").append(szQTH);
+		if (szQTH.length() > 25) szQTH.erase(25);
+		if (8 + szQTH.length() < 25)
+			ssInfo.append(17 - szQTH.length(), ' ');
+		ssInfo.append("Phone:  ").append(szPhone).append("\n");
 
-		snprintf (szInfo, sizeof(szInfo), "QTH:    %s", szQTH.c_str());
-		while (strlen(szInfo) < 28) strcat(szInfo, " ");
-		sInfo.append(szInfo).append(szPhone).append("\n");
-
-		snprintf (szInfo, sizeof(szInfo), "Email:  %-s", szEmail.c_str());
-
-		sInfo.append(szInfo);
-
-		szComment1.assign(rec.comment1);
-		szComment2.assign(rec.comment2);
-		sInfo.append("\nInfo:\n");
-		sInfo.append(szComment1.c_str()).append("\n");
-		sInfo.append(szComment2.c_str());
-	}
-	txtInfo->label (sInfo.c_str());
+		ssInfo.append("Email: ").append(szEmail).append("\n");
+		std::string info = "Info:  ";
+		info.append(rec.comment1).append("; ").append(rec.comment2);
+		size_t incr = 0;
+		if (info.length() > 46) {
+			bool ok = false;
+			for (int i = 0; i < 8; i++) {
+				if (info[45 - i] == ' ') {
+					info.replace(45 - i, 1, "\n");
+					ok = true;
+					break;
+				}
+			}
+			if (!ok) {
+				info.insert(45, "\n");
+				if (info[46] == ' ') info.erase(46,1);
+				else incr++;
+			}
+		}
+		if (info.length() > 91 + incr) {
+			bool ok = false;
+			for (int i = 0; i < 8; i++) {
+				if (info[90 + incr- i] == ' ') {
+					info.replace(90 + incr - i, 1, "\n");
+					ok = true;
+					break;
+				}
+			}
+			if (!ok) {
+				info.insert(90 + incr, "\n");
+				if (info[91 + incr] == ' ') info.erase(91 + incr,1);
+				else incr++;
+			}
+		}
+		if (info.length() > 135 + incr) {
+			bool ok = false;
+			for (int i = 0; i < 8; i++) {
+				if (info[135 + incr - i] == ' ') {
+					info.replace(135 + incr - i, 1, "\n");
+					ok = true;
+					break;
+				}
+			}
+			if (!ok) {
+				info.insert(135 + incr, "\n");
+				if (info[136 + incr] == ' ') info.erase(136 + incr,1);
+				else incr++;
+			}
+		}
+		if (info.length() > 190 + incr) info.erase(190 + incr);
+		ssInfo.append(info);
+		txtInfo->label (ssInfo.c_str());
+	} else
+		txtInfo->label ("");
 }
 
 void updateLogins ()
@@ -341,7 +387,7 @@ void my_UI::PickedToCallinsDB (size_t record_number)
 {
 	time_t the_time;
 	struct tm *tm_ptr;
-	char pr[3], ar[2], su[4],nm[11], st[3], sztime[6];
+	char pr[3], ar[2], su[4],nm[15], st[3], sztime[6];
 
 	if (callinlist.inList(record_number)) {
 		fl_beep (FL_BEEP_ERROR);
@@ -368,12 +414,12 @@ void my_UI::PickedToCallinsDB (size_t record_number)
 	strncpy(nm, rec.name.c_str(), sizeof(nm)-1);
 	strncpy(st, rec.status.c_str(), sizeof(st)-1);
 
-	if (strstr (szP1, st)) {
-		callinlist.add (record_number, pr, ar, su, nm, sztime, chP1[0]);
-	} else if (strstr (szP2, st)) {
-		callinlist.add (record_number, pr, ar, su, nm, sztime, chP2[0]);
-	} else if (strstr (szP3, st)) {
-		callinlist.add (record_number, pr, ar, su, nm, sztime, chP3[0]);
+	if (progStatus.strP1.find(st) != std::string::npos) {
+		callinlist.add (record_number, pr, ar, su, nm, sztime, progStatus.chP1[0]);
+	} else if (progStatus.strP2.find(st) != std::string::npos) {
+		callinlist.add (record_number, pr, ar, su, nm, sztime, progStatus.chP2[0]);
+	} else if (progStatus.strP3.find(st) != std::string::npos) {
+		callinlist.add (record_number, pr, ar, su, nm, sztime, progStatus.chP3[0]);
 	} else {
 		callinlist.add (record_number, pr, ar, su, nm, sztime);
 	}
@@ -572,7 +618,7 @@ int my_UI::handle (int e)
 			if (my_status == PICKLIST) {
 				if (k == FL_Enter) {
 					PickedToCallins (whoPicked);
-					if (callin_is_up) {
+					if (progStatus.callin_is_up) {
 						WhoIsUp = callinlist.numlist () - 1;
 						dispCallIns(false);
 					}
@@ -610,7 +656,7 @@ int my_UI::handle (int e)
 			if (my_status == SUFFIX && k == FL_Enter) {
 				if (nbrPicked) {
 					PickedToCallins (0);
-					if (callin_is_up) {
+					if (progStatus.callin_is_up) {
 						WhoIsUp = callinlist.numlist () - 1;
 						dispCallIns(false);
 					}
@@ -685,11 +731,11 @@ int my_UI::handle (int e)
 				tm_ptr = localtime (&the_time);
 				sprintf( sztime, "%02d:%02d", tm_ptr->tm_hour, tm_ptr->tm_min);
 				callinlist.add (-1, szPrefix.c_str(), szArea.c_str(), szSuffix.c_str(), "", sztime );
-				if (disp_new_login) WhoIsUp = callinlist.numlist () - 1;
+				if (progStatus.disp_new_login) WhoIsUp = callinlist.numlist () - 1;
 				dispCallIns (false);
 				clearPickList ();
 				clearSAP ();
-				if (disp_new_login && open_editor) cb_F12 (WhoIsUp);
+				if (progStatus.disp_new_login && progStatus.open_editor) cb_F12 (WhoIsUp);
 			}
 		}
 	}

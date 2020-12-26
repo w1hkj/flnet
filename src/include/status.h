@@ -30,6 +30,33 @@ struct status {
 	int		mainY;
 	int		ui_size;
 
+	int		fgColors[5];
+	int		bgColors[5];
+
+	int		disp_new_login;
+	int		open_editor;
+	int		callin_is_up;
+	int		QRZXML;
+
+	int				chAuto;
+	int				left_justify;
+
+	std::string		chP1;
+	std::string		chP2;
+	std::string		chP3;
+
+	std::string		strP1;
+	std::string		strP2;
+	std::string		strP3;
+
+	std::string		myLocator;
+	std::string		user_name;
+	std::string		user_password;
+	std::string		callookurl;
+	std::string		hamqthurl;
+	std::string		hamcallurl;
+	std::string		qrzurl;
+
 	void saveLastState();
 	void loadLastState();
 };

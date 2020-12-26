@@ -32,7 +32,7 @@
 enum logStatus{EMPTY,LOGIN,FIRST,SECOND,LOGOUT};
 
 #define LISTINCR 500
-#define DLINESIZE 24
+#define DLINESIZE 30
 #define BLANKS 4
 
 struct _logged {
@@ -41,7 +41,7 @@ struct _logged {
 	char szPrefix[3];
 	char szArea[2];
 	char szSuffix[4];
-	char szName[10];
+	char szName[15];
 	char szTime[6];
 	char chPriority;
 	char displine[DLINESIZE + 1];
@@ -75,7 +75,7 @@ public:
 	int del (int n);
 	void clear (void);
 	char *displine (int n);
-	char *report_line(int n);
+	const char *report_line(int n);
 	char *prefix (int n);
 	char *area (int n);
 	char *suffix (long n);

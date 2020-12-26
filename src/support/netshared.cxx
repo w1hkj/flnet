@@ -26,6 +26,7 @@
 
 
 #include <string>
+#include <sstream>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -46,8 +47,8 @@
 #include "config.h"
 #include "net_config.h"
 #include "xml_io.h"
-
 #include "csvdb.h"
+#include "status.h"
 
 csvdb netdb;
 
@@ -65,8 +66,8 @@ size_t		currec;
 size_t		brwsnum;
 size_t		AddedRecNbr;
 
-char sSimpleName[120];
-char szDispName[80];
+char sSimpleName[400];
+char szDispName[200];
 
 Fl_Window	*NetNbrSearch = NULL,
 *NetNbrBrowse = NULL,
@@ -175,23 +176,19 @@ void toggleState()
 
 long IsInDB (const char *p, const char *a, const char *s)
 {
-	char prefix[3], area[2], suffix[4];
+	std::string prefix = trim (uppercase (p));
+	std::string area = trim (uppercase(a));
+	std::string suffix = trim (uppercase(s));
 	long found;
 	int cmp, suffix_only = 0;
-	memset (prefix, 0, 3);
-	memset (area, 0, 2);
-	memset (suffix, 0, 4);
-	strncpy (prefix, trim (uppercase (p)), 2);
-	strncpy (area, trim (uppercase (a)), 1);
-	strncpy (suffix, trim (uppercase (s)), 3);
 
 	found = -1L;
-	if (area[0] == 0 && prefix[0]== 0) suffix_only = 1;
+	if (area.empty() && prefix.empty()) suffix_only = 1;
 
 	SortBySAP ();
 
 	for (int n = 0; n < netdb.numrecs(); n++) {
-		cmp = strcmp (suffix, trim (brwsData[n].suffix));
+		cmp = suffix.compare( trim (brwsData[n].suffix) );
 		if (cmp > 0) continue;
 		if (cmp < 0) break;
 		// only looking for a suffix match
@@ -199,8 +196,8 @@ long IsInDB (const char *p, const char *a, const char *s)
 			found = n;
 			break;
 		}
-		if (strcmp(prefix, trim (brwsData[n].prefix)) == 0 &&
-			strcmp(area, brwsData[n].area) == 0) {
+		if (prefix.compare (trim (brwsData[n].prefix) ) == 0 &&
+			area.compare (trim (brwsData[n].area) ) == 0) {
 			found = n;
 			break;
 		}
@@ -240,8 +237,10 @@ void getBrwsData()
 		return;
 	}
 
-	snprintf (szDispName, sizeof(szDispName), "%s (%d)", sSimpleName, (int)netdb.numrecs());
-	dbSelectLabel->value(szDispName);
+	static stringstream dispname;
+	dispname.seekp(ios::beg);
+	dispname << sSimpleName << " (" << netdb.numrecs() << ")";
+	dbSelectLabel->value(dispname.str().c_str());
 	dbSelectLabel->redraw();
 
 	currec = netdb.recnbr();
@@ -339,28 +338,30 @@ void openDB(string fname)
 		exit(0);
 	}
 	if (netdb.numrecs()) {
-		readConfig ();
-		callinlist.setPri_1 (chP1[0]);
-		callinlist.setPri_2 (chP2[0]);
-		callinlist.setPri_3 (chP3[0]);
-		if (chAuto == 'y') callinlist.AutoPriority (1);
+		callinlist.setPri_1 (progStatus.chP1[0]);
+		callinlist.setPri_2 (progStatus.chP2[0]);
+		callinlist.setPri_3 (progStatus.chP3[0]);
+		if (progStatus.chAuto == 'y') callinlist.AutoPriority (1);
 		getBrwsData();
 	} else {
-		snprintf (szDispName, sizeof(szDispName), "%s (%d)", sSimpleName, (int)netdb.numrecs());
-//		dbSelectGroup->label (szDispName);
-//		dbSelectGroup->redraw();
-		dbSelectLabel->value(szDispName);
+		static stringstream dispname;
+		dispname.seekp(ios::beg);
+		dispname << sSimpleName << " (" << netdb.numrecs() << ")";
+		dbSelectLabel->value(dispname.str().c_str());
 		dbSelectLabel->redraw();
 	}
 }
 
 void dispRec ()
 {
-	char buf[80];
-	sprintf (buf,"File:%s",sSimpleName);
-	lblFileName->value (buf);
-	sprintf (buf,"Recs: %d", (int)netdb.numrecs());
-	lblNumRecs->value (buf);
+	static stringstream fname;
+	fname.seekp(ios::beg);
+	fname << "File:" << sSimpleName;
+	lblFileName->value (fname.str().c_str());
+	static stringstream recs;
+	recs.seekp(ios::beg);
+	recs << "Recs: " << netdb.numrecs();
+	lblNumRecs->value (recs.str().c_str());
 
 	csvRecord rec;
 	netdb.get(currec, rec);
@@ -377,11 +378,7 @@ void dispRec ()
 	inpCity->value (trim (rec.city.c_str()));
 	inpState->value (trim (rec.state.c_str()));
 	inpZip->value (trim (rec.zip.c_str()));
-	strcpy(buf, rec.phone.c_str());
-	if (strpbrk (buf, "0123456789") != NULL)
-		inpPhone->value (trim (buf));
-	else
-		inpPhone->value ("");
+	inpPhone->value (trim (rec.phone.c_str()));
 	inpSpouse->value (trim (rec.spouse.c_str()));
 	inpSpBirthday->value (trim (rec.sp_birth.c_str()));
 	inpBirthday->value(rec.birthdate.c_str());

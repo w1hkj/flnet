@@ -42,88 +42,87 @@ struct UI_SIZES {
 };
 
 UI_SIZES UI_small[] = {
-	{ 0, 0, 390, 455, 0, 12}, // window  0
-	{ 0, 0, 390, 25, 0, 12}, // menu_ bar 1
-	{ 0, 25, 390, 430, 0, 12}, // myUI 2
-	{ 125, 25, 74, 20, 0, 14}, // txtNcallins  3
-	{ 0, 45, 225, 255, 0, 14}, // net_grp1  4
-	{ 5, 125, 15, 25, 0, 12}, // ptr_left  4
-	{ 210, 125, 15, 25, 0, 12}, // ptr_right  6
-	{ 17, 45, 196, 256, 0, 12}, // net_grp2  7
-	{ 20, 47, 190, 26, 0, 13}, // txtTitles  8
-	{ 20, 70, 190, 16, 0, 13}, // txtLine[0]  9
-	{ 20, 85, 190, 16, 0, 13}, // txtLine[1]  10
-	{ 20, 100, 190, 16, 0, 13}, // txtLine[2]  11
-	{ 20, 115, 190, 16, 0, 13}, // txtLine[3]  12
-	{ 20, 130, 190, 16, 0, 13}, // txtLine[4]  13
-	{ 20, 145, 190, 16, 0, 13}, // txtLine[5]  14
-	{ 20, 160, 190, 16, 0, 13}, // txtLine[6]  15
-	{ 20, 175, 190, 16, 0, 13}, // txtLine[7]  16
-	{ 20, 190, 190, 16, 0, 13}, // txtLine[8]  17
-	{ 20, 205, 190, 16, 0, 13}, // txtLine[9]  18
-	{ 20, 220, 190, 16, 0, 13}, // txtLine[10]  19
-	{ 20, 235, 190, 16, 0, 13}, // txtLine[11]  20
-	{ 20, 250, 190, 16, 0, 13}, // txtLine[12]  21
-	{ 20, 265, 190, 16, 0, 13}, // txtLine[13]  22
-	{ 20, 280, 190, 16, 0, 13}, // txtLine[14]  23
-	{ 230, 27, 155, 18, 0, 12}, // dbSelectLabel
+	{   0,   0, 390, 460, FL_COURIER, 12}, // window  0
+	{   0,   0, 390,  25, FL_COURIER, 12}, // menu_ bar 1
+	{   0,  25, 390, 430, FL_COURIER, 12}, // myUI 2
+	{   0,  45, 230, 255, FL_COURIER, 12}, // net_grp1  4
+	{   2, 125,  15,  25, FL_COURIER, 12}, // ptr_left  4
+	{ 215, 125,  15,  25, FL_COURIER, 12}, // ptr_right  6
+	{  15,  45, 198, 256, FL_COURIER_BOLD, 14}, // net_grp2  7
+	{  17,  47, 196,  26, FL_COURIER_BOLD, 12}, // txtTitles  8
+	{  17,  70, 196,  16, FL_COURIER, 12}, // txtLine[0]  9
+	{  17,  85, 196,  16, FL_COURIER, 12}, // txtLine[1]  10
+	{  17, 100, 196,  16, FL_COURIER, 12}, // txtLine[2]  11
+	{  17, 115, 196,  16, FL_COURIER, 12}, // txtLine[3]  12
+	{  17, 130, 196,  16, FL_COURIER, 12}, // txtLine[4]  13
+	{  17, 145, 196,  16, FL_COURIER, 12}, // txtLine[5]  14
+	{  17, 160, 196,  16, FL_COURIER, 12}, // txtLine[6]  15
+	{  17, 175, 196,  16, FL_COURIER, 12}, // txtLine[7]  16
+	{  17, 190, 196,  16, FL_COURIER, 12}, // txtLine[8]  17
+	{  17, 205, 196,  16, FL_COURIER, 12}, // txtLine[9]  18
+	{  17, 220, 196,  16, FL_COURIER, 12}, // txtLine[10]  19
+	{  17, 235, 196,  16, FL_COURIER, 12}, // txtLine[11]  20
+	{  17, 250, 196,  16, FL_COURIER, 12}, // txtLine[12]  21
+	{  17, 265, 196,  16, FL_COURIER, 12}, // txtLine[13]  22
+	{  17, 280, 196,  16, FL_COURIER, 12}, // txtLine[14]  23
 
-	{ 230, 45, 155, 255, 0, 12}, // dbSelectGroup  24
-	{ 240, 65, 40, 25, 0, 12}, // inpLoginSuffix  25
-	{ 285, 65, 30, 25, 0, 12}, // inpLoginPrefix  26
-	{ 320, 65, 40, 25, 0, 12}, // inpLoginArea  27
+	{ 230,  27, 155,  18, FL_COURIER_BOLD, 14}, // dbSelectLabel
+	{ 230,  45, 155, 255, FL_COURIER, 12}, // dbSelectGroup  24
+	{ 240,  65,  40,  25, FL_COURIER, 12}, // inpLoginSuffix  25
+	{ 285,  65,  30,  25, FL_COURIER, 12}, // inpLoginPrefix  26
+	{ 320,  65,  40,  25, FL_COURIER, 12}, // inpLoginArea  27
 
-	{ 235, 95, 146, (NPICKITEMS/2)*12+8, 0, 12}, // net_grp3  28
-	{ 238, 98, 70, 12, 0, 12}, // txtPick[0]   29
-	{ 308, 98, 70, 12, 0, 12}, // txtPick[12]  39
+	{ 235,  95, 146, (NPICKITEMS/2)*12+8, FL_COURIER, 12}, // net_grp3  28
+	{ 238,  98,  70,  12, FL_COURIER, 12}, // txtPick[0]   29
+	{ 308,  98,  70,  12, FL_COURIER, 12}, // txtPick[12]  39
 
-	{ 320, 135, 25, 120, 0, 12}, // txtPickArrows  49
-	{ 235, 40, 40, 30, 0, 12}, // bx_suffix  50
-	{ 280, 40, 40, 30, 0, 12}, // bx_prefix  51
-	{ 320, 40, 40, 30, 0, 12}, // bx_area  52
-	{ 5, 301, 379, 150, 0, 14}, // txtInfo  53
+	{ 320, 135,  25, 120, FL_COURIER, 12}, // txtPickArrows  49
+	{ 235,  40,  40,  30, FL_COURIER, 12}, // bx_suffix  50
+	{ 280,  40,  40,  30, FL_COURIER, 12}, // bx_prefix  51
+	{ 320,  40,  40,  30, FL_COURIER, 12}, // bx_area  52
+	{   2, 301, 386, 155, FL_COURIER, 13}, // txtInfo  53
 };
 
 UI_SIZES UI_big[] = {
-	{ 0, 0, 475, 635, 0, 16}, // window
-	{ 0, 0, 475, 25, 0, 12}, // menu_ bar
-	{ 0, 25, 475, 414, 0, 16}, // myUI
-	{ 140, 30, 115, 20, 1, 16}, // txtNcallins
-	{ 0, 49, 275, 396, 1, 16}, // net_grp1
-	{ 2, 180, 15, 24, 0, 16}, // ptr_left
-	{ 258, 180, 15, 24, 0, 16}, // ptr_right
-	{ 17, 60, 240, 384, 0, 16}, // net_grp2
-	{ 17, 60, 240, 24, 4, 16}, // txtTitles
-	{ 17, 84, 240, 24, 4, 16}, // txtLine[0]
-	{ 17, 108, 240, 24, 4, 16}, // txtLine[1]
-	{ 17, 132, 240, 24, 4, 16}, // txtLine[2]
-	{ 17, 156, 240, 24, 4, 16}, // txtLine[3]
-	{ 17, 180, 240, 24, 4, 16}, // txtLine[4]
-	{ 17, 204, 240, 24, 4, 16}, // txtLine[5]
-	{ 17, 228, 240, 24, 4, 16}, // txtLine[6]
-	{ 17, 252, 240, 24, 4, 16}, // txtLine[7]
-	{ 17, 276, 240, 24, 4, 16}, // txtLine[8]
-	{ 17, 300, 240, 24, 4, 16}, // txtLine[9]
-	{ 17, 324, 240, 24, 4, 16}, // txtLine[10]
-	{ 17, 348, 240, 24, 4, 16}, // txtLine[11]
-	{ 17, 372, 240, 24, 4, 16}, // txtLine[12]
-	{ 17, 396, 240, 24, 4, 16}, // txtLine[13]
-	{ 17, 420, 240, 24, 4, 16}, // txtLine[14]
-	{ 284, 36, 185, 24, 13, 14}, // dbSelectLabel
-	{ 284, 60, 185, 380, 13, 18}, // dbSelectGroup
-	{ 291, 87, 60, 30, 13, 18}, // inpLoginSuffix
-	{ 355, 87, 60, 30, 13, 18}, // inpLoginPrefix
-	{ 419, 87, 40, 30, 13, 18}, // inpLoginArea
+	{   0,   0, 475, 635, FL_COURIER, 16}, // window
+	{   0,   0, 475,  25, FL_COURIER, 12}, // menu_ bar
+	{   0,  25, 475, 414, FL_COURIER, 16}, // myUI
+	{   0,  49, 275, 396, FL_COURIER, 14}, // net_grp1
+	{   2, 180,  15,  24, FL_COURIER, 16}, // ptr_left
+	{ 270, 180,  15,  24, FL_COURIER, 16}, // ptr_right
+	{  15,  58, 255, 388, FL_COURIER_BOLD, 16}, // net_grp2
+	{  17,  60, 251,  24, FL_COURIER_BOLD, 15}, // txtTitles
+	{  17,  84, 251,  24, FL_COURIER, 15}, // txtLine[0]
+	{  17, 108, 251,  24, FL_COURIER, 15}, // txtLine[1]
+	{  17, 132, 251,  24, FL_COURIER, 15}, // txtLine[2]
+	{  17, 156, 251,  24, FL_COURIER, 15}, // txtLine[3]
+	{  17, 180, 251,  24, FL_COURIER, 15}, // txtLine[4]
+	{  17, 204, 251,  24, FL_COURIER, 15}, // txtLine[5]
+	{  17, 228, 251,  24, FL_COURIER, 15}, // txtLine[6]
+	{  17, 252, 251,  24, FL_COURIER, 15}, // txtLine[7]
+	{  17, 276, 251,  24, FL_COURIER, 15}, // txtLine[8]
+	{  17, 300, 251,  24, FL_COURIER, 15}, // txtLine[9]
+	{  17, 324, 251,  24, FL_COURIER, 15}, // txtLine[10]
+	{  17, 348, 251,  24, FL_COURIER, 15}, // txtLine[11]
+	{  17, 372, 251,  24, FL_COURIER, 15}, // txtLine[12]
+	{  17, 396, 251,  24, FL_COURIER, 15}, // txtLine[13]
+	{  17, 420, 251,  24, FL_COURIER, 15}, // txtLine[14]
 
-	{ 291, 125, 170, (NPICKITEMS/2)*16+4, 0, 16}, // net_grp3  28
-	{ 293, 127, 83, 16, 0, 16}, // txtPick[0]   29
-	{ 376, 127, 83, 16, 0, 16}, // txtPick[12]  39
+	{ 284,  36, 185,  24, FL_COURIER_BOLD, 16}, // dbSelectLabel
+	{ 284,  60, 185, 380, FL_COURIER, 18}, // dbSelectGroup
+	{ 291,  87,  60,  30, FL_COURIER, 18}, // inpLoginSuffix
+	{ 355,  87,  60,  30, FL_COURIER, 18}, // inpLoginPrefix
+	{ 419,  87,  40,  30, FL_COURIER, 18}, // inpLoginArea
 
-	{ 374, 195, 25, 180, 0, 18}, // txtPickArrows
-	{ 291, 60, 60, 25, 0, 16}, // bx_suffix
-	{ 355, 60, 61, 25, 0, 16}, // bx_prefix
-	{ 419, 60, 40, 25, 0, 16}, // bx_area
-	{ 5, 449, 465, 180, 0, 16}, // txtInfo
+	{ 291, 125, 170, (NPICKITEMS/2)*16+4, FL_COURIER, 16}, // net_grp3  28
+	{ 293, 127,  83,  16, FL_COURIER, 16}, // txtPick[0]   29
+	{ 376, 127,  83,  16, FL_COURIER, 16}, // txtPick[12]  39
+
+	{ 374, 195,  25, 180, FL_COURIER, 18}, // txtPickArrows
+	{ 291,  60,  60,  25, FL_COURIER, 16}, // bx_suffix
+	{ 355,  60,  61,  25, FL_COURIER, 16}, // bx_prefix
+	{ 419,  60,  40,  25, FL_COURIER, 16}, // bx_area
+	{   5, 449, 465, 180, FL_COURIER, 16}, // txtInfo
 };
 
 int last_size = SMALL;
@@ -141,8 +140,6 @@ void ui_size(int sz, int X, int Y)
 	ui++;
 	myUI->resize(ui->x, ui->y, ui->w, ui->h);
 	ui++;
-	txtNcallins->resize(ui->x, ui->y, ui->w, ui->h);
-	ui++;
 	net_grp1->resize(ui->x, ui->y, ui->w, ui->h);
 	net_grp1->labelfont(ui->fnt);
 	net_grp1->labelsize(ui->size);
@@ -152,6 +149,8 @@ void ui_size(int sz, int X, int Y)
 	ptr_right->resize(ui->x, ui->y, ui->w, ui->h);
 	ui++;
 	net_grp2->resize(ui->x, ui->y, ui->w, ui->h);
+	net_grp2->labelfont(ui->fnt);
+	net_grp2->labelsize(ui->size);
 	ui++;
 	txtTitles->resize(ui->x, ui->y, ui->w, ui->h);
 	txtTitles->labelfont(ui->fnt);
@@ -222,6 +221,8 @@ void ui_size(int sz, int X, int Y)
 	dbSelectLabel->textsize(ui->size);
 	ui++;
 	dbSelectGroup->resize(ui->x, ui->y, ui->w, ui->h);
+	dbSelectGroup->labelfont(ui->fnt);
+	dbSelectGroup->labelsize(ui->size);
 	ui++;
 	inpLoginSuffix->resize(ui->x, ui->y, ui->w, ui->h);
 	inpLoginSuffix->labelfont(ui->fnt);

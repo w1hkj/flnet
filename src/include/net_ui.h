@@ -18,7 +18,6 @@ extern void cb_mnuEventLog(Fl_Menu_*, void*);
 extern void cb_mnuAbout(Fl_Menu_*, void*);
 extern my_UI *myUI;
 #include <FL/Fl_Box.H>
-extern Fl_Box *txtNcallins;
 #include <FL/Fl_Group.H>
 extern Fl_Group *net_grp1;
 extern Fl_Box *ptr_left;

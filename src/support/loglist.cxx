@@ -23,11 +23,16 @@
 //
 // =====================================================================
 
+#include <iostream>
+#include <string>
+#include <sstream>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include "loglist.h"
 #include "netshared.h"
+#include "status.h"
 
 void loglist::clear (void)
 {
@@ -57,33 +62,55 @@ loglist::loglist ()
 
 void loglist::CreateDispLine (int n)
 {
-	char dline[25], call[10];
-	strcpy (call, trim(llist[n].szPrefix));
-	strcat (call, trim(llist[n].szArea));
-	strcat (call, trim(llist[n].szSuffix));
-	snprintf (dline, sizeof(dline), "%-8s%-8s%5s %c",
-			  call,
-			  llist[n].szName,
-			  llist[n].szTime,
-			  llist[n].chPriority);
+	static std::string call;
+	static std::string dline;
+	static std::string name;
+	static std::string time;
+	call.clear();
+	dline.clear();
+	name.clear();
+	time.clear();
+
+	call.assign(trim(llist[n].szPrefix)).append(trim(llist[n].szArea)).append(trim(llist[n].szSuffix));
+	if (call.length() < 6) dline.append(6 - call.length(), ' ');
+	dline.append(call);
+
+	dline.append(" ");
+	name = trim(llist[n].szName);
+	if (name.length() > 13) name = name.erase(13);
+	if (progStatus.left_justify) {
+		if (name.length() < 13) name.append(13 - name.length(), ' ');
+	} else {
+		if (name.length() < 13) name = std::string(13 - name.length(),' ').append(name);
+	}
+	dline.append(name);
+
+	dline.append(" ");
+	time = llist[n].szTime;
+	time.erase(2,1); // remove ':'
+	dline.append(time);
+
+	dline.append(" ");
+	dline += llist[n].chPriority;
+
 	memset (llist[n].displine, 0, DLINESIZE + 1);
-	strncpy (llist[n].displine, dline, DLINESIZE);
+	strncpy (llist[n].displine, dline.c_str(), DLINESIZE);
 
 	return;
 }
 
-char *loglist::report_line(int n)
+const char *loglist::report_line(int n)
 {
 	int nn = n + BLANKS;
-	static char dline[50], call[10];
-	strcpy (call, trim(llist[nn].szPrefix));
-	strcat (call, trim(llist[nn].szArea));
-	strcat (call, trim(llist[nn].szSuffix));
-	snprintf (dline, sizeof(dline), "%s\t%s\t%s",
-			  call,
-			  llist[nn].szName,
-			  llist[nn].szTime);
-	return dline;
+	static std::string rline;
+	rline.assign(trim(llist[nn].szPrefix))
+		 .append(trim(llist[nn].szArea))
+		 .append(trim(llist[nn].szSuffix))
+		 .append("\t")
+		 .append(llist[nn].szName)
+		 .append("\t")
+		 .append(llist[nn].szTime);
+	return rline.c_str();
 }
 
 int loglist::add (long N,
@@ -113,7 +140,7 @@ int loglist::add (long N,
 	strcpy(llist[nlist].szArea, a);
 	strcpy(llist[nlist].szSuffix, s);
 
-	strncpy (llist[nlist].szName, name, 7);
+	strncpy (llist[nlist].szName, name, 14);
 	strcpy (llist[nlist].szTime, szTime);
 
 	CreateDispLine (nlist);
@@ -140,7 +167,7 @@ void loglist::modify (int n,
 	strcpy(llist[nn].szPrefix, p);
 	strcpy(llist[nn].szArea, a);
 	strcpy(llist[nn].szSuffix, s);
-	strncpy (llist[nn].szName, name, 7);
+	strncpy (llist[nn].szName, name, 14);
 
 	CreateDispLine (nn);
 

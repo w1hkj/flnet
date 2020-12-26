@@ -40,13 +40,12 @@
 
 #include "threads.h"
 #include "util.h"
-
 #include "lookupcall.h"
 #include "locator.h"
 #include "xmlreader.h"
 #include "network.h"
-
 #include "netedits.h"
+#include "status.h"
 
 #define DISP_DEBUG 1
 
@@ -389,9 +388,9 @@ bool getSessionKey(string& sessionpage)
 	string html = "http://";
 	html.append(qrzhost);
 	html.append(" /xml/current/?username=");
-	html.append(progdefaults.user_name);
+	html.append(progStatus.user_name);
 	html.append(";password=");
-	html.append(progdefaults.user_password);
+	html.append(progStatus.user_password);
 	html.append(";agent=");
 	html.append(PACKAGE_NAME);
 	html.append("-");
@@ -502,12 +501,12 @@ void QRZ_disp_result(void *)
 		if (!comment1.empty()) comment1.append("; ");
 		comment1.append("Loc: ").append(query.grid);
 
-		if (!progdefaults.myLocator.empty()) {
+		if (!progStatus.myLocator.empty()) {
 			char buf[10], dist[10];
 			buf[0] = '\0';
 			dist[0] = '\0';
 			double distance, azimuth, lon[2], lat[2];
-			if (QRB::locator2longlat(&lon[0], &lat[0], progdefaults.myLocator.c_str()) == QRB::QRB_OK &&
+			if (QRB::locator2longlat(&lon[0], &lat[0], progStatus.myLocator.c_str()) == QRB::QRB_OK &&
 				QRB::locator2longlat(&lon[1], &lat[1], query.grid.c_str()) == QRB::QRB_OK &&
 				QRB::qrb(lon[0], lat[0], lon[1], lat[1], &distance, &azimuth) == QRB::QRB_OK) {
 				snprintf(buf, sizeof(buf), "%03.0f", round(azimuth));
@@ -759,7 +758,7 @@ void parse_callook(string& xmlpage)
 
 bool CALLOOKGetXML(string& xmlpage)
 {
-	string url = progdefaults.callookurl;
+	string url = progStatus.callookurl;
 	size_t p = 0;
 	if ((p = url.find("https")) != std::string::npos)
 		url.erase(p+4,1);
@@ -837,11 +836,11 @@ void parse_html(const string& htmlpage)
 bool HAMCALLget(string& htmlpage)
 {
 	string html = "http://";
-	html.append(progdefaults.hamcallurl);
+	html.append(progStatus.hamcallurl);
 	html.append("  /call?username=");
-	html.append(progdefaults.user_name);
+	html.append(progStatus.user_name);
 	html.append("&password=");
-	html.append(progdefaults.user_password);
+	html.append(progStatus.user_password);
 	html.append("&rawlookup=1&callsign=");
 	html.append(callsign);
 	html.append("&program=flnet-");
@@ -850,7 +849,7 @@ bool HAMCALLget(string& htmlpage)
 
 //	print_query("hamcall", url_html);
 
-//	string url = progdefaults.hamcallurl;
+//	string url = progStatus.hamcallurl;
 //	size_t p = url.find("//");
 //	string service = url.substr(0, p);
 //	url.erase(0, p+2);
@@ -940,12 +939,12 @@ bool HAMQTH_get_session_id()
 	size_t p1 = string::npos;
 	size_t p2 = string::npos;
 
-	url.assign(progdefaults.hamqthurl);
+	url.assign(progStatus.hamqthurl);
 	if ((p1 = url.find("https")) != std::string::npos)
 		url.erase(p1+4,1);
 	if (url[url.length()-1] != '/') url += '/';
-	url.append("xml.php?u=").append(progdefaults.user_name);
-	url.append("&p=").append(progdefaults.user_password);
+	url.append("xml.php?u=").append(progStatus.user_name);
+	url.append("&p=").append(progStatus.user_password);
 
 	HAMQTH_session_id.clear();
 
@@ -1122,7 +1121,7 @@ bool HAMQTHget(string& htmlpage)
 	}
 
 	size_t p1;
-	url.assign(progdefaults.hamqthurl);
+	url.assign(progStatus.hamqthurl);
 	if ((p1 = url.find("https")) != std::string::npos)
 		url.erase(p1+4,1);
 	if (url[url.length()-1] != '/') url += '/';
@@ -1216,7 +1215,7 @@ void CALLSIGNquery(std::string inpCall)
 			callsign.erase(slash);
 	}
 
-	switch (DB_XML_query = static_cast<qrz_xmlquery_t>(progdefaults.QRZXML)) {
+	switch (DB_XML_query = static_cast<qrz_xmlquery_t>(progStatus.QRZXML)) {
 	case QRZNET:
 //		printf("%s","Request sent to qrz.com...\n");
 		break;
@@ -1224,10 +1223,10 @@ void CALLSIGNquery(std::string inpCall)
 //		printf("%s","Request sent to www.hamcall.net...\n");
 		break;
 	case CALLOOK:
-//		printf("Request sent to %s\n", progdefaults.callookurl.c_str());
+//		printf("Request sent to %s\n", progStatus.callookurl.c_str());
 		break;
 	case HAMQTH:
-//		printf("Request sent to %s\n", progdefaults.hamqthurl.c_str());
+//		printf("Request sent to %s\n", progStatus.hamqthurl.c_str());
 		break;
 	case QRZXMLNONE:
 		break;
