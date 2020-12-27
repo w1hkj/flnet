@@ -40,6 +40,7 @@ struct status {
 
 	int				chAuto;
 	int				left_justify;
+	int				arc_conversion;
 
 	std::string		chP1;
 	std::string		chP2;

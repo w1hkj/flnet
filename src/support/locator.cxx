@@ -69,6 +69,7 @@
 #include <math.h>
 
 #include "locator.h"
+#include "status.h"
 
 namespace QRB {
 
@@ -531,7 +532,14 @@ int qrb(double lon1, double lat1, double lon2, double lat2, double *distance, do
 		 * So take 180 Degrees of arc times 60 nm,
 		 * and you get 10800 nm, or whatever units...
 		 */
-		*distance = M_PI * ARC_IN_KM;
+		switch (progStatus.arc_conversion) {
+			default:
+			case 0: *distance = M_PI * ARC_IN_KM;
+					break;
+			case 1: *distance = M_PI * ARC_IN_NM;
+					break;
+			case 2: *distance = M_PI * ARC_IN_SM;
+		}
 		*azimuth = 0.0;
 		return QRB_OK;
 	}
@@ -545,7 +553,14 @@ int qrb(double lon1, double lat1, double lon2, double lat2, double *distance, do
 	 */
 
 	
-	*distance = arc * ARC_IN_KM;
+	switch (progStatus.arc_conversion) {
+		default:
+		case 0: *distance = arc * ARC_IN_KM;
+				break;
+		case 1: *distance = arc * ARC_IN_NM;
+				break;
+		case 2: *distance = arc * ARC_IN_SM;
+	}
 
 	/* Short Path */
 	/* Change to azimuth computation by Dave Freese, W1HKJ */
@@ -576,7 +591,16 @@ int qrb(double lon1, double lat1, double lon2, double lat2, double *distance, do
  */
 
 double distance_long_path(double distance) {
-	 return (ARC_IN_KM * 2.0 * M_PI) - distance;
+	double value;
+	switch (progStatus.arc_conversion) {
+		default:
+		case 0: value = (ARC_IN_KM * 2.0 * M_PI) - distance;
+				break;
+		case 1: value = (ARC_IN_NM * 2.0 * M_PI) - distance;
+				break;
+		case 2: value = (ARC_IN_SM * 2.0 * M_PI) - distance;
+	}
+	return value;
 }
 
 /**

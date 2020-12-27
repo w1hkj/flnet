@@ -52,6 +52,8 @@ status progStatus = {
 
 	'n',							// int			chAuto;
 	true,							// int			left_justify
+	0,								// int			distance conversion
+									//				0 - KM, 1 - NM, 2 - SM
 
 	"A",							// std::string	chP1;
 	"B",							// std::string	chP2;
@@ -122,6 +124,7 @@ void status::saveLastState()
 	flnetpref.set("hamcallurl", hamcallurl.c_str());
 	flnetpref.set("qrzurl", qrzurl.c_str());
 
+	flnetpref.set("arc_conversion", arc_conversion);
 }
 
 void status::loadLastState()
@@ -171,4 +174,6 @@ void status::loadLastState()
 	flnetpref.get("hamqthurl", sztext, hamqthurl.c_str(), 100); hamqthurl = sztext;
 	flnetpref.get("hamcallurl", sztext, hamcallurl.c_str(), 100); hamcallurl = sztext;
 	flnetpref.get("qrzurl", sztext, qrzurl.c_str(), 100); qrzurl = sztext;
+
+	flnetpref.get("arc_conversion", arc_conversion, arc_conversion);
 }

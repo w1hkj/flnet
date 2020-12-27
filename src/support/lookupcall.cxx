@@ -513,7 +513,9 @@ void QRZ_disp_result(void *)
 				snprintf(dist, sizeof(dist), "%.0f", distance);
 				if (DISP_DEBUG) std::cout << "Locator:  " << query.grid << std::endl;
 				if (DISP_DEBUG) std::cout << "Azimuth:  " << buf << std::endl;
-				if (DISP_DEBUG) std::cout << "Distance: " << distance << " km" << std::endl;
+				if (DISP_DEBUG) std::cout << "Distance: " << distance << 
+				(progStatus.arc_conversion == 0 ? " km" :
+				 (progStatus.arc_conversion == 1 ? " nm" : " mi")) << std::endl;
 				comment1.append(" Az: ").append(buf);
 				comment1.append(" Dis: ").append(dist).append(" km");
 			}

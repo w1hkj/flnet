@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <FL/fl_show_colormap.H>
+#include <FL/Fl_Choice.H>
 #include "netsupport.h"
 #include "netshared.h"
 #include "config.h"
@@ -35,6 +36,7 @@
 #include "debug.h"
 #include "lookupcall.h"
 #include "status.h"
+#include "combo.h"
 
 Fl_Menu_Bar *mnu_bar=(Fl_Menu_Bar *)0;
 Fl_Group *tabGroupColors=(Fl_Group *)0;
@@ -68,6 +70,8 @@ Fl_Check_Button *chk_qrz = (Fl_Check_Button *)0;
 Fl_Input *inp_qrzurl = (Fl_Input *)0;
 
 Fl_Check_Button *chk_left_justify = (Fl_Check_Button *)0;
+
+Fl_Choice *combo_arc_conversion = (Fl_Choice *)0;
 
 Fl_Return_Button *btnConfigOK = (Fl_Return_Button *)0;
 
@@ -413,33 +417,47 @@ static void cb_left_justify(Fl_Check_Button *, void *)
 	progStatus.left_justify = chk_left_justify->value();
 }
 
+static void cb_arc_conversion (Fl_Choice *w, void *)
+{
+	progStatus.arc_conversion = combo_arc_conversion->value();
+}
+
 Fl_Double_Window* configDialog() {
 	Fl_Double_Window* w = new Fl_Double_Window(440, 250, "Net Configuration");
 
 	tabsConfig = new Fl_Tabs(5, 10, 430, 210);
 	tabsConfig->color((Fl_Color)44);
 		tabGroupUI = new Fl_Group(5, 35, 430, 185, "UI behavior");
-			btn_new_login_is_up = new Fl_Check_Button(30, 60, 70, 15, "New login is up");
+			btn_new_login_is_up = new Fl_Check_Button(30, 50, 70, 15, "New login is up");
 			btn_new_login_is_up->tooltip("Move new login to the >...<\nspot in the calll in list");
 			btn_new_login_is_up->down_box(FL_DOWN_BOX);
 			btn_new_login_is_up->callback((Fl_Callback*)cb_btn_new_login_is_up);
 			btn_new_login_is_up->value(progStatus.disp_new_login);
 
-			btnOpenEditor = new Fl_Check_Button(30, 90, 70, 15, "Open editor for new login");
+			btnOpenEditor = new Fl_Check_Button(30, 80, 70, 15, "Open editor for new login");
 			btnOpenEditor->tooltip("Open editor for new call in\nNew login is up must be enabled");
 			btnOpenEditor->down_box(FL_DOWN_BOX);
 			btnOpenEditor->callback((Fl_Callback*)cb_btnOpenEditor);
 			btnOpenEditor->value(progStatus.open_editor);
 
-			btn_current_call_in_is_up = new Fl_Check_Button(30, 120, 70, 15, "Current call in is up");
+			btn_current_call_in_is_up = new Fl_Check_Button(30, 110, 70, 15, "Current call in is up");
 			btn_current_call_in_is_up->tooltip("Move last login to the >...<\nspot in the calll in list");
 			btn_current_call_in_is_up->down_box(FL_DOWN_BOX);
 			btn_current_call_in_is_up->callback((Fl_Callback*)cb_btn_current_call_in_is_up);
 			btn_current_call_in_is_up->value(progStatus.callin_is_up);
 
-			chk_left_justify = new Fl_Check_Button(30, 150, 120, 24, "Left_Justify nickname");
+			chk_left_justify = new Fl_Check_Button(30, 140, 120, 24, "Left_Justify nickname");
 			chk_left_justify->value(progStatus.left_justify);
 			chk_left_justify->callback((Fl_Callback*)cb_left_justify);
+
+			combo_arc_conversion = new Fl_Choice (30, 175, 120, 24, "Arc Distance");
+//			combo_arc_conversion->type(1);
+			combo_arc_conversion->add("Kilometers");
+			combo_arc_conversion->add("Nautical Miles");
+			combo_arc_conversion->add("Statute Miles");
+			combo_arc_conversion->align(FL_ALIGN_RIGHT);
+			combo_arc_conversion->value(progStatus.arc_conversion);
+			combo_arc_conversion->callback((Fl_Callback*)cb_arc_conversion);
 
 		tabGroupUI->end();
 
