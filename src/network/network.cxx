@@ -53,7 +53,6 @@ static void my_debug( void *ctx, int level,
 					  const char *str )
 {
 	((void) level);
-
 	fprintf( (FILE *) ctx, "%s:%04d: %s", file, line, str );
 	fflush(  (FILE *) ctx  );
 }
@@ -96,6 +95,7 @@ void Url::parse(std::string url)
 	_host = stripped(_host);
 	_url = stripped(url);
 	_request = stripped(_request);
+
 if (_debug) {
 	debug_file << "parser:" << std::endl;
 	debug_file << "url:  " << url << std::endl;
@@ -468,7 +468,16 @@ void Url::debug(bool on)
 bool get_http(const std::string& url, std::string& reply, double timeout)
 {
 	Url target_url;
-	target_url.debug(false);//true);
+	target_url.debug(false);
+	target_url.timeout(timeout);
+
+	return target_url.get(url, reply);
+}
+
+bool get_http_debug(const std::string& url, std::string& reply, double timeout)
+{
+	Url target_url;
+	target_url.debug(true);
 	target_url.timeout(timeout);
 
 	return target_url.get(url, reply);

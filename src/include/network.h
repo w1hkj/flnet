@@ -42,6 +42,7 @@
 #include "mbedtls/certs.h"
 
 extern bool get_http(const std::string& url, std::string& reply, double timeout = 0.0);
+extern bool get_http_debug(const std::string& url, std::string& reply, double timeout = 0.0);
 
 extern char ca_crt_rsa[];
 extern size_t ca_crt_rsa_size;

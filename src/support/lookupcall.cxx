@@ -167,7 +167,7 @@ void subst_chars(string &s)
 	}
 }
 
-void clear_Lookup()
+void clear_lookup()
 {
 	query.name.clear();
 	query.addr1.clear();
@@ -183,6 +183,175 @@ void clear_Lookup()
 	query.lond.clear();
 	query.notes.clear();
 	query.country.clear();
+}
+
+// ---------------------------------------------------------------------
+// compute azimute and distance between to grid locations
+// ---------------------------------------------------------------------
+
+void compute()
+{
+	if (!inpLocator) return;
+
+	std::string remote = inpLocator->value();
+	if (remote.empty()) {
+		outAzimuth->value("");
+		outDistance->value("");
+		return;
+	}
+	char az[10], dist[20];
+	az[0] = '\0';
+	dist[0] = '\0';
+	double distance, azimuth, lon[2], lat[2];
+	if ( QRB::locator2longlat(
+			&lon[0], &lat[0],
+			progStatus.myLocator.c_str()) != QRB::QRB_OK ) {
+		outAzimuth->value("");
+		outDistance->value("");
+		if (DISP_DEBUG) std::cout << "myLocator conversion failed" << std::endl;
+		return;
+	}
+	if ( QRB::locator2longlat(
+			&lon[1], &lat[1],
+			remote.c_str()) != QRB::QRB_OK ) {
+		outAzimuth->value("");
+		outDistance->value("");
+		if (DISP_DEBUG) std::cout << "remote conversion failed" << std::endl;
+		return;
+	}
+	if ( QRB::qrb(
+			lon[0], lat[0], lon[1], lat[1],
+			&distance, &azimuth) != QRB::QRB_OK) {
+		outAzimuth->value("");
+		outDistance->value("");
+		if (DISP_DEBUG) std::cout << "geoidesic conversion failed" << std::endl;
+		return;
+	}
+	snprintf(az, sizeof(az), "%03.0f", round(azimuth));
+	snprintf(dist, sizeof(dist), "%.0f %s",
+			 distance,
+			 (progStatus.arc_conversion == 0 ? " km" :
+			 (progStatus.arc_conversion == 1 ? " nm" : " mi") ) );
+	outAzimuth->value(az);
+	outDistance->value(dist);
+	if (DISP_DEBUG) std::cout << "Locator:  " << remote << std::endl;
+	if (DISP_DEBUG) std::cout << "Azimuth:  " << az << std::endl;
+	if (DISP_DEBUG) std::cout << "Distance: " << dist << std::endl;
+}
+
+void display_lookup_result(void *)
+{
+	if (query.fname.length() > 0) {
+		camel_case(query.fname);
+		string::size_type spacePos = query.fname.find(" ");
+		//    if fname is "ABC" then display "ABC"
+		// or if fname is "A BCD" then display "A BCD"
+		if (spacePos == string::npos || (spacePos == 1)) {
+			if (DISP_DEBUG) std::cout << "Name: " << query.fname << std::endl;
+			inpFname->value(query.fname.c_str());
+			inpFname->redraw();
+		}
+		// if fname is "ABC Y" then display "ABC"
+		else if (spacePos > 2) {
+			string fname;
+			fname.assign(query.fname, 0, spacePos);
+			if (DISP_DEBUG) std::cout << "Name: " << query.fname << std::endl;
+			inpFname->value(fname.c_str());
+			inpFname->redraw();
+		}
+		// fname must be "ABC DEF" so display "ABC DEF"
+		else {
+			if (DISP_DEBUG) std::cout << "Name: " << query.fname << std::endl;
+			inpFname->value(query.fname.c_str());
+			inpFname->redraw();
+		}
+	}
+	if (query.name.length() > 0) {
+		// only name is set; don't know first/last, so just show all
+		if (DISP_DEBUG) std::cout << "Name: " << query.name << std::endl;
+		inpLname->value(query.name.c_str());
+		inpLname->redraw();
+	}
+	if (inpNickname->value()[0] == 0) {
+		inpNickname->value(query.fname.c_str());
+		inpNickname->redraw();
+	}
+
+		if (DISP_DEBUG) std::cout << "Qth: " << query.qth << std::endl;
+//	inpQth->value(query.qth.c_str());
+//	inpQth->position (0);
+
+		if (DISP_DEBUG) std::cout << "State: " << query.state << std::endl;
+	if (!query.state.empty()) {
+		inpState->value(query.state.c_str());
+		inpState->position (0);
+		inpState->redraw();
+	} else if (!query.province.empty()) {
+		if (DISP_DEBUG) std::cout << "Prov: " << query.province << std::endl;
+		inpState->value(query.province.c_str());
+		inpState->position (0);
+		inpState->redraw();
+	}
+
+	std::string comment1 = inpComment1->value();
+
+	if (!query.country.empty()) {
+		if (DISP_DEBUG) std::cout << "Country: " << query.country << std::endl;
+		inpCountry->value (query.country.c_str());
+	}
+
+	if (!query.addr1.empty()) {
+		if (DISP_DEBUG) std::cout << "Address-1: " << query.addr1 << std::endl;
+		inpAddress->value (query.addr1.c_str());
+		inpAddress->redraw();
+	}
+	if (!query.addr2.empty()) {
+		if (DISP_DEBUG) std::cout << "Address-2: " << query.addr2 << std::endl;
+		inpCity->value (query.addr2.c_str());
+		inpCity->redraw();
+	}
+	if (!query.zip.empty()) {
+		if (DISP_DEBUG) std::cout << "Zip: " << query.zip << std::endl;
+		inpZip->value (query.zip.c_str());
+		inpZip->redraw();
+	}
+	if (inpBirthday->value()[0] == 0) {
+		if (DISP_DEBUG) std::cout << "Born: " << query.born << std::endl;
+		inpBirthday->value(query.born.c_str());
+		inpBirthday->redraw();
+	}
+	if (inpEmail->value()[0] == 0) {
+		if (DISP_DEBUG) std::cout << "Email: " << query.email << std::endl;
+		inpEmail->value(query.email.c_str());
+		inpEmail->redraw();
+	}
+
+	if (!query.locator.empty()) {
+
+		if (inpLocator->value()[0] == 0) {
+//			if (DISP_DEBUG) std::cout << "Locator: " << query.locator << std::endl;
+			inpLocator->value(query.locator.c_str());
+			inpLocator->redraw();
+		}
+
+		if (!progStatus.myLocator.empty())
+			compute();
+
+		inpComment1->value(comment1.c_str());
+	}
+
+	std::string comment2 = inpComment2->value();
+	if (!query.notes.empty()) {
+
+		if (DISP_DEBUG) std::cout << "Notes: " << query.notes << std::endl;
+		if (!comment2.empty()) comment2.append("; ");
+		comment2.append(query.notes);
+	}
+	inpComment2->value(comment2.c_str());
+
+	inpComment1->redraw();
+	inpComment2->redraw();
+	Fl::flush();
 }
 
 // ----------------------------------------------------------------------------
@@ -263,7 +432,7 @@ bool parse_xml(const string& xmlpage)
 		qrzSessionKey.clear();
 		qrzalert.clear();
 		qrzerror.clear();
-		clear_Lookup();
+		clear_lookup();
 	}
 
 	TAG tag = QRZ_IGNORE;
@@ -398,155 +567,6 @@ bool QRZGetXML(string& xmlpage)
 	return get_http(html, xmlpage, 5.0);
 }
 
-// ---------------------------------------------------------------------
-// compute azimute and distance between to grid locations
-// ---------------------------------------------------------------------
-
-void compute()
-{
-	if (!inpLocator) return;
-
-	char az[10], dist[20];
-	az[0] = '\0';
-	dist[0] = '\0';
-	double distance, azimuth, lon[2], lat[2];
-	if (QRB::locator2longlat(
-			&lon[0], &lat[0],
-			progStatus.myLocator.c_str()) == QRB::QRB_OK &&
-		QRB::locator2longlat(
-			&lon[1], &lat[1],
-			inpLocator->value()) == QRB::QRB_OK &&
-		QRB::qrb(
-			lon[0], lat[0], lon[1], lat[1],
-			&distance, &azimuth) == QRB::QRB_OK) {
-		snprintf(az, sizeof(az), "%03.0f", round(azimuth));
-		snprintf(dist, sizeof(dist), "%.0f %s",
-				 distance,
-				 (progStatus.arc_conversion == 0 ? " km" :
-				 (progStatus.arc_conversion == 1 ? " nm" : " mi") ) );
-		outAzimuth->value(az);
-		outDistance->value(dist);
-		if (DISP_DEBUG) std::cout << "Locator:  " << query.locator << std::endl;
-		if (DISP_DEBUG) std::cout << "Azimuth:  " << az << std::endl;
-		if (DISP_DEBUG) std::cout << "Distance: " << dist << std::endl;
-	}
-}
-
-void QRZ_disp_result(void *)
-{
-	if (query.fname.length() > 0) {
-		camel_case(query.fname);
-		string::size_type spacePos = query.fname.find(" ");
-		//    if fname is "ABC" then display "ABC"
-		// or if fname is "A BCD" then display "A BCD"
-		if (spacePos == string::npos || (spacePos == 1)) {
-			if (DISP_DEBUG) std::cout << "Name: " << query.fname << std::endl;
-			inpFname->value(query.fname.c_str());
-			inpFname->redraw();
-		}
-		// if fname is "ABC Y" then display "ABC"
-		else if (spacePos > 2) {
-			string fname;
-			fname.assign(query.fname, 0, spacePos);
-			if (DISP_DEBUG) std::cout << "Name: " << query.fname << std::endl;
-			inpFname->value(fname.c_str());
-			inpFname->redraw();
-		}
-		// fname must be "ABC DEF" so display "ABC DEF"
-		else {
-			if (DISP_DEBUG) std::cout << "Name: " << query.fname << std::endl;
-			inpFname->value(query.fname.c_str());
-			inpFname->redraw();
-		}
-	}
-	if (query.name.length() > 0) {
-		// only name is set; don't know first/last, so just show all
-		if (DISP_DEBUG) std::cout << "Name: " << query.name << std::endl;
-		inpLname->value(query.name.c_str());
-		inpLname->redraw();
-	}
-	if (inpNickname->value()[0] == 0) {
-		inpNickname->value(query.fname.c_str());
-		inpNickname->redraw();
-	}
-
-		if (DISP_DEBUG) std::cout << "Qth: " << query.qth << std::endl;
-//	inpQth->value(query.qth.c_str());
-//	inpQth->position (0);
-
-		if (DISP_DEBUG) std::cout << "State: " << query.state << std::endl;
-	if (!query.state.empty()) {
-		inpState->value(query.state.c_str());
-		inpState->position (0);
-		inpState->redraw();
-	} else if (!query.province.empty()) {
-		if (DISP_DEBUG) std::cout << "Prov: " << query.province << std::endl;
-		inpState->value(query.province.c_str());
-		inpState->position (0);
-		inpState->redraw();
-	}
-
-	std::string comment1 = inpComment1->value();
-
-	if (!query.country.empty()) {
-		if (DISP_DEBUG) std::cout << "Country: " << query.country << std::endl;
-		inpCountry->value (query.country.c_str());
-	}
-
-	if (!query.addr1.empty()) {
-		if (DISP_DEBUG) std::cout << "Address-1: " << query.addr1 << std::endl;
-		inpAddress->value (query.addr1.c_str());
-		inpAddress->redraw();
-	}
-	if (!query.addr2.empty()) {
-		if (DISP_DEBUG) std::cout << "Address-2: " << query.addr2 << std::endl;
-		inpCity->value (query.addr2.c_str());
-		inpCity->redraw();
-	}
-	if (!query.zip.empty()) {
-		if (DISP_DEBUG) std::cout << "Zip: " << query.zip << std::endl;
-		inpZip->value (query.zip.c_str());
-		inpZip->redraw();
-	}
-	if (inpBirthday->value()[0] == 0) {
-		if (DISP_DEBUG) std::cout << "Born: " << query.born << std::endl;
-		inpBirthday->value(query.born.c_str());
-		inpBirthday->redraw();
-	}
-	if (inpEmail->value()[0] == 0) {
-		if (DISP_DEBUG) std::cout << "Email: " << query.email << std::endl;
-		inpEmail->value(query.email.c_str());
-		inpEmail->redraw();
-	}
-
-	if (!query.locator.empty()) {
-
-		if (inpLocator->value()[0] == 0) {
-			if (DISP_DEBUG) std::cout << "Locator: " << query.locator << std::endl;
-			inpLocator->value(query.locator.c_str());
-			inpLocator->redraw();
-		}
-
-		if (!progStatus.myLocator.empty())
-			compute();
-
-		inpComment1->value(comment1.c_str());
-	}
-
-	std::string comment2 = inpComment2->value();
-	if (!query.notes.empty()) {
-
-		if (DISP_DEBUG) std::cout << "Notes: " << query.notes << std::endl;
-		if (!comment2.empty()) comment2.append("; ");
-		comment2.append(query.notes);
-	}
-	inpComment2->value(comment2.c_str());
-
-	inpComment1->redraw();
-	inpComment2->redraw();
-	Fl::flush();
-}
-
 void lookup_init(void)
 {
 	if (QRZ_thread)
@@ -640,7 +660,7 @@ void QRZquery()
 				query.province = query.state;
 				query.state.clear();
 			}
-			Fl::awake(QRZ_disp_result);
+			Fl::awake(display_lookup_result);
 		}
 	}
 	else {
@@ -749,7 +769,7 @@ void parse_callook(string& xmlpage)
 	if (!nodestr.empty()) {
 		query.lond = node_data(nodestr, "longitude");
 		query.latd = node_data(nodestr, "latitude");
-		query.locator = node_data(nodestr, "locatorsquare");
+		query.locator = node_data(nodestr, "gridsquare");
 	}
 
 	p = query.addr2.find(",");
@@ -765,7 +785,7 @@ void parse_callook(string& xmlpage)
 		}
 		query.addr2 = query.qth;
 	}
-
+	query.country = "United States";
 }
 
 bool CALLOOKGetXML(string& xmlpage)
@@ -774,9 +794,10 @@ bool CALLOOKGetXML(string& xmlpage)
 	size_t p = 0;
 	if ((p = url.find("https")) != std::string::npos)
 		url.erase(p+4,1);
+	if ((p = url.find("www.")) != std::string::npos)
+		url.erase(p, 4);
 	url.append(callsign).append("/xml");
-	bool res = get_http(url, xmlpage, 5.0);
-	printf("result = %d\n", res);
+	bool res = get_http_debug(url, xmlpage, 5.0);
 	return res;
 }
 
@@ -786,12 +807,12 @@ void CALLOOKquery()
 
 	string CALLOOKpage;
 
-	clear_Lookup();
+	clear_lookup();
 	ok = CALLOOKGetXML(CALLOOKpage);
 	if (ok) {
 		subst_chars(CALLOOKpage);
 		parse_callook(CALLOOKpage);
-		Fl::awake(QRZ_disp_result);
+		Fl::awake(display_lookup_result);
 	}
 }
 
@@ -814,7 +835,7 @@ void parse_html(const string& htmlpage)
 
 	size_t p;
 
-	clear_Lookup();
+	clear_lookup();
 
 	if ((p = htmlpage.find(HAMCALL_FIRST)) != string::npos) {
 		p++;
@@ -879,7 +900,7 @@ void HAMCALLquery()
 		parse_html(htmlpage);
 	} else
 		query.notes = htmlpage;
-	Fl::awake(QRZ_disp_result);
+	Fl::awake(display_lookup_result);
 }
 
 // ----------------------- END HAMCALL ---------------------------------
@@ -999,7 +1020,7 @@ void parse_HAMQTH_html(const string& htmlpage)
 	size_t p1 = string::npos;
 	string tempstr;
 
-	clear_Lookup();
+	clear_lookup();
 
 	query.fname.clear();
 	query.qth.clear();
@@ -1007,6 +1028,9 @@ void parse_HAMQTH_html(const string& htmlpage)
 	query.locator.clear();
 	query.notes.clear();
 	query.country.clear();
+	query.locator.clear();
+	query.latd.clear();
+	query.lond.clear();
 
 	if ((p = htmlpage.find("<error>")) != string::npos) {
 		p += 7;
@@ -1074,7 +1098,7 @@ void parse_HAMQTH_html(const string& htmlpage)
 					p += 10;
 					p1 = htmlpage.find("</district>", p);
 					if (p1 != string::npos)
-						query.province = htmlpage.substr(p, p1 - p);
+						query.state = htmlpage.substr(p, p1 - p);
 				}
 			}
 		}
@@ -1087,36 +1111,13 @@ void parse_HAMQTH_html(const string& htmlpage)
 			query.state = htmlpage.substr(p, p1 - p);
 	}
 
-	if ((p = htmlpage.find("<locator>")) != string::npos) {
+	if ((p = htmlpage.find("<grid>")) != string::npos) {
 		p += 6;
-		p1 = htmlpage.find("</locator>", p);
+		p1 = htmlpage.find("</grid>", p);
 		if (p1 != string::npos)
 			query.locator = htmlpage.substr(p, p1 - p);
 	}
 
-	if ((p = htmlpage.find("<email>")) != string::npos) {
-		p += strlen("<email>");
-		p1 = htmlpage.find("</email>", p);
-		if (p1 != string::npos)
-			query.email = htmlpage.substr(p, p1 - p);
-	}
-
-	if ((p = htmlpage.find("<birth_year>")) != string::npos) {
-		p += strlen("<birth_year>");
-		p1 = htmlpage.find("</birth_year>");
-		if (p1 != string::npos)
-			query.born = htmlpage.substr(p, p1 - p);
-	}
-
-	if ((p = htmlpage.find("<qsl_via>")) != string::npos) {
-		p += 9;
-		p1 = htmlpage.find("</qsl_via>", p);
-		if (p1 != string::npos) {
-			tempstr.assign(htmlpage.substr(p, p1 - p));
-			if (!tempstr.empty())
-				query.notes.append("QSL via: ").append(tempstr).append("\n");
-		}
-	}
 }
 
 bool HAMQTHget(string& htmlpage)
@@ -1175,7 +1176,7 @@ void HAMQTHquery()
 	subst_chars(htmlpage);
 	parse_HAMQTH_html(htmlpage);
 
-	Fl::awake(QRZ_disp_result);
+	Fl::awake(display_lookup_result);
 
 }
 

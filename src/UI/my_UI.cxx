@@ -251,8 +251,9 @@ void updateCallins (bool fldigi_flag)
 			}
 			if (!ok) line.insert(46, "\n");
 		}
+		if (!line.empty()) line.append("; ");
 		line.append(rec.comment2);
-		if (line.length() > 92) line.erase(92);
+		if (line.length() > 93) line.erase(93);
 		ssInfo.append(line);
 
 		txtInfo->label (ssInfo.c_str());
