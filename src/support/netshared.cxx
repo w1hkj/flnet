@@ -82,28 +82,27 @@ void close_misc_dialogs(void)
 	if(CallsignBrowse) CallsignBrowse->hide();
 }
 
-char *uppercase (const char *s)
+string uppercase( string s)
 {
-	static char ucase[128];
-	memset (ucase, (char)0, sizeof(ucase));
-	strncpy (ucase, s, sizeof(ucase)-1);
-	for (unsigned int i = 0; i < strlen(ucase); i++)
+	static string ucase;
+	ucase.clear();
+	ucase.assign(s);
+	for (size_t i = 0; i < s.length(); i++)
 		ucase[i] = toupper(ucase[i]);
 	return ucase;
 }
 
-char *trim (const char *s)
+string trim(string s)
 {
-	static char trimmed[128];
-	memset (trimmed, (char)0, sizeof(trimmed));
-	strncpy (trimmed, s, sizeof(trimmed)-1);
-	while ( (strlen(trimmed)) && (trimmed[strlen(trimmed)-1] == ' '))
-		trimmed[strlen(trimmed)-1] = 0;
-	if (trimmed[0] == 0) return trimmed;
-	while (trimmed[0] == ' ')
-		strcpy(trimmed, trimmed+1);
+	static string trimmed;
+	trimmed.clear();
+	trimmed.assign(s);
+	while (trimmed.length() && trimmed[0] == ' ') trimmed.erase(0);
+	while (trimmed.length() && trimmed[trimmed.length()-1] == ' ')
+		trimmed.erase(trimmed.length() - 1);
 	return trimmed;
 }
+
 
 void gotoRec (long L)
 {
@@ -214,9 +213,9 @@ void AddNewRecord (char *prefix, char *area, char *suffix)
 	inpPrefix->value (prefix);
 	inpArea->value (area);
 	inpSuffix->value (suffix);
-	strcpy (tmp, trim(prefix));
-	strcat (tmp, trim(area));
-	strcat (tmp, trim(suffix));
+	strcpy (tmp, trim(prefix).c_str());
+	strcat (tmp, trim(area).c_str());
+	strcat (tmp, trim(suffix).c_str());
 	inpCallsign->value (tmp);
 	inpNickname->take_focus ();
 	editState = ADD;
@@ -366,34 +365,34 @@ void dispRec ()
 	csvRecord rec;
 	netdb.get(currec, rec);
 
-	inpPrefix->value (trim (rec.prefix.c_str()));
-	inpArea->value (trim (rec.area.c_str()));
-	inpSuffix->value (trim (rec.suffix.c_str()));
-	inpNickname->value (trim (rec.name.c_str()));
-	inpNetNbr->value (trim (rec.netnbr.c_str()));
+	inpPrefix->value (trim (rec.prefix).c_str());
+	inpArea->value (trim (rec.area).c_str());
+	inpSuffix->value (trim (rec.suffix).c_str());
+	inpNickname->value (trim (rec.name).c_str());
+	inpNetNbr->value (trim (rec.netnbr).c_str());
 	txtLogDate->value( rec.logdate.c_str());
-	inpFname->value (trim (rec.fname.c_str()));
-	inpLname->value (trim (rec.lname.c_str()));
-	inpAddress->value (trim (rec.addr.c_str()));
-	inpCity->value (trim (rec.city.c_str()));
-	inpState->value (trim (rec.state.c_str()));
-	inpZip->value (trim (rec.zip.c_str()));
-	inpPhone->value (trim (rec.phone.c_str()));
-	inpSpouse->value (trim (rec.spouse.c_str()));
-	inpSpBirthday->value (trim (rec.sp_birth.c_str()));
+	inpFname->value (trim (rec.fname).c_str());
+	inpLname->value (trim (rec.lname).c_str());
+	inpAddress->value (trim (rec.addr).c_str());
+	inpCity->value (trim (rec.city).c_str());
+	inpState->value (trim (rec.state).c_str());
+	inpZip->value (trim (rec.zip).c_str());
+	inpPhone->value (trim (rec.phone).c_str());
+	inpSpouse->value (trim (rec.spouse).c_str());
+	inpSpBirthday->value (trim (rec.sp_birth).c_str());
 	inpBirthday->value(rec.birthdate.c_str());
 
-	inpCallsign->value (trim (rec.callsign.c_str()));
-	inpNbrLogins->value (trim (rec.nbrlogins.c_str()));
-	inpStatus->value (trim (rec.status.c_str()));
-	inpJoined->value (trim (rec.joined.c_str()));
-	inpComment1->value (trim (rec.comment1.c_str()));
-	inpComment2->value (trim (rec.comment2.c_str()));
-	inpEmail->value (trim (rec.email.c_str()));
-	inpPrevDate->value (trim (rec.prevdate.c_str()));
+	inpCallsign->value (trim (rec.callsign).c_str());
+	inpNbrLogins->value (trim (rec.nbrlogins).c_str());
+	inpStatus->value (trim (rec.status).c_str());
+	inpJoined->value (trim (rec.joined).c_str());
+	inpComment1->value (trim (rec.comment1).c_str());
+	inpComment2->value (trim (rec.comment2).c_str());
+	inpEmail->value (trim (rec.email).c_str());
+	inpPrevDate->value (trim (rec.prevdate).c_str());
 
-	inpLocator->value (trim (rec.locator.c_str()));
-	inpCountry->value (trim (rec.country.c_str()));
+	inpLocator->value (trim (rec.locator).c_str());
+	inpCountry->value (trim (rec.country).c_str());
 
 	outAzimuth->value("");
 	outDistance->value("");

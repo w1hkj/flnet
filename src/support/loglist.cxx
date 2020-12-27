@@ -72,6 +72,7 @@ void loglist::CreateDispLine (int n)
 	time.clear();
 
 	call.assign(trim(llist[n].szPrefix)).append(trim(llist[n].szArea)).append(trim(llist[n].szSuffix));
+
 	if (call.length() < 6) dline.append(6 - call.length(), ' ');
 	dline.append(call);
 

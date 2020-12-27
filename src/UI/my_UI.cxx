@@ -162,9 +162,6 @@ void updateCallins (bool fldigi_flag)
 		szLogDate.assign(rec.logdate);
 		szNetNbr.assign(rec.netnbr);
 		szSpouse.assign(trim(rec.spouse.c_str()));
-		if (!szSpouse.empty()) {
-			szSpouse.append(", ").append(rec.sp_birth);
-		}
 		szPhone.assign(trim(rec.phone.c_str()));
 
 		szQTH.assign(trim(rec.city.c_str()));

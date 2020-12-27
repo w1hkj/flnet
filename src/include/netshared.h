@@ -67,8 +67,8 @@ extern void saveCurRecord ();
 extern void clearEditForm ();
 extern void appendNewRecord ();
 
-extern char *uppercase (const char *);
-extern char *trim (const char *);
+extern std::string uppercase (std::string s);
+extern std::string trim (std::string s);
 
 extern void toggleState ();
 
