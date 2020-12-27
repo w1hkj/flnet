@@ -210,15 +210,22 @@ Fl_Window * newEditWindow(bool new_window_flag)
 	inpState = new Fl_Input(275, 265, 35, 25);
 	inpZip = new Fl_Input(320, 265, 60, 25);
 
-	inpPhone = new Fl_Input(385, 265, 135, 24, "Phone:");
-	inpPhone->align(FL_ALIGN_TOP_LEFT);
-
 	inpBirthday = new Fl_DateInput(385, 217, 120, 24, "Birthday:");
 	inpBirthday->align(FL_ALIGN_TOP_LEFT);
 	inpBirthday->format(1);
 
+	inpPhone = new Fl_Input(385, 265, 135, 24, "Phone:");
+	inpPhone->align(FL_ALIGN_TOP_LEFT);
+
+	inpEmail = new Fl_Input(80, 295, 440, 24, "Email:");
+
 	inpSpouse = new Fl_Input(80, 324, 85, 24, "Spouse:");
+
 	inpSpBirthday = new Fl_Input(235, 324, 75, 24, "Birthday:");
+
+	inpComment1 = new Fl_Input(80, 355, 440, 24, "Comments");
+
+	inpComment2 = new Fl_Input(80, 385, 440, 24);
 
 	int xpos = 45;
 	int ypos = 420;
@@ -268,10 +275,6 @@ Fl_Window * newEditWindow(bool new_window_flag)
 	lblNumRecs = new Fl_Output(440, 30, 85, 24);
 	lblNumRecs->box(FL_BORDER_BOX);
 	lblNumRecs->color(53);
-
-	inpEmail = new Fl_Input(80, 295, 440, 24, "Email:");
-	inpComment1 = new Fl_Input(80, 355, 440, 24, "Comments");
-	inpComment2 = new Fl_Input(80, 385, 440, 24);
 
 	dlgNetEdit->end();
 

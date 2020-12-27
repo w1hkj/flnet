@@ -632,14 +632,14 @@ int my_UI::handle (int e)
 			}
 
 			if (my_status == LOGLIST) {
-				if (k == FL_Enter) {
+				if (k == FL_Enter || k == FL_KP_Enter) {
 					dispCallIns(updateFldigi);
 					return 1;
 				}
 			}
 
 			if (my_status == PICKLIST) {
-				if (k == FL_Enter) {
+				if (k == FL_Enter || k == FL_KP_Enter) {
 					PickedToCallins (whoPicked);
 					if (progStatus.callin_is_up) {
 						WhoIsUp = callinlist.numlist () - 1;
@@ -676,7 +676,7 @@ int my_UI::handle (int e)
 				}
 			}
 
-			if (my_status == SUFFIX && k == FL_Enter) {
+			if (my_status == SUFFIX && (k == FL_Enter || k == FL_KP_Enter)) {
 				if (nbrPicked) {
 					PickedToCallins (0);
 					if (progStatus.callin_is_up) {
@@ -746,7 +746,7 @@ int my_UI::handle (int e)
 				}
 				return 1;
 			}
-			if (k == FL_Enter && my_status == AREA) {
+			if ((k == FL_Enter || k == FL_KP_Enter) && my_status == AREA) {
 				time_t the_time;
 				struct tm *tm_ptr;
 				char sztime[6];
