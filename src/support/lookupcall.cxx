@@ -47,7 +47,7 @@
 #include "netedits.h"
 #include "status.h"
 
-#define DISP_DEBUG 0
+#define DISP_DEBUG 1
 
 using namespace std;
 
@@ -696,7 +696,7 @@ void QRZquery()
 	<location>
 		<latitude>32.92178</latitude>
 		<longitude>-94.9185</longitude>
-		<locatorsquare>EM22mw</locatorsquare>
+		<gridsquare>EM22mw</grodsquare>
 	</location>
 	<otherinfo>
 		<grantdate>04/24/2014</grantdate>
@@ -1118,6 +1118,36 @@ void parse_HAMQTH_html(const string& htmlpage)
 			query.locator = htmlpage.substr(p, p1 - p);
 	}
 
+	if ((p = htmlpage.find("<email>")) != string::npos) {
+		p += 7;
+		p1 = htmlpage.find("</email>", p);
+		if (p1 != string::npos)
+			query.email = htmlpage.substr(p, p1 - p);
+	}
+
+	std::string szlat = "";
+	std::string szlon = "";
+	if ((p = htmlpage.find("<latitude>")) != string::npos) {
+		p += 10;
+		p1 = htmlpage.find("</latitude>", p);
+		if (p1 != string::npos)
+			szlat = htmlpage.substr(p, p1 - p);
+	}
+	if ((p = htmlpage.find("<longitude>")) != string::npos) {
+		p += 11;
+		p1 = htmlpage.find("</longitude>", p);
+		if (p1 != string::npos)
+			szlon = htmlpage.substr(p, p1 - p);
+	}
+	if (!szlat.empty() && !szlon.empty()) {
+		double lat = atof(szlat.c_str());
+		double lon = atof(szlon.c_str());
+		char qthloc[10];
+		QRB::longlat2locator(lon,lat,qthloc,3);
+		qthloc[4] = tolower(qthloc[4]);
+		qthloc[5] = tolower(qthloc[5]);
+		query.locator = qthloc;
+	}
 }
 
 bool HAMQTHget(string& htmlpage)

@@ -226,7 +226,7 @@ void updateCallins (bool fldigi_flag)
 		line.assign("Country:").append(szCountry).append("\n");
 		ssInfo.append(line);
 
-		line.assign("Loc     ").append(rec.locator);
+		line.assign("Loc:    ").append(rec.locator);
 		if (line.length() > 20) line.erase(20);
 		if (line.length() < 20) line.append(20 - line.length(), ' ');
 		line.append("Az: ").append(szAzimuth);
