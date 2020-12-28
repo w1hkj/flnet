@@ -46,6 +46,7 @@ static Fl_Window *about = ( Fl_Window * )0;
 //Fl_Window *content = ( Fl_Window * )0;
 
 extern void updateLogins ();
+extern void clear_outfilename();
 
 void cb_mnuOpen(Fl_Menu_*mnu, void *d)
 {
@@ -55,7 +56,12 @@ void cb_mnuOpen(Fl_Menu_*mnu, void *d)
 		open_dir.c_str(), 0);
 	if (!p) return;
 	selected_file = p;
+
+	clear_outfilename();
 	updateLogins ();
+	callinlist.clear ();
+	updateCallins (false);
+
 	LOG_INFO("Open database %s", selected_file.c_str());
 	openDB (selected_file.c_str());
 }
@@ -67,7 +73,12 @@ void cb_mnuNew(Fl_Menu_*mnu, void *d)
 	char *p = fl_file_chooser ("New .csv file", "*.csv", selected_file.c_str(), 0);
 	if (!p) return;
 	selected_file = p;
+
+	clear_outfilename();
 	updateLogins ();
+	callinlist.clear ();
+	updateCallins (false);
+
 	LOG_INFO("New database %s", selected_file.c_str());
 	openDB (selected_file.c_str());
 }

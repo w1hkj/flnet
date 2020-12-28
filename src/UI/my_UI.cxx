@@ -237,20 +237,26 @@ void updateCallins (bool fldigi_flag)
 		ssInfo.append(line);
 
 		line.assign("Info:   ").append(rec.comment1);
-		if (line.length() > 46) {
+		std::string temp = rec.comment2;
+		if (!temp.empty()) {
+			line.append("; ").append(temp);
+		}
+		if (line.length() > 47) {
 			bool ok = false;
-			for (size_t n = 46; n > 30; n--) {
+			for (size_t n = 47; n > 30; n--) {
 				if (line[n] == ' ') {
 					line[n] = '\n';
 					ok = true;
 					break;
 				}
 			}
-			if (!ok) line.insert(46, "\n");
+			if (!ok) line.insert(47, "\n");
+			size_t p = line.find('\n');
+			std::string line2 = line.substr(p+1);
+			line.erase(p+1);
+			if (line2.length() > 47) line2.erase(47);
+			line.append(line2);
 		}
-		if (!line.empty()) line.append("; ");
-		line.append(rec.comment2);
-		if (line.length() > 93) line.erase(93);
 		ssInfo.append(line);
 
 		txtInfo->label (ssInfo.c_str());
@@ -259,12 +265,20 @@ void updateCallins (bool fldigi_flag)
 
 }
 
+static string outfilename;
+
+void clear_outfilename()
+{
+	outfilename.clear();
+}
+
 void updateLogins ()
 {
 	int i, n;
 	long rc;
 	FILE *fToday;
 	char today[80];
+	char ftoday[80];
 	char szLine[40];
 	char sztemp[40];
 	csvRecord rec;
@@ -274,52 +288,52 @@ void updateLogins ()
 	time(&t);
 	gmtime_r(&t, &tim);
 	strftime(today, sizeof(today), "%Y%m%d", &tim);
+	strftime(ftoday, sizeof(ftoday), "%Y.%m.%d.%H%M", &tim);
 
-	string outfilename = selected_file;
-	size_t p = outfilename.find(".csv");
-	if (p != string::npos) outfilename.erase(p);
-	p = outfilename.find(".CSV");
-	if (p != string::npos) outfilename.erase(p);
-	outfilename.append("-").append(today).append(".log");
+	if (outfilename.empty()) {
+		outfilename = selected_file;
+		size_t p = outfilename.find(".csv");
+		if (p != string::npos) outfilename.erase(p);
+		p = outfilename.find(".CSV");
+		if (p != string::npos) outfilename.erase(p);
+		outfilename.append("-").append(ftoday).append(".log");
+		fToday = fopen(outfilename.c_str(), "w");
+	} else
+		fToday = fopen(outfilename.c_str(), "w");
 
-	if (callinlist.numlist() == 0) return;
-	if (callinlist.numlist()) {
-		fToday = fopen (outfilename.c_str(), "a");
-		for (i = 0; i < callinlist.numlist(); i++) {
-			strcpy (szLine, callinlist.displine(i));
-			fprintf (fToday, "%s\n", szLine);
-			rc = callinlist.recN (i);
-			if (rc >= 0 && rc < (long)netdb.numrecs()) {
-				netdb.get(rc, rec);
-				rec.prevdate.assign(rec.logdate);
-				n = atoi (rec.nbrlogins.c_str());
-				n += 1;
-				sprintf (sztemp, "%d", n);
-				rec.nbrlogins.assign(sztemp);
+	for (i = 0; i < callinlist.numlist(); i++) {
+		strcpy (szLine, callinlist.displine(i));
+		fprintf (fToday, "%s\n", szLine);
+		rc = callinlist.recN (i);
+		if (rc >= 0 && rc < (long)netdb.numrecs()) {
+			netdb.get(rc, rec);
+			rec.prevdate.assign(rec.logdate);
+			n = atoi (rec.nbrlogins.c_str());
+			n += 1;
+			sprintf (sztemp, "%d", n);
+			rec.nbrlogins.assign(sztemp);
+			rec.logdate.assign(today);
+			netdb.put(rc, rec);
+		} else {
+			netdb.clearrec(rec);
+			szLine[6] = 0;
+			char *pos = strpbrk(szLine,"0123456789");
+			if (pos != NULL) {
+				pos++;
+				rec.suffix.assign(pos);
+				*pos = 0;
+				pos--;
+				rec.area.assign(pos);
+				*pos = 0;
+				rec.prefix.assign(szLine);
 				rec.logdate.assign(today);
-				netdb.put(rc, rec);
-			} else {
-				netdb.clearrec(rec);
-				szLine[6] = 0;
-				char *pos = strpbrk(szLine,"0123456789");
-				if (pos != NULL) {
-					pos++;
-					rec.suffix.assign(pos);
-					*pos = 0;
-					pos--;
-					rec.area.assign(pos);
-					*pos = 0;
-					rec.prefix.assign(szLine);
-					rec.logdate.assign(today);
-					rec.nbrlogins.assign("1");
-					netdb.add(rec);
-				}
+				rec.nbrlogins.assign("1");
+				netdb.add(rec);
 			}
 		}
 	}
+
 	fclose (fToday);
-	callinlist.clear ();
-	updateCallins (false);
 }
 
 void my_UI::UpdateWhoIsUp (long L)
@@ -623,6 +637,7 @@ int my_UI::handle (int e)
 						callinlist.del(WhoIsUp);
 						WhoIsUp--;
 						if (WhoIsUp < 0) WhoIsUp = 0;
+						updateLogins();
 						dispCallIns (false);
 						return 1;
 					}
@@ -643,6 +658,7 @@ int my_UI::handle (int e)
 						WhoIsUp = callinlist.numlist () - 1;
 						dispCallIns(false);
 					}
+					updateLogins();
 					my_status = LOGLIST;
 				}
 				if (k == FL_Down) {
@@ -681,6 +697,7 @@ int my_UI::handle (int e)
 						WhoIsUp = callinlist.numlist () - 1;
 						dispCallIns(false);
 					}
+					updateLogins();
 					my_status = LOGLIST;
 				}
 			}
@@ -757,6 +774,7 @@ int my_UI::handle (int e)
 				clearPickList ();
 				clearSAP ();
 				if (progStatus.disp_new_login && progStatus.open_editor) cb_F12 (WhoIsUp);
+				updateLogins();
 			}
 		}
 	}
