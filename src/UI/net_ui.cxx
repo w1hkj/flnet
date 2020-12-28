@@ -167,7 +167,7 @@ Fl_Double_Window* newNetControl() {
 
 				for (int i = 0; i < 15; i++) {
 					txtLine[i] = new Fl_Box(20, 70 + 15 * i, 190, 15);
-					txtLine[i]->box(FL_NO_BOX);
+					txtLine[i]->box(FL_FLAT_BOX);
 					txtLine[i]->color(FL_BACKGROUND2_COLOR);
 					txtLine[i]->labelfont(FL_SCREEN);
 					txtLine[i]->labelsize(12);

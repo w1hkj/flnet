@@ -104,18 +104,18 @@ char *fmtDate(char *d)
 	return date;
 }
 
-void updateInfo()
-{
-}
-
 void updateCallins (bool fldigi_flag)
 {
 	int i,j;
+	Fl_Color fg, bg;
 
 	for (i = WhoIsUp - 4, j = 0; i < WhoIsUp + 11; i++, j++) {
-		txtLine[j]->labelcolor (progStatus.fgColors[callinlist.status(i)]);
-		txtLine[j]->color (progStatus.bgColors[callinlist.status(i)]);
+		fg = progStatus.fgColors[callinlist.status(i)];
+		bg = progStatus.bgColors[callinlist.status(i)];
+		txtLine[j]->labelcolor (fg);
+		txtLine[j]->color (bg);
 		txtLine[j]->label (callinlist.displine(i));
+		txtLine[j]->redraw_label();
 	}
 
 	szFullName.clear();

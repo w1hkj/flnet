@@ -39,7 +39,7 @@ status progStatus = {
 	FL_WHITE,
 	FL_YELLOW,
 	FL_WHITE,
-	FL_BLACK,						// int			bgColors[5];
+	FL_WHITE,						// int			bgColors[5];
 	FL_WHITE,
 	FL_BLUE,
 	FL_DARK_GREEN,
