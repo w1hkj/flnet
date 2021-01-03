@@ -68,6 +68,7 @@ string szArea = "";
 string szSuffix = "";
 string szFullName;
 string szLogDate;
+string szPrevDate;
 string szBirthday;
 string szNetNbr;
 string szSpouse;
@@ -120,6 +121,7 @@ void updateCallins (bool fldigi_flag)
 
 	szFullName.clear();
 	szLogDate.clear();
+	szPrevDate.clear();
 	szBirthday.clear();
 	szNetNbr.clear();
 	szSpouse.clear();
@@ -138,8 +140,7 @@ void updateCallins (bool fldigi_flag)
 	checkins.seekp(ios::beg);
 	checkins << "Check-ins: " << callinlist.numlist();
 	strncpy(lbl, checkins.str().c_str(), 18);
-	net_grp2->label(lbl);
-	net_grp2->redraw_label();
+	out_callins->value(lbl);
 
 	long rc = callinlist.recN(WhoIsUp);
 
@@ -160,6 +161,7 @@ void updateCallins (bool fldigi_flag)
 		szFullName.assign(trim(rec.fname.c_str())).append(" ");
 		szFullName.append(trim(rec.lname.c_str()));
 		szLogDate.assign(rec.logdate);
+		szPrevDate.assign(rec.prevdate);
 		szNetNbr.assign(rec.netnbr);
 		szSpouse.assign(trim(rec.spouse.c_str()));
 		szPhone.assign(trim(rec.phone.c_str()));
@@ -260,8 +262,10 @@ void updateCallins (bool fldigi_flag)
 		ssInfo.append(line);
 
 		txtInfo->label (ssInfo.c_str());
-	} else
+	} else if (callinlist.numlist() == 0)
 		txtInfo->label ("");
+	else
+		txtInfo->label ("NOT IN DATABASE");
 
 }
 
@@ -272,7 +276,7 @@ void clear_outfilename()
 	outfilename.clear();
 }
 
-void updateLogins ()
+void updateLogins (bool closing = false)
 {
 	int i, n;
 	long rc;
@@ -304,32 +308,19 @@ void updateLogins ()
 	for (i = 0; i < callinlist.numlist(); i++) {
 		strcpy (szLine, callinlist.displine(i));
 		fprintf (fToday, "%s\n", szLine);
-		rc = callinlist.recN (i);
-		if (rc >= 0 && rc < (long)netdb.numrecs()) {
-			netdb.get(rc, rec);
-			rec.prevdate.assign(rec.logdate);
-			n = atoi (rec.nbrlogins.c_str());
-			n += 1;
-			sprintf (sztemp, "%d", n);
-			rec.nbrlogins.assign(sztemp);
+		if (closing) {
+std::cout << "closing" << std::endl;
+			rc = callinlist.recN (i);
+			if (rc >= 0 && rc < (long)netdb.numrecs()) {
+				netdb.get(rc, rec);
+				rec.prevdate.assign(rec.logdate);
+				n = atoi (rec.nbrlogins.c_str());
+				n += 1;
+				sprintf (sztemp, "%d", n);
+				rec.nbrlogins.assign(sztemp);
 			rec.logdate.assign(today);
 			netdb.put(rc, rec);
-		} else {
-			netdb.clearrec(rec);
-			szLine[6] = 0;
-			char *pos = strpbrk(szLine,"0123456789");
-			if (pos != NULL) {
-				pos++;
-				rec.suffix.assign(pos);
-				*pos = 0;
-				pos--;
-				rec.area.assign(pos);
-				*pos = 0;
-				rec.prefix.assign(szLine);
-				rec.logdate.assign(today);
-				rec.nbrlogins.assign("1");
-				netdb.add(rec);
-			}
+			} 
 		}
 	}
 
@@ -762,6 +753,12 @@ int my_UI::handle (int e)
 				return 1;
 			}
 			if ((k == FL_Enter || k == FL_KP_Enter) && my_status == AREA) {
+				int found = IsInDB(szPrefix.c_str(), szArea.c_str(), szSuffix.c_str());
+				if (found >= 0) {
+					PickedToCallinsDB(found);
+					return 1;
+				}
+
 				time_t the_time;
 				struct tm *tm_ptr;
 				char sztime[6];

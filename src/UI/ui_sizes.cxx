@@ -45,6 +45,7 @@ UI_SIZES UI_small[] = {
 	{   0,   0, 390, 460, FL_COURIER, 12}, // window  0
 	{   0,   0, 390,  25, FL_COURIER, 12}, // menu_ bar 1
 	{   0,  25, 390, 430, FL_COURIER, 12}, // myUI 2
+	{  15,  26, 120,  19, FL_COURIER_BOLD, 12}, // out_callins
 	{   0,  45, 230, 255, FL_COURIER, 12}, // net_grp1  4
 	{   2, 125,  15,  25, FL_COURIER, 12}, // ptr_left  4
 	{ 215, 125,  15,  25, FL_COURIER, 12}, // ptr_right  6
@@ -66,7 +67,7 @@ UI_SIZES UI_small[] = {
 	{  17, 265, 196,  16, FL_COURIER, 12}, // txtLine[13]  22
 	{  17, 280, 196,  16, FL_COURIER, 12}, // txtLine[14]  23
 
-	{ 230,  27, 155,  18, FL_COURIER_BOLD, 14}, // dbSelectLabel
+	{ 135,  27, 250,  18, FL_COURIER_BOLD, 12}, // dbSelectLabel
 	{ 230,  45, 155, 255, FL_COURIER, 12}, // dbSelectGroup  24
 	{ 240,  65,  40,  25, FL_COURIER, 12}, // inpLoginSuffix  25
 	{ 285,  65,  30,  25, FL_COURIER, 12}, // inpLoginPrefix  26
@@ -87,6 +88,7 @@ UI_SIZES UI_big[] = {
 	{   0,   0, 475, 635, FL_COURIER, 16}, // window
 	{   0,   0, 475,  25, FL_COURIER, 12}, // menu_ bar
 	{   0,  25, 475, 414, FL_COURIER, 16}, // myUI
+	{  17,  26, 143,  32, FL_COURIER_BOLD, 15}, // out_callins
 	{   0,  49, 275, 396, FL_COURIER, 14}, // net_grp1
 	{   2, 180,  15,  24, FL_COURIER, 16}, // ptr_left
 	{ 270, 180,  15,  24, FL_COURIER, 16}, // ptr_right
@@ -108,7 +110,7 @@ UI_SIZES UI_big[] = {
 	{  17, 396, 251,  24, FL_COURIER, 15}, // txtLine[13]
 	{  17, 420, 251,  24, FL_COURIER, 15}, // txtLine[14]
 
-	{ 284,  36, 185,  24, FL_COURIER_BOLD, 16}, // dbSelectLabel
+	{ 160,  26, 310,  32, FL_COURIER_BOLD, 15}, // dbSelectLabel
 	{ 284,  60, 185, 380, FL_COURIER, 18}, // dbSelectGroup
 	{ 291,  87,  60,  30, FL_COURIER, 18}, // inpLoginSuffix
 	{ 355,  87,  60,  30, FL_COURIER, 18}, // inpLoginPrefix
@@ -139,6 +141,10 @@ void ui_size(int sz, int X, int Y)
 	mnu_bar->resize(ui->x, ui->y, ui->w, ui->h);
 	ui++;
 	myUI->resize(ui->x, ui->y, ui->w, ui->h);
+	ui++;
+	out_callins->resize(ui->x, ui->y, ui->w, ui->h);
+	out_callins->textfont(ui->fnt);
+	out_callins->textsize(ui->size);
 	ui++;
 	net_grp1->resize(ui->x, ui->y, ui->w, ui->h);
 	net_grp1->labelfont(ui->fnt);

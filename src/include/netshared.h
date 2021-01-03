@@ -59,7 +59,7 @@ extern State editstate;
 extern size_t currec;
 extern size_t brwsnum;
 
-extern char sSimpleName[];
+extern string sSimpleName;
 
 extern Fl_Input *inpPrefix;
 
@@ -76,7 +76,7 @@ extern void getBrwsData ();
 extern int NetNbrCompare (const void *, const void *);
 extern int SAPCompare (const void *, const void *);
 extern int APSCompare (const void *, const void *);
-extern void AddNewRecord (char *prefix, char *area, char *suffix);
+extern void AddNewRecord (const char *prefix, const char *area, const char *suffix);
 extern void setAddState ();
 
 extern void SortBySAP ();
@@ -103,6 +103,10 @@ extern void cbCloseConfig ();
 extern void ui_size(int, int, int);
 extern void change_size();
 extern bool split_call(std::string src, std::string &p, std::string &a, std::string &s);
+
+extern void update_select_label();
+
+extern long IsInDB(const char *p, const char *a, const char *s);
 
 #endif
 

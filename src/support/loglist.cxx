@@ -73,13 +73,17 @@ void loglist::CreateDispLine (int n)
 
 	call.assign(trim(llist[n].szPrefix)).append(trim(llist[n].szArea)).append(trim(llist[n].szSuffix));
 
-	if (call.length() < 6) dline.append(6 - call.length(), ' ');
+	if (progStatus.call_left_justify) {
+		if (call.length() < 6) call.append(6 - call.length(), ' ');
+	} else {
+		if (call.length() < 6) call = std::string(6 - call.length(),' ').append(call);
+	}
 	dline.append(call);
 
 	dline.append(" ");
 	name = trim(llist[n].szName);
 	if (name.length() > 13) name = name.erase(13);
-	if (progStatus.left_justify) {
+	if (progStatus.name_left_justify) {
 		if (name.length() < 13) name.append(13 - name.length(), ' ');
 	} else {
 		if (name.length() < 13) name = std::string(13 - name.length(),' ').append(name);

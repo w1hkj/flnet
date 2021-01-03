@@ -665,7 +665,8 @@ void Socket::open(const Address& addr)
 ///
 void Socket::close(void)
 {
-printf("sockfd %d\n", sockfd);
+	if (SOCKET_DEBUG)
+		printf("sockfd %d\n", sockfd);
 #ifdef __MINGW32__
 	::closesocket(sockfd);
 #else
@@ -952,7 +953,8 @@ int Socket::connect(void)
 			errno, strerror(errno));
 		throw SocketException(errno, "connect");
 	}
-	printf(" Connected to sockfd %d: %s\n", sockfd, address.get_str(ainfo).c_str());
+	if (SOCKET_DEBUG)
+		printf(" Connected to sockfd %d: %s\n", sockfd, address.get_str(ainfo).c_str());
 	connected_flag = true;
 	return EISCONN;
 }
@@ -963,14 +965,14 @@ int Socket::connect(void)
 ///
 bool Socket::connect1(void)
 {
-    connected_flag = false;
+	connected_flag = false;
 	if (SOCKET_DEBUG)
 		printf("Connecting to %s\n", address.get_str(ainfo).c_str());
 
 	if (::connect(sockfd, ainfo->ai_addr, ainfo->ai_addrlen) == -1) {
 		return false;
 	}
-    connected_flag = true;
+	connected_flag = true;
 	return true;
 }
 

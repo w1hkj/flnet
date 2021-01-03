@@ -45,7 +45,7 @@ static Fl_Window *about = ( Fl_Window * )0;
 //Fl_Window *editor = NULL;
 //Fl_Window *content = ( Fl_Window * )0;
 
-extern void updateLogins ();
+extern void updateLogins (bool closing);
 extern void clear_outfilename();
 
 void cb_mnuOpen(Fl_Menu_*mnu, void *d)
@@ -58,7 +58,7 @@ void cb_mnuOpen(Fl_Menu_*mnu, void *d)
 	selected_file = p;
 
 	clear_outfilename();
-	updateLogins ();
+	updateLogins (true);
 	callinlist.clear ();
 	updateCallins (false);
 
@@ -75,7 +75,7 @@ void cb_mnuNew(Fl_Menu_*mnu, void *d)
 	selected_file = p;
 
 	clear_outfilename();
-	updateLogins ();
+	updateLogins (true);
 	callinlist.clear ();
 	updateCallins (false);
 
@@ -108,7 +108,7 @@ extern void close_misc_dialogs(void);
 
 void cleanExit(void)
 {
-	updateLogins ();
+	updateLogins (true);
 	closeDB();
 	close_xmlrpc();
 	debug::stop();

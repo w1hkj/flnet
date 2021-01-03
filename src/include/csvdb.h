@@ -39,14 +39,14 @@ using namespace std;
 
 
 struct callsigns {
-	string prefix;
-	string area;
-	string suffix;
+	char prefix[4];
+	char area[2];
+	char suffix[4];
 	int nbr;
 	callsigns() {
-		prefix.clear();
-		area.clear();
-		suffix.clear();
+		memset(prefix, 0, 4);
+		memset(area, 0, 2);
+		memset(suffix, 0, 4);
 		nbr = -1; }
 };
 

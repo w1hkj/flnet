@@ -51,7 +51,8 @@ status progStatus = {
 	1,								// int			QRZXML;
 
 	'n',							// int			chAuto;
-	true,							// int			left_justify
+	false,							// int			call_left_justify
+	true,							// int			name_left_justify
 	0,								// int			distance conversion
 									//				0 - KM, 1 - NM, 2 - SM
 
@@ -106,7 +107,9 @@ void status::saveLastState()
 	flnetpref.set("QRZXML", QRZXML);
 
 	flnetpref.set("chAuto", chAuto);
-	flnetpref.set("left_justify", left_justify);
+
+	flnetpref.set("call_left_justify", call_left_justify);
+	flnetpref.set("name_left_justify", name_left_justify);
 
 	flnetpref.set("chP1", chP1.c_str());
 	flnetpref.set("chP2", chP2.c_str());
@@ -156,7 +159,9 @@ void status::loadLastState()
 	flnetpref.get("QRZXML", QRZXML, QRZXML);
 
 	flnetpref.get("chAuto", chAuto, chAuto);
-	flnetpref.get("left_justify", left_justify, left_justify);
+
+	flnetpref.get("call_left_justify", call_left_justify, call_left_justify);
+	flnetpref.get("name_left_justify", name_left_justify, name_left_justify);
 
 	char sztext[100];
 	flnetpref.get("chP1", sztext, chP1.c_str(), 100); chP1 = sztext;

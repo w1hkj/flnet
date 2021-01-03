@@ -57,15 +57,15 @@ bool csvdb::mapheader(string header)
 	return ok;
 }
 
-static int compfunc(const void *r1, const void *r2) {
+static int callsign_comp(const void *r1, const void *r2) {
 	callsigns *p1 = (callsigns *)r1;
 	callsigns *p2 = (callsigns *)r2;
 	// sort by area / prefix / suffix
-	int comp = p1->area.compare(p2->area);
+	int comp = strcmp(p1->area, p2->area);
 	if (comp == 0) {
-		comp = p1->prefix.compare(p2->prefix);
+		comp = strcmp(p1->prefix, p2->prefix);
 		if (comp == 0)
-			comp = p1->suffix.compare(p2->suffix);
+			comp = strcmp(p1->suffix, p2->suffix);
 	}
 	return comp;
 }
@@ -292,23 +292,22 @@ void csvdb::join(csvRecord &rec, string &str)
 
 int csvdb::save()
 {
+	if (dbrecs.size() == 0) return - 1;
+
 	fstream dbfile(dbfilename.c_str(), ios::out | ios::binary);
 	if (!dbfile) return -1;
 
-	struct callsigns *clist = (struct callsigns *) new callsigns[dbrecs.size()];
-
-	if(!clist) {
-		printf("In Function %s near Line %d: Allocation Error", __func__, __LINE__);
-		return -1;
-	}
+	static struct callsigns *clist = new callsigns[dbrecs.size()];
 
 	for (size_t n = 0; n < dbrecs.size(); n++) {
-		clist[n].prefix = dbrecs[n].prefix;
-		clist[n].area   = dbrecs[n].area;
-		clist[n].suffix = dbrecs[n].suffix;
+		strncpy(clist[n].prefix , dbrecs[n].prefix.c_str(), 3);
+		strncpy(clist[n].area, dbrecs[n].area.c_str(), 1);
+		strncpy(clist[n].suffix, dbrecs[n].suffix.c_str(), 4);
 		clist[n].nbr = n;
 	}
-	qsort ( &(clist[0]), dbrecs.size(), sizeof(callsigns), compfunc);
+	qsort ( (void *)(&clist[0]), dbrecs.size(), sizeof(callsigns), callsign_comp);
+	for (size_t n = 0; n < dbrecs.size(); n++) {
+	}
 
 	// csv file header line
 	dbfile << csvFields << "\n";
@@ -318,9 +317,7 @@ int csvdb::save()
 		join(dbrecs[clist[n].nbr], line);
 		dbfile << line << "\n";
 	}
-
 	dbfile.close();
-
 	delete [] clist;
 
 	return 0;

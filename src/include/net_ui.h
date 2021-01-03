@@ -54,6 +54,7 @@ extern void cb_mnuAbout(Fl_Menu_*, void*);
 extern my_UI *myUI;
 
 extern Fl_Group *net_grp1;
+extern Fl_Output *out_callins;
 extern Fl_Box *ptr_left;
 extern Fl_Box *ptr_right;
 extern Fl_Group *net_grp2;

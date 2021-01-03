@@ -47,7 +47,7 @@
 #include "netedits.h"
 #include "status.h"
 
-#define DISP_DEBUG 1
+#define DISP_DEBUG 0
 
 using namespace std;
 
@@ -183,6 +183,7 @@ void clear_lookup()
 	query.lond.clear();
 	query.notes.clear();
 	query.country.clear();
+	query.email.clear();
 }
 
 // ---------------------------------------------------------------------
@@ -797,7 +798,8 @@ bool CALLOOKGetXML(string& xmlpage)
 	if ((p = url.find("www.")) != std::string::npos)
 		url.erase(p, 4);
 	url.append(callsign).append("/xml");
-	bool res = get_http_debug(url, xmlpage, 5.0);
+	bool res = get_http(url, xmlpage, 5.0);
+//	bool res = get_http_debug(url, xmlpage, 5.0);
 	return res;
 }
 
@@ -981,8 +983,6 @@ bool HAMQTH_get_session_id()
 
 	HAMQTH_session_id.clear();
 
-printf("Query string:%s\n", url.c_str());
-
 	int ret = get_http(url, retstr, 5.0);
 
 	if (ret == 0 ) {
@@ -990,8 +990,6 @@ printf("Query string:%s\n", url.c_str());
 		return false;
 	}
 
-	printf("url: %s\n", url.c_str());
-	printf("reply: %s\n", retstr.c_str());
 	p1 = retstr.find("<error>");
 	if (p1 != string::npos) {
 		p2 = retstr.find("</error>");
@@ -1021,16 +1019,6 @@ void parse_HAMQTH_html(const string& htmlpage)
 	string tempstr;
 
 	clear_lookup();
-
-	query.fname.clear();
-	query.qth.clear();
-	query.state.clear();
-	query.locator.clear();
-	query.notes.clear();
-	query.country.clear();
-	query.locator.clear();
-	query.latd.clear();
-	query.lond.clear();
 
 	if ((p = htmlpage.find("<error>")) != string::npos) {
 		p += 7;
@@ -1087,21 +1075,18 @@ void parse_HAMQTH_html(const string& htmlpage)
 			query.qth = htmlpage.substr(p, p1 - p);
 	}
 
-	if ((p = htmlpage.find("<country>")) != string::npos) {
+	if ((p = htmlpage.find("<adr_zip>")) != string::npos) {
 		p += 9;
-		p1 = htmlpage.find("</country>", p);
-		if (p1 != string::npos) {
+		p1 = htmlpage.find("</adr_zip>", p);
+		if (p1 != string::npos)
+			query.zip = htmlpage.substr(p, p1 - p);
+	}
+
+	if ((p = htmlpage.find("<adr_country>")) != string::npos) {
+		p += 13;
+		p1 = htmlpage.find("</adr_country>", p);
+		if (p1 != string::npos)
 			query.country = htmlpage.substr(p, p1 - p);
-			if (query.country == "Canada") {
-				p = htmlpage.find("<district>");
-				if (p != string::npos) {
-					p += 10;
-					p1 = htmlpage.find("</district>", p);
-					if (p1 != string::npos)
-						query.state = htmlpage.substr(p, p1 - p);
-				}
-			}
-		}
 	}
 
 	if ((p = htmlpage.find("<us_state>")) != string::npos) {

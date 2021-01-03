@@ -39,7 +39,8 @@ struct status {
 	int		QRZXML;
 
 	int				chAuto;
-	int				left_justify;
+	int				call_left_justify;
+	int				name_left_justify;
 	int				arc_conversion;
 
 	std::string		chP1;

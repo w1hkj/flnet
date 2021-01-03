@@ -135,6 +135,45 @@ void cb_locator(Fl_Input *, void *)
 	compute();
 }
 
+void cb_prefix(Fl_Input *w, void *)
+{
+	static std::string str;
+	str = inpPrefix->value();
+	for (size_t n = 0; n < str.length(); n++) str[n] = toupper(str[n]);
+	inpPrefix->value(str.c_str());
+	inpPrefix->redraw();
+	static std::string call;
+	call.assign(inpPrefix->value()).append(inpArea->value()).append(inpSuffix->value());
+	inpCallsign->value(call.c_str());
+	inpCallsign->redraw();
+}
+
+void cb_area(Fl_Input *w, void *)
+{
+	static std::string str;
+	str = inpArea->value();
+	for (size_t n = 0; n < str.length(); n++) str[n] = toupper(str[n]);
+	inpArea->value(str.c_str());
+	inpArea->redraw();
+	static std::string call;
+	call.assign(inpPrefix->value()).append(inpArea->value()).append(inpSuffix->value());
+	inpCallsign->value(call.c_str());
+	inpCallsign->redraw();
+}
+
+void cb_suffix(Fl_Input *w, void *)
+{
+	static std::string str;
+	str = inpSuffix->value();
+	for (size_t n = 0; n < str.length(); n++) str[n] = toupper(str[n]);
+	inpSuffix->value(str.c_str());
+	inpSuffix->redraw();
+	static std::string call;
+	call.assign(inpPrefix->value()).append(inpArea->value()).append(inpSuffix->value());
+	inpCallsign->value(call.c_str());
+	inpCallsign->redraw();
+}
+
 Fl_Window * newEditWindow(bool new_window_flag)
 {
 
@@ -152,12 +191,15 @@ Fl_Window * newEditWindow(bool new_window_flag)
 
 	inpPrefix = new Fl_Input(10, 75, 35, 24, "Prefix");
 	inpPrefix->align(FL_ALIGN_TOP_LEFT);
+	inpPrefix->callback((Fl_Callback *)cb_prefix);
 
 	inpArea = new Fl_Input(55, 75, 30, 24, "Area");
 	inpArea->align(FL_ALIGN_TOP_LEFT);
+	inpArea->callback((Fl_Callback *)cb_area);
 
 	inpSuffix = new Fl_Input(95, 75, 45, 24, "Suffix");
 	inpSuffix->align(FL_ALIGN_TOP_LEFT);
+	inpSuffix->callback((Fl_Callback *)cb_suffix);
 
 	inpNickname = new Fl_Input(155, 75, 150, 24, "Nickname");
 	inpNickname->align(FL_ALIGN_TOP_LEFT);

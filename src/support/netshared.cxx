@@ -49,10 +49,14 @@
 #include "xml_io.h"
 #include "csvdb.h"
 #include "status.h"
+#include "icons.h"
 
 csvdb netdb;
 
 extern loglist callinlist;
+
+int  binary_search_call(int l, int r, std::string &p, std::string &a, std::string &s);
+int  binary_search_netnbr(int l, int r, int x);
 
 short	rc;
 int		fc, nrecs;
@@ -66,7 +70,7 @@ size_t		currec;
 size_t		brwsnum;
 size_t		AddedRecNbr;
 
-char sSimpleName[400];
+string sSimpleName;
 char szDispName[200];
 
 Fl_Window	*NetNbrSearch = NULL,
@@ -117,25 +121,27 @@ void showState ()
 			btnNewSave->label("New");
 			btnUpdateCancel->label ("Update");
 			btnNewSave->show ();
+			btnUpdateCancel->show();
 			btnDelete->show ();
 			btnFirst->show ();
 			btnPrev->show ();
 			btnNext->show ();
 			btnLast->show ();
 			btn2Queue->show ();
+			btnClose->show();
 			break;
 
 		case NEW:
 			btnNewSave->label ("Save");
 			btnUpdateCancel->label ("Cancel");
 			btnNewSave->show ();
-			btnDelete->hide ();
 			btnDelete->show ();
 			btnFirst->show ();
 			btnPrev->show ();
 			btnNext->show ();
 			btnLast->show ();
 			btn2Queue->show ();
+			btnClose->hide();
 			break;
 
 		case ADD:
@@ -148,6 +154,7 @@ void showState ()
 			btnNext->hide ();
 			btnLast->hide ();
 			btn2Queue->hide ();
+			btnClose->hide();
 			break;
 
 		case MODIFY:
@@ -159,6 +166,8 @@ void showState ()
 			btnLast->hide ();
 			btn2Queue->hide ();
 			btnUpdateCancel->label ("Update");
+			btnUpdateCancel->show();
+			btnClose->show();
 			break;
 	}
 }
@@ -201,22 +210,22 @@ long IsInDB (const char *p, const char *a, const char *s)
 			break;
 		}
 	}
+	if (found >= 0) return brwsData[found].recN;
 	return found;
 }
 
 extern Fl_Input *inpCallsign;
 
-void AddNewRecord (char *prefix, char *area, char *suffix)
+void AddNewRecord (const char *prefix, const char *area, const char *suffix)
 {
-	char tmp[12];
+//std::cout << "AddNewRecord(" << prefix << area << suffix << ")" << std::endl;
 	clearEditForm ();
 	inpPrefix->value (prefix);
 	inpArea->value (area);
 	inpSuffix->value (suffix);
-	strcpy (tmp, trim(prefix).c_str());
-	strcat (tmp, trim(area).c_str());
-	strcat (tmp, trim(suffix).c_str());
-	inpCallsign->value (tmp);
+	std::string tmp;
+	tmp.assign(trim(prefix)).append(trim(area)).append(trim(suffix));
+	inpCallsign->value (tmp.c_str());
 	inpNickname->take_focus ();
 	editState = ADD;
 	showState ();
@@ -229,22 +238,22 @@ void ModifyRecord (long N)
 	gotoRec (N);
 }
 
-
+int get_cnt = 0;
 void getBrwsData()
 {
+//std::cout << "genBrwsData() " << ++get_cnt << std::endl;
 	if (!netdb.numrecs()) {
 		return;
 	}
 
-	static stringstream dispname;
-	dispname.seekp(ios::beg);
-	dispname << sSimpleName << " (" << netdb.numrecs() << ")";
-	dbSelectLabel->value(dispname.str().c_str());
-	dbSelectLabel->redraw();
+	update_select_label();
 
 	currec = netdb.recnbr();
 	if (brwsData) {
-		delete[] brwsData;
+//std::cout << "numrecs " << netdb.numrecs() << std::endl;
+//std::cout << "brwsData " << brwsData << std::endl;
+//std::cout << "sizeof(brwsdata) " << sizeof(brwsData) << std::endl;
+		delete [] brwsData;
 		brwsData = NULL;
 	}
 
@@ -321,16 +330,26 @@ void SortByAPS()
 void closeDB()
 {
 	netdb.save();
+
 	std::string cfg_filename = home_dir;
 	cfg_filename.append("flnet.cfg");
 	FILE *cfg_file = fopen(cfg_filename.c_str(),"w");
 	fprintf(cfg_file, "%s\n", selected_file.c_str());
 	fclose(cfg_file);
+
+}
+
+void update_select_label()
+{
+	char dispname[30];
+	snprintf(dispname, sizeof(dispname), "%s (%d)", sSimpleName.c_str(), netdb.numrecs());
+	dbSelectLabel->value(dispname);
+	dbSelectLabel->redraw();
 }
 
 void openDB(string fname)
 {
-	strcpy (sSimpleName, fl_filename_name(fname.c_str()));
+	sSimpleName = fl_filename_name(fname.c_str());
 	netdb.filename(fname.c_str());
 	if (netdb.load() != 0) {
 		fl_message("Not an flnet csv file");
@@ -343,11 +362,7 @@ void openDB(string fname)
 		if (progStatus.chAuto == 'y') callinlist.AutoPriority (1);
 		getBrwsData();
 	} else {
-		static stringstream dispname;
-		dispname.seekp(ios::beg);
-		dispname << sSimpleName << " (" << netdb.numrecs() << ")";
-		dbSelectLabel->value(dispname.str().c_str());
-		dbSelectLabel->redraw();
+		update_select_label();
 	}
 }
 
@@ -363,6 +378,7 @@ void dispRec ()
 	lblNumRecs->value (recs.str().c_str());
 
 	csvRecord rec;
+
 	netdb.get(currec, rec);
 
 	inpPrefix->value (trim (rec.prefix).c_str());
@@ -472,6 +488,7 @@ void saveCurRecord ()
 
 void appendNewRecord ()
 {
+//std::cout << "appendNewRecord()" << std::endl;
 	csvRecord rec;
 	setFields (rec);
 	netdb.add(rec);
@@ -480,6 +497,7 @@ void appendNewRecord ()
 
 void appendNewRecord (csvRecord &rec)
 {
+//std::cout << "appendNewRecord(rec)" << std::endl;
 	setFields (rec);
 	netdb.add(rec);
 	getBrwsData ();
@@ -505,7 +523,7 @@ int add_fldigi_record(void)
 	if(split_call(data->callsign, prefix, area, suffix) == false) return -1;
 
 	if(IsInDB (prefix.c_str(), area.c_str(), suffix.c_str()) < 0) {
-		csvRecord rec;
+		csvRecord *rec = new csvRecord;
 		char date[32];
 		time_t rawtime = 0;
 		struct tm * timeinfo = 0;
@@ -515,34 +533,34 @@ int add_fldigi_record(void)
 		memset(date, 0, sizeof(date));
 		snprintf(date, sizeof(date)-1, "%04d%02d%02d", timeinfo->tm_year+1900, timeinfo->tm_mon+1, timeinfo->tm_mday);
 
-		rec.prefix    = trim(uppercase(prefix.c_str()));
-		rec.area      = trim(area.c_str());
-		rec.suffix    = trim(uppercase(suffix.c_str()));
-		rec.name      = trim(data->name.c_str());
-		rec.fname     = trim(data->name.c_str());
-		rec.city      = trim(data->qth.c_str());
-		rec.state     = trim(data->state.c_str());
-		rec.callsign  = trim(uppercase(data->callsign.c_str()));
-		rec.netnbr 	  = "";
-		rec.logdate   = date;
-		rec.lname 	  = "";
-		rec.addr	  = "";
-		rec.zip	      = "";
-		rec.phone     = "";
-		rec.birthdate = "";
-		rec.spouse    = "";
-		rec.sp_birth  = "";
-		rec.nbrlogins = "";
-		rec.status    = "";
-		rec.joined    = date;
-		rec.comment1  = "";
-		rec.comment2  = "";
-		rec.email     = "";
-		rec.prevdate  = "";
-		rec.country   = "";
-		rec.locator      = "";
+		rec->prefix    = trim(uppercase(prefix.c_str()));
+		rec->area      = trim(area.c_str());
+		rec->suffix    = trim(uppercase(suffix.c_str()));
+		rec->name      = trim(data->name.c_str());
+		rec->fname     = trim(data->name.c_str());
+		rec->city      = trim(data->qth.c_str());
+		rec->state     = trim(data->state.c_str());
+		rec->callsign  = trim(uppercase(data->callsign.c_str()));
+		rec->netnbr    = "";
+		rec->logdate   = date;
+		rec->lname     = "";
+		rec->addr      = "";
+		rec->zip       = "";
+		rec->phone     = "";
+		rec->birthdate = "";
+		rec->spouse    = "";
+		rec->sp_birth  = "";
+		rec->nbrlogins = "";
+		rec->status    = "";
+		rec->joined    = date;
+		rec->comment1  = "";
+		rec->comment2  = "";
+		rec->email     = "";
+		rec->prevdate  = "";
+		rec->country   = "";
+		rec->locator   = "";
 
-		netdb.add(rec);
+		netdb.add(*rec);
 		getBrwsData ();
 	}
 
@@ -614,24 +632,73 @@ void cb_mnuFldigiEditor(Fl_Menu_*, void*)
 
 void cb_F12(int WhoIsUp)
 {
-	long shownrec;
-	int n;
-	n = callinlist.numlist ();
-	if (!n) return;
-
 	Fl_Window *editor = getEditWindow();
-	editor->resize(main_window->x() + main_window->w() + 10, main_window->y(), 535, 460);
+//	editor->resize(main_window->x() + main_window->w() + 10, main_window->y(), 535, 460);
+
+	clearEditForm ();
+
+	std::string prefix = trim(callinlist.prefix (WhoIsUp));
+	std::string area = trim(callinlist.area (WhoIsUp));
+	std::string suffix = trim(callinlist.suffix (WhoIsUp));
+
+// do not allow empty database entry!
+	if (prefix.empty() || area.empty() || suffix.empty()) {
+		fl_alert2("No check-in selected");
+		return;
+	}
+	std::string tmp;
+	tmp.assign(trim(prefix)).append(trim(area)).append(trim(suffix));
 
 	SortBySAP ();
-	clearEditForm ();
-	editor->show ();
 
-	if ((shownrec = callinlist.recN (WhoIsUp)) != -1)
-		ModifyRecord (shownrec);
-	else
-		AddNewRecord (callinlist.prefix (WhoIsUp),
-					  callinlist.area (WhoIsUp),
-					  callinlist.suffix (WhoIsUp));
+	int rnbr = binary_search_call(0, netdb.numrecs(), prefix, area, suffix);
+
+	if (rnbr < 0) {
+		csvRecord *rec = new csvRecord;
+		char date[32];
+		time_t rawtime = 0;
+		struct tm * timeinfo = 0;
+
+		time (&rawtime);
+		timeinfo = localtime (&rawtime);
+		memset(date, 0, sizeof(date));
+		snprintf(date, sizeof(date)-1, "%04d%02d%02d", timeinfo->tm_year+1900, timeinfo->tm_mon+1, timeinfo->tm_mday);
+
+		rec->prefix.assign(prefix);
+		rec->area.assign(area);
+		rec->suffix.assign(suffix);
+		rec->name.clear();
+		rec->fname.clear();
+		rec->city.clear();
+		rec->state.clear();
+		rec->callsign.assign(trim(prefix)).append(trim(area)).append(trim(suffix));
+		rec->netnbr.clear();
+		rec->logdate.clear();
+		rec->lname.clear();
+		rec->addr.clear();
+		rec->zip.clear();
+		rec->phone.clear();
+		rec->birthdate.clear();
+		rec->spouse.clear();
+		rec->sp_birth.clear();
+		rec->nbrlogins.clear();
+		rec->status.clear();
+		rec->joined.clear();
+		rec->comment1.clear();
+		rec->comment2.clear();
+		rec->email.clear();
+		rec->prevdate.clear();
+		rec->country.clear();
+		rec->locator.clear();
+
+		netdb.add(*rec);
+		getBrwsData ();
+
+		SortBySAP();
+		rnbr = binary_search_call(0, netdb.numrecs(), prefix, area, suffix);
+	}
+	editor->show();
+	ModifyRecord(brwsData[rnbr].recN);
 }
 
 void cb_ShiftF12(void)
@@ -641,11 +708,10 @@ void cb_ShiftF12(void)
 	myUI->PickedToCallinsDB((size_t) brwsData[rn].recN);
 }
 
-
 void cbEditor ()
 {
 	Fl_Window *editor = getEditWindow();
-	editor->resize(main_window->x() + main_window->w() + 10, main_window->y(), 535, 460);
+//	editor->resize(main_window->x() + main_window->w() + 10, main_window->y(), 535, 460);
 
 	SortBySAP ();
 	clearEditForm ();
@@ -658,8 +724,8 @@ void cbEditor ()
 void cbCloseEditor ()
 {
 	Fl_Window *editor = getEditWindow();
-	getBrwsData ();
-	SortBySAP ();
+//	getBrwsData ();
+//	SortBySAP ();
 	editState = UPDATE;
 	showState ();
 	editor->hide ();
@@ -738,6 +804,30 @@ void cb_btnSearchCancel(Fl_Button *b, void *d)
 	CallsignSearch->hide ();
 }
 
+// l = left element in search interval
+// r = right element in search interval
+// p = search prefix
+// a = search area
+// s = search suffix
+int  binary_search_call(int l, int r, std::string &p, std::string &a, std::string &s) 
+{ 
+	std::string p2, a2, s2;
+	if (r >= l) { 
+		int mid = l + (r - l) / 2; 
+		p2 = trim(brwsData[mid].prefix);
+		a2 = trim(brwsData[mid].area);
+		s2 = trim(brwsData[mid].suffix);
+		if (s2 > s) return binary_search_call(l, mid - 1, p, a, s);
+		if (s2 < s) return binary_search_call(mid + 1, r, p, a, s);
+		if (a2 > a) return binary_search_call(l, mid - 1, p, a, s);
+		if (a2 < a) return binary_search_call(mid + 1, r, p, a, s);
+		if (p2 > p) return binary_search_call(l, mid - 1, p, a, s);
+		if (p2 < p) return binary_search_call(mid + 1, r, p, a, s);
+		return mid;
+	} 
+	return -1; 
+} 
+
 void cb_btnSearchOK(Fl_Return_Button *b, void *d)
 {
 	long found;
@@ -745,10 +835,14 @@ void cb_btnSearchOK(Fl_Return_Button *b, void *d)
 
 	CallsignSearch->hide ();
 
-	found = IsInDB (sSrchPrefix->value(), sSrchArea->value(), sSrchSuffix->value());
+	SortBySAP();
+	std::string p = trim(uppercase(sSrchPrefix->value()));
+	std::string a = trim(uppercase(sSrchArea->value()));
+	std::string s = trim(uppercase(sSrchSuffix->value()));
+	found = binary_search_call(	0, netdb.numrecs() - 1, p, a, s);
+
 	if (found > -1) {
-		brwsnum = found;
-		gotoRec (brwsData[found].recN);
+		gotoRec(brwsData[found].recN);
 	}
 }
 
@@ -756,6 +850,9 @@ void cb_mnuSearchCallsign (Fl_Menu_ *m, void *d)
 {
 	if (!CallsignSearch)
 		CallsignSearch = newSearchCallsignDialog();
+	sSrchPrefix->value("");
+	sSrchArea->value("");
+	sSrchSuffix->value("");
 	CallsignSearch->show();
 }
 
@@ -764,36 +861,42 @@ void cb_btnSearchNetNbrCancel (Fl_Button *b, void *d)
 	NetNbrSearch->hide ();
 }
 
+// l = left element in search interval
+// r = right element in search interval
+// x = search value
+int  binary_search_netnbr(int l, int r, int x) 
+{ 
+	int snbr;
+    if (r >= l) { 
+        int mid = l + (r - l) / 2; 
+        snbr = atol(brwsData[mid].netnbr);
+        if (snbr == x) return mid; 
+        if (snbr > x) return binary_search_netnbr(l, mid - 1, x); 
+        return binary_search_netnbr(mid + 1, r, x); 
+    } 
+    return -1; 
+} 
+
 void cb_btnSearchNetNbrOK (Fl_Return_Button *b, void *d)
 {
 	if (!brwsData) return;
-	long found;
-	char szNbr[10];
-	int nbr, netnbr;
-
-	strcpy (szNbr, sSrchNetNbr->value());
+	int srchnbr = atol(sSrchNetNbr->value());
+	int found = -1;
 	NetNbrSearch->hide ();
 
-	found = -1L;
 	SortByNetNbr ();
-	nbr = atoi(szNbr);
-	for (int n = 0; n < netdb.numrecs(); n++) {
-		netnbr = atoi (brwsData[n].netnbr);
-		if (nbr > netnbr) continue;
-		if (nbr < netnbr) break;
-		found = n;
-		break;
-	}
-	if (found > -1) {
-		brwsnum = found;
-		gotoRec (brwsData[found].recN);
-	}
+	found = binary_search_netnbr(0, netdb.numrecs() - 1, srchnbr);
+
+	if (found == -1) return;
+
+	gotoRec(brwsData[found].recN);
 }
 
 void cb_mnuSearchNetNbr (Fl_Menu_ *m, void *d)
 {
 	if (!NetNbrSearch)
 		NetNbrSearch = newSearchNetNbrDialog ();
+	sSrchNetNbr->value("");
 	NetNbrSearch->show ();
 }
 
@@ -834,6 +937,7 @@ void cb_btnUpdateCancel(Fl_Button *b, void *d)
 			saveCurRecord ();
 			getBrwsData ();
 			SortBySAP ();
+			update_select_label();
 		}
 	}
 }
@@ -843,6 +947,7 @@ void cb_btnDelete(Fl_Button *b, void *d)
 	if (fl_choice("Confirm Delete", "cancel", "OK", NULL) == 1) {
 		netdb.erase(currec);
 		cbGoFirstRec (NULL,NULL);
+		update_select_label();
 	}
 }
 
@@ -878,6 +983,7 @@ void cb_btnNewSave(Fl_Button *b, void *d)
 {
 	if (editState == NEW || editState == ADD) {
 		if (IsInDB (inpPrefix->value(), inpArea->value(), inpSuffix->value()) == -1) {
+
 			std::string newPrefix;
 			std::string newArea;
 			std::string newSuffix;
@@ -885,17 +991,23 @@ void cb_btnNewSave(Fl_Button *b, void *d)
 			newPrefix.assign(trim(inpPrefix->value()));
 			newArea.assign(trim(inpArea->value()));
 			newSuffix.assign(trim(inpSuffix->value()));
+// do not allow empty database records !!
+			if (newPrefix.empty() || newArea.empty() || newSuffix.empty()) {
+				fl_alert2("Prefix/Area/Suffix are required entries");
+				return;
+			}
 
 			appendNewRecord ();
-
-			getBrwsData ();
 			SortBySAP();
 
 			if(newPrefix.size() && newArea.size() && newSuffix.size()) {
 				long found =  IsInDB (newPrefix.c_str(), newArea.c_str(), newSuffix.c_str());
-				if(found > -1) {
-					currec = brwsData[found].recN;
+
+				if (found > -1) {
+					currec = found;
 					gotoRec(currec);
+					toggleState ();
+					return;
 				}
 			}
 
@@ -907,9 +1019,12 @@ void cb_btnNewSave(Fl_Button *b, void *d)
 				updateCallins (false);
 				return;
 			}
-		} else
+			update_select_label();
+		} else {
+			clearEditForm();
+			gotoRec(currec);
 			fl_alert ("Callsign already in database");
-		//cbGoLastRec (NULL, NULL);
+		}
 	} else {
 		clearEditForm ();
 		editState = NEW;

@@ -68,7 +68,8 @@ Fl_Input *inp_hamcallurl = (Fl_Input *)0;
 Fl_Check_Button *chk_qrz = (Fl_Check_Button *)0;
 Fl_Input *inp_qrzurl = (Fl_Input *)0;
 
-Fl_Check_Button *chk_left_justify = (Fl_Check_Button *)0;
+Fl_Check_Button *chk_call_left_justify = (Fl_Check_Button *)0;
+Fl_Check_Button *chk_name_left_justify = (Fl_Check_Button *)0;
 
 Fl_Choice *combo_arc_conversion = (Fl_Choice *)0;
 
@@ -80,6 +81,7 @@ Fl_Return_Button *btnConfigOK = (Fl_Return_Button *)0;
 
 my_UI *myUI=(my_UI *)0;
 Fl_Group *net_grp1=(Fl_Group *)0;
+Fl_Output *out_callins=(Fl_Output *)0;
 Fl_Box *ptr_left=(Fl_Box *)0;
 Fl_Box *ptr_right=(Fl_Box *)0;
 Fl_Group *net_grp2=(Fl_Group *)0;
@@ -143,6 +145,12 @@ Fl_Double_Window* newNetControl() {
 		myUI->align(Fl_Align(FL_ALIGN_TOP));
 		myUI->when(FL_WHEN_RELEASE);
 
+		out_callins = new Fl_Output( 20, 24, 180, 22, "");
+		out_callins->color(FL_BACKGROUND_COLOR);
+		out_callins->box(FL_FLAT_BOX);
+		out_callins->align(FL_ALIGN_CENTER);
+		out_callins->value("");
+
 		net_grp1 = new Fl_Group(0, 45, 225, 255, "");
 		net_grp1->tooltip("Use UP/DN arrow keys to scroll list");
 		net_grp1->labelfont(FL_SCREEN);
@@ -153,10 +161,10 @@ Fl_Double_Window* newNetControl() {
 
 			ptr_right = new Fl_Box(210, 125, 15, 25, "@<");
 
-			net_grp2 = new Fl_Group(17, 45, 196, 255, "Check-ins:");
+			net_grp2 = new Fl_Group(17, 45, 196, 255, "");
 			net_grp2->box(FL_DOWN_BOX);
 			net_grp2->color(FL_BACKGROUND2_COLOR);
-			net_grp2->align(FL_ALIGN_TOP_LEFT);
+			net_grp2->align(FL_ALIGN_CENTER);
 
 				txtTitles = new Fl_Box(20, 47, 190, 22, " Call |    Name     |Time|F");
 				txtTitles->box(FL_FLAT_BOX);
@@ -177,7 +185,7 @@ Fl_Double_Window* newNetControl() {
 
 		net_grp1->end();
 
-		dbSelectLabel = new Fl_Output(230, 27, 155, 18);
+		dbSelectLabel = new Fl_Output(200, 27, 155, 18);
 		dbSelectLabel->color(FL_BACKGROUND_COLOR);
 		dbSelectLabel->box(FL_FLAT_BOX);
 
@@ -416,9 +424,14 @@ static void cb_hamqrzurl(Fl_Input *, void *)
 	progStatus.qrzurl = inp_qrzurl->value();
 }
 
-static void cb_left_justify(Fl_Check_Button *, void *)
+static void cb_call_left_justify(Fl_Check_Button *, void *)
 {
-	progStatus.left_justify = chk_left_justify->value();
+	progStatus.call_left_justify = chk_call_left_justify->value();
+}
+
+static void cb_name_left_justify(Fl_Check_Button *, void *)
+{
+	progStatus.name_left_justify = chk_name_left_justify->value();
 }
 
 static void cb_arc_conversion (Fl_Choice *w, void *)
@@ -440,21 +453,25 @@ Fl_Double_Window* configDialog() {
 			btn_new_login_is_up->callback((Fl_Callback*)cb_btn_new_login_is_up);
 			btn_new_login_is_up->value(progStatus.disp_new_login);
 
-			btnOpenEditor = new Fl_Check_Button(30, 80, 70, 15, "Open editor for new login");
+			btnOpenEditor = new Fl_Check_Button(30, 75, 70, 15, "Open editor for new login");
 			btnOpenEditor->tooltip("Open editor for new call in\nNew login is up must be enabled");
 			btnOpenEditor->down_box(FL_DOWN_BOX);
 			btnOpenEditor->callback((Fl_Callback*)cb_btnOpenEditor);
 			btnOpenEditor->value(progStatus.open_editor);
 
-			btn_current_call_in_is_up = new Fl_Check_Button(30, 110, 70, 15, "Current call in is up");
+			btn_current_call_in_is_up = new Fl_Check_Button(30, 100, 70, 15, "Current call in is up");
 			btn_current_call_in_is_up->tooltip("Move last login to the >...<\nspot in the calll in list");
 			btn_current_call_in_is_up->down_box(FL_DOWN_BOX);
 			btn_current_call_in_is_up->callback((Fl_Callback*)cb_btn_current_call_in_is_up);
 			btn_current_call_in_is_up->value(progStatus.callin_is_up);
 
-			chk_left_justify = new Fl_Check_Button(30, 140, 120, 24, "Left_Justify nickname");
-			chk_left_justify->value(progStatus.left_justify);
-			chk_left_justify->callback((Fl_Callback*)cb_left_justify);
+			chk_call_left_justify = new Fl_Check_Button(30, 125, 120, 24, "Left_Justify callsign");
+			chk_call_left_justify->value(progStatus.call_left_justify);
+			chk_call_left_justify->callback((Fl_Callback*)cb_call_left_justify);
+
+			chk_name_left_justify = new Fl_Check_Button(30, 150, 120, 24, "Left_Justify nickname");
+			chk_name_left_justify->value(progStatus.name_left_justify);
+			chk_name_left_justify->callback((Fl_Callback*)cb_name_left_justify);
 
 			combo_arc_conversion = new Fl_Choice (30, 175, 120, 24, "Arc Distance");
 //			combo_arc_conversion->type(1);
