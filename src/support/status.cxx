@@ -70,6 +70,7 @@ status progStatus = {
 	"https://www.hamqth.com/",		// std::string	hamqthurl;
 	"https://www.hamcall.net/",		// std::string	hamcallurl;
 	"https://www.qrz.com/",			// std::string	qrzurl;
+	""								// std::string	masterdb;
 
 };
 
@@ -126,6 +127,7 @@ void status::saveLastState()
 	flnetpref.set("hamqthurl", hamqthurl.c_str());
 	flnetpref.set("hamcallurl", hamcallurl.c_str());
 	flnetpref.set("qrzurl", qrzurl.c_str());
+	flnetpref.set("masterdb", masterdb.c_str());
 
 	flnetpref.set("arc_conversion", arc_conversion);
 }
@@ -163,22 +165,23 @@ void status::loadLastState()
 	flnetpref.get("call_left_justify", call_left_justify, call_left_justify);
 	flnetpref.get("name_left_justify", name_left_justify, name_left_justify);
 
-	char sztext[100];
-	flnetpref.get("chP1", sztext, chP1.c_str(), 100); chP1 = sztext;
-	flnetpref.get("chP2", sztext, chP2.c_str(), 100); chP2 = sztext;
-	flnetpref.get("chP3", sztext, chP3.c_str(), 100); chP3 = sztext;
+	char sztext[501];
+	flnetpref.get("chP1", sztext, chP1.c_str(), 500); chP1 = sztext;
+	flnetpref.get("chP2", sztext, chP2.c_str(), 500); chP2 = sztext;
+	flnetpref.get("chP3", sztext, chP3.c_str(), 500); chP3 = sztext;
 
-	flnetpref.get("strP1", sztext, strP1.c_str(), 100); strP1 = sztext;
-	flnetpref.get("strP2", sztext, strP2.c_str(), 100); strP2 = sztext;
-	flnetpref.get("strP3", sztext, strP3.c_str(), 100); strP3 = sztext;
+	flnetpref.get("strP1", sztext, strP1.c_str(), 500); strP1 = sztext;
+	flnetpref.get("strP2", sztext, strP2.c_str(), 500); strP2 = sztext;
+	flnetpref.get("strP3", sztext, strP3.c_str(), 500); strP3 = sztext;
 
-	flnetpref.get("myLocator", sztext, myLocator.c_str(), 100); myLocator = sztext;
-	flnetpref.get("user_name", sztext, user_name.c_str(), 100); user_name = sztext;
-	flnetpref.get("user_password", sztext, user_password.c_str(), 100); user_password = sztext;
-	flnetpref.get("callookurl", sztext, callookurl.c_str(), 100); callookurl = sztext;
-	flnetpref.get("hamqthurl", sztext, hamqthurl.c_str(), 100); hamqthurl = sztext;
-	flnetpref.get("hamcallurl", sztext, hamcallurl.c_str(), 100); hamcallurl = sztext;
-	flnetpref.get("qrzurl", sztext, qrzurl.c_str(), 100); qrzurl = sztext;
+	flnetpref.get("myLocator", sztext, myLocator.c_str(), 500); myLocator = sztext;
+	flnetpref.get("user_name", sztext, user_name.c_str(), 500); user_name = sztext;
+	flnetpref.get("user_password", sztext, user_password.c_str(), 500); user_password = sztext;
+	flnetpref.get("callookurl", sztext, callookurl.c_str(), 500); callookurl = sztext;
+	flnetpref.get("hamqthurl", sztext, hamqthurl.c_str(), 500); hamqthurl = sztext;
+	flnetpref.get("hamcallurl", sztext, hamcallurl.c_str(), 500); hamcallurl = sztext;
+	flnetpref.get("qrzurl", sztext, qrzurl.c_str(), 500); qrzurl = sztext;
+	flnetpref.get("masterdb", sztext, masterdb.c_str(), 500); masterdb = sztext;
 
 	flnetpref.get("arc_conversion", arc_conversion, arc_conversion);
 }

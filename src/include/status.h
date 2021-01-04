@@ -58,6 +58,7 @@ struct status {
 	std::string		hamqthurl;
 	std::string		hamcallurl;
 	std::string		qrzurl;
+	std::string		masterdb;
 
 	void saveLastState();
 	void loadLastState();

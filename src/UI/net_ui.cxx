@@ -24,6 +24,9 @@
 //
 // =====================================================================
 
+#include <FL/fl_ask.H>
+#include <FL/Fl_File_Chooser.H>
+
 #include "net_ui.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -67,6 +70,9 @@ Fl_Input *inp_hamcallurl = (Fl_Input *)0;
 
 Fl_Check_Button *chk_qrz = (Fl_Check_Button *)0;
 Fl_Input *inp_qrzurl = (Fl_Input *)0;
+
+Fl_Input *inp_masterdb = (Fl_Input *)0;
+Fl_Button *btn_masterdb = (Fl_Button *)0;
 
 Fl_Check_Button *chk_call_left_justify = (Fl_Check_Button *)0;
 Fl_Check_Button *chk_name_left_justify = (Fl_Check_Button *)0;
@@ -424,6 +430,22 @@ static void cb_hamqrzurl(Fl_Input *, void *)
 	progStatus.qrzurl = inp_qrzurl->value();
 }
 
+static void cb_masterdb(Fl_Input *, void *)
+{
+	progStatus.masterdb = inp_masterdb->value();
+}
+
+static void cb_select_masterdb( Fl_Button *, void *)
+{
+	string open_dir = home_dir;
+	char *p = fl_file_chooser (
+		"Select master DB file", "*.csv", 
+		open_dir.c_str(), 0);
+	if (!p) return;
+	progStatus.masterdb = p;
+	inp_masterdb->value(progStatus.masterdb.c_str());
+}
+
 static void cb_call_left_justify(Fl_Check_Button *, void *)
 {
 	progStatus.call_left_justify = chk_call_left_justify->value();
@@ -444,9 +466,9 @@ static void cb_arc_conversion (Fl_Choice *w, void *)
 Fl_Double_Window* configDialog() {
 	Fl_Double_Window* w = new Fl_Double_Window(440, 250, "Net Configuration");
 
-	tabsConfig = new Fl_Tabs(5, 10, 430, 210);
+	tabsConfig = new Fl_Tabs(0, 10, 440, 210);
 	tabsConfig->color((Fl_Color)44);
-		tabGroupUI = new Fl_Group(5, 35, 430, 185, "UI behavior");
+		tabGroupUI = new Fl_Group(0,035, 440, 185, "UI behavior");
 			btn_new_login_is_up = new Fl_Check_Button(30, 50, 70, 15, "New login is up");
 			btn_new_login_is_up->tooltip("Move new login to the >...<\nspot in the calll in list");
 			btn_new_login_is_up->down_box(FL_DOWN_BOX);
@@ -484,7 +506,7 @@ Fl_Double_Window* configDialog() {
 
 		tabGroupUI->end();
 
-		tabGroupColors = new Fl_Group(5, 35, 430, 185, "Colors");
+		tabGroupColors = new Fl_Group(0, 35, 440, 185, "Colors");
 		tabGroupColors->hide();
 			txtSample[1] = new Fl_Output(145, 60, 45, 25, "Logged In");
 			txtSample[1]->textfont(FL_SCREEN);
@@ -536,7 +558,7 @@ Fl_Double_Window* configDialog() {
 
 		tabGroupColors->end();
 
-		tabGroupPriority = new Fl_Group(5, 35, 430, 185, "Priority");
+		tabGroupPriority = new Fl_Group(0, 35, 440, 185, "Priority");
 		tabGroupPriority->hide();
 			cfgP1 = new Fl_Input(160, 70, 20, 25, "Priority 1 character");
 
@@ -559,57 +581,68 @@ Fl_Double_Window* configDialog() {
 
 		tabGroupPriority->end();
 
-		tabGroupLookup = new Fl_Group(5, 35, 430, 185, "Lookup");
+		tabGroupLookup = new Fl_Group(0, 35, 440, 185, "Lookup");
 		tabGroupLookup->hide();
 
-			inp_myLocator = new Fl_Input(70, 50, 120, 24, "My Loc:");
+			inp_myLocator = new Fl_Input(15, 50, 80, 24, "My Loc:");
 			inp_myLocator->value(progStatus.myLocator.c_str());
 			inp_myLocator->callback((Fl_Callback*)cb_myLocator);
+			inp_myLocator->align(FL_ALIGN_TOP_LEFT);
 
-			inp_user_name = new Fl_Input(70, 80, 120, 24, "Id:");
+			inp_user_name = new Fl_Input(100, 50, 110, 24, "Id:");
 			inp_user_name->value(progStatus.user_name.c_str());
 			inp_user_name->callback((Fl_Callback*)cb_user_name);
+			inp_user_name->align(FL_ALIGN_TOP_LEFT);
 
-			inp_user_password = new Fl_Input(230, 80, 120, 24, "Pwd:");
+			inp_user_password = new Fl_Input(215, 50, 120, 24, "Pwd:");
 			inp_user_password->value(progStatus.user_password.c_str());
 			inp_user_password->callback((Fl_Callback*)cb_user_password);
 			inp_user_password->type(FL_SECRET_INPUT);
+			inp_user_password->align(FL_ALIGN_TOP_LEFT);
 
-			chk_pwd = new Fl_Check_Button(363, 80, 40, 18, "Show");
+			chk_pwd = new Fl_Check_Button(340, 50, 40, 18, "Show pwd");
 			chk_pwd->value(false);
 			chk_pwd->callback((Fl_Callback*)cb_chk_pwd);
 
-			chk_callook = new Fl_Check_Button(23, 115, 50, 18, "callook.info:");
+			chk_callook = new Fl_Check_Button(23, 78, 50, 18, "callook.info:");
 			chk_callook->value(progStatus.QRZXML == CALLOOK);
 			chk_callook->callback((Fl_Callback*)cb_chk_callook);
 
-			inp_callookurl = new Fl_Input(140, 115, 280, 24, "");
+			inp_callookurl = new Fl_Input(140, 75, 280, 24, "");
 			inp_callookurl->value(progStatus.callookurl.c_str());
 			inp_callookurl->callback((Fl_Callback*)cb_callookurl);
 
-			chk_hamqth = new Fl_Check_Button(23, 140, 50, 18, "hamqth.com:");
+			chk_hamqth = new Fl_Check_Button(23, 103, 50, 18, "hamqth.com:");
 			chk_hamqth->value(progStatus.QRZXML == HAMQTH);
 			chk_hamqth->callback((Fl_Callback*)cb_chk_hamqth);
 
-			inp_hamqthurl = new Fl_Input(140, 140, 280, 24, "");
+			inp_hamqthurl = new Fl_Input(140, 100, 280, 24, "");
 			inp_hamqthurl->value(progStatus.hamqthurl.c_str());
 			inp_hamqthurl->callback((Fl_Callback*)cb_hamqthurl);
 
-			chk_hamcall = new Fl_Check_Button(23, 165, 50, 18, "hamcall.net:");
+			chk_hamcall = new Fl_Check_Button(23, 128, 50, 18, "hamcall.net:");
 			chk_hamcall->value(progStatus.QRZXML == HAMCALLNET);
 			chk_hamcall->callback((Fl_Callback*)cb_chk_hamcall);
 
-			inp_hamcallurl = new Fl_Input(140, 165, 280, 24, "");
+			inp_hamcallurl = new Fl_Input(140, 125, 280, 24, "");
 			inp_hamcallurl->value(progStatus.hamcallurl.c_str());
 			inp_hamcallurl->callback((Fl_Callback*)cb_hamcallurl);
 
-			chk_qrz = new Fl_Check_Button(23, 190, 50, 18, "qrz.com:");
+			chk_qrz = new Fl_Check_Button(23, 153, 50, 18, "qrz.com:");
 			chk_qrz->value(progStatus.QRZXML == QRZNET);
 			chk_qrz->callback((Fl_Callback*)cb_chk_qrz);
 
-			inp_qrzurl = new Fl_Input(140, 190, 180, 24, "");
+			inp_qrzurl = new Fl_Input(140, 150, 280, 24, "");
 			inp_qrzurl->value(progStatus.qrzurl.c_str());
 			inp_qrzurl->callback((Fl_Callback*)cb_hamqrzurl);
+
+			inp_masterdb = new Fl_Input(10, 190, 360, 24, "Master DB");
+			inp_masterdb->value(progStatus.masterdb.c_str());
+			inp_masterdb->callback((Fl_Callback*)cb_masterdb);
+			inp_masterdb->align(FL_ALIGN_TOP_LEFT);
+
+			btn_masterdb = new Fl_Button(375, 190, 60, 24, "Select");
+			btn_masterdb->callback((Fl_Callback*)cb_select_masterdb);
 
 		tabGroupLookup->end();
 

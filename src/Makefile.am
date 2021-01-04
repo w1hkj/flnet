@@ -333,6 +333,7 @@ flnet_SOURCES += \
 	support/loglist.cxx \
 	support/locator.cxx \
 	support/lookupcall.cxx \
+	support/masterdb.cxx \
 	support/netshared.cxx \
 	support/netsupport.cxx \
 	support/pixmaps.cxx \
@@ -363,6 +364,7 @@ flnet_SOURCES += \
 	include/net_icon.h \
 	include/flnetrc.h \
 	include/locator.h \
+	include/masterdb.h \
 	include/netshared.h \
 	include/netsupport.h \
 	include/net_ui.h \

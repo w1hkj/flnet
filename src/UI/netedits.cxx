@@ -35,42 +35,7 @@
 #include "lookupcall.h"
 #include "date.h"
 #include "calendar.h"
-
-static void cb_mnuSortByAPS(Fl_Menu_*, void*) {
-	SortByAPS ();
-	cbGoFirstRec (NULL,NULL);
-}
-
-static void cb_mnuSortBySAP(Fl_Menu_*, void*) {
-	SortBySAP ();
-	cbGoFirstRec (NULL,NULL);
-}
-
-static void cb_mnuSortByNetNbr(Fl_Menu_*, void*) {
-	SortByNetNbr ();
-	cbGoFirstRec (NULL,NULL);
-}
-
-Fl_Menu_Item menu_mbarMain[] = {
-	{"&Sort", 0,  0, 0, 64, 0, 0, 14, 56},
-	{"&Area/Prefix/Suffix", 0,  (Fl_Callback*)cb_mnuSortByAPS, 0, 0, 0, 0, 14, 56},
-	{"&Suffix/Area/Prefix", 0,  (Fl_Callback*)cb_mnuSortBySAP, 0, 0, 0, 0, 14, 56},
-	{"&Net Number", 0,  (Fl_Callback*)cb_mnuSortByNetNbr, 0, 0, 0, 0, 14, 56},
-	{0},
-	{"Sea&rch", 0,  0, 0, 64, 0, 0, 14, 56},
-	{"&Callsign", 0,  (Fl_Callback*)cb_mnuSearchCallsign, 0, 0, 0, 0, 14, 56},
-	{"&NetNbr", 0,  (Fl_Callback*)cb_mnuSearchNetNbr, 0, 0, 0, 0, 14, 56},
-	{0},
-	{"&Browse", 0,  0, 0, 64, 0, 0, 14, 56},
-	{"&Callsign", 0,  (Fl_Callback*)cb_mnuBrowseCallsign, 0, 0, 0, 0, 14, 56},
-	{"&NetNbr", 0,  (Fl_Callback*)cb_mnuBrowseNetNbr, 0, 0, 0, 0, 14, 56},
-	{0},
-	{"&Lookup", 0, 0, 0, 64, 0, 0, 14, 56},
-	{"On-line", 0, (Fl_Callback*)cb_LookupCall, 0, 0, 0, 0, 14, 56},
-	{"Fldigi", 0,  (Fl_Callback*)cb_mnuFldigiEditor, 0, 0, 0, 0, 14, 56},
-	{0},
-	{0}
-};
+#include "masterdb.h"
 
 Fl_Menu_Bar *mbarMain = (Fl_Menu_Bar *)0;
 Fl_Input *inpPrefix=(Fl_Input *)0;
@@ -113,6 +78,71 @@ Fl_Input *inpCountry = (Fl_Input *)0;
 Fl_Input *inpLocator = (Fl_Input *)0;
 Fl_Output *outAzimuth = (Fl_Output *)0;
 Fl_Output *outDistance = (Fl_Output *)0;
+
+static void cb_mnuSortByAPS(Fl_Menu_*, void*) {
+	SortByAPS ();
+	cbGoFirstRec (NULL,NULL);
+}
+
+static void cb_mnuSortBySAP(Fl_Menu_*, void*) {
+	SortBySAP ();
+	cbGoFirstRec (NULL,NULL);
+}
+
+static void cb_mnuSortByNetNbr(Fl_Menu_*, void*) {
+	SortByNetNbr ();
+	cbGoFirstRec (NULL,NULL);
+}
+
+static void cb_mnu_masterdb(Fl_Menu_ *, void *) {
+	csvRecord mrec;
+	bool ok = from_masterdb(
+			inpPrefix->value(),
+			inpArea->value(),
+			inpSuffix->value(), &mrec);
+
+	if (ok) {
+		inpNickname->value(mrec.name.c_str());
+		inpFname->value(mrec.fname.c_str());
+		inpLname->value(mrec.lname.c_str());
+		inpAddress->value(mrec.addr.c_str());
+		inpCity->value(mrec.city.c_str());
+		inpState->value(mrec.state.c_str());
+		inpZip->value(mrec.zip.c_str());
+		inpPhone->value(mrec.phone.c_str());
+		inpBirthday->value(mrec.birthdate.c_str());
+		inpSpouse->value(mrec.spouse.c_str());
+		inpSpBirthday->value(mrec.sp_birth.c_str());
+		inpComment1->value(mrec.comment1.c_str());
+		inpComment2->value(mrec.comment2.c_str());
+		inpEmail->value(mrec.email.c_str());
+		inpLocator->value(mrec.locator.c_str());
+		inpLocator->do_callback();
+		inpCountry->value(mrec.country.c_str());
+	}
+}
+
+Fl_Menu_Item menu_mbarMain[] = {
+	{"&Sort", 0,  0, 0, 64, 0, 0, 14, 56},
+	{"&Area/Prefix/Suffix", 0,  (Fl_Callback*)cb_mnuSortByAPS, 0, 0, 0, 0, 14, 56},
+	{"&Suffix/Area/Prefix", 0,  (Fl_Callback*)cb_mnuSortBySAP, 0, 0, 0, 0, 14, 56},
+	{"&Net Number", 0,  (Fl_Callback*)cb_mnuSortByNetNbr, 0, 0, 0, 0, 14, 56},
+	{0},
+	{"Sea&rch", 0,  0, 0, 64, 0, 0, 14, 56},
+	{"&Callsign", 0,  (Fl_Callback*)cb_mnuSearchCallsign, 0, 0, 0, 0, 14, 56},
+	{"&NetNbr", 0,  (Fl_Callback*)cb_mnuSearchNetNbr, 0, 0, 0, 0, 14, 56},
+	{0},
+	{"&Browse", 0,  0, 0, 64, 0, 0, 14, 56},
+	{"&Callsign", 0,  (Fl_Callback*)cb_mnuBrowseCallsign, 0, 0, 0, 0, 14, 56},
+	{"&NetNbr", 0,  (Fl_Callback*)cb_mnuBrowseNetNbr, 0, 0, 0, 0, 14, 56},
+	{0},
+	{"&Lookup", 0, 0, 0, 64, 0, 0, 14, 56},
+	{"On-line", 0, (Fl_Callback*)cb_LookupCall, 0, 0, 0, 0, 14, 56},
+	{"Fldigi", 0,  (Fl_Callback*)cb_mnuFldigiEditor, 0, 0, 0, 0, 14, 56},
+	{"Master DB", 0,  (Fl_Callback*)cb_mnu_masterdb, 0, 0, 0, 0, 14, 56},
+	{0},
+	{0}
+};
 
 static Fl_Window *editor = (Fl_Window *)0;
 
