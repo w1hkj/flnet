@@ -61,7 +61,7 @@ extern size_t brwsnum;
 
 extern string sSimpleName;
 
-extern Fl_Input *inpPrefix;
+extern Fl_Input2 *inpPrefix;
 
 extern void saveCurRecord ();
 extern void clearEditForm ();

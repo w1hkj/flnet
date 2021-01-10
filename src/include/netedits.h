@@ -27,10 +27,10 @@
 #include <FL/Fl.H>
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Menu_Bar.H>
-#include <FL/Fl_Input.H>
 #include <FL/Fl_Output.H>
 #include <FL/Fl_Button.H>
 
+#include "flinput2.h"
 #include "date.h"
 #include "calendar.h"
 
@@ -46,24 +46,24 @@ extern void cb_mnuHamcall(Fl_Menu_*, void*);
 extern void cb_mnuFldigiEditor(Fl_Menu_*, void*);
 extern void cb_LookupCall(Fl_Menu_*, void*);
 
-extern Fl_Input *inpPrefix;
-extern Fl_Input *inpArea;
-extern Fl_Input *inpSuffix;
-extern Fl_Input *inpNickname;
-extern Fl_Input *inpNetNbr;
-extern Fl_Input *inpFname;
-extern Fl_Input *inpLname;
-extern Fl_Input *inpAddress;
-extern Fl_Input *inpCity;
-extern Fl_Input *inpState;
-extern Fl_Input *inpZip;
-extern Fl_Input *inpPhone;
+extern Fl_Input2 *inpPrefix;
+extern Fl_Input2 *inpArea;
+extern Fl_Input2 *inpSuffix;
+extern Fl_Input2 *inpNickname;
+extern Fl_Input2 *inpNetNbr;
+extern Fl_Input2 *inpFname;
+extern Fl_Input2 *inpLname;
+extern Fl_Input2 *inpAddress;
+extern Fl_Input2 *inpCity;
+extern Fl_Input2 *inpState;
+extern Fl_Input2 *inpZip;
+extern Fl_Input2 *inpPhone;
 extern Fl_DateInput *inpBirthday;
-extern Fl_Input *inpSpouse;
-extern Fl_Input *inpSpBirthday;
+extern Fl_Input2 *inpSpouse;
+extern Fl_Input2 *inpSpBirthday;
 
-extern Fl_Input *inpCountry;
-extern Fl_Input *inpLocator;
+extern Fl_Input2 *inpCountry;
+extern Fl_Input2 *inpLocator;
 extern Fl_Output *outAzimuth;
 extern Fl_Output *outDistance;
 extern Fl_Button *recompute;
@@ -90,14 +90,14 @@ extern void cb_CloseEditor(Fl_Button*, void*);
 extern Fl_Button *btnClose;
 extern Fl_Output *lblFileName;
 extern Fl_Output *lblNumRecs;
-extern Fl_Input *inpCallsign;
+extern Fl_Input2 *inpCallsign;
 extern Fl_DateInput *inpPrevDate;
-extern Fl_Input *inpNbrLogins;
-extern Fl_Input *inpStatus;
+extern Fl_Input2 *inpNbrLogins;
+extern Fl_Input2 *inpStatus;
 extern Fl_DateInput *inpJoined;
-extern Fl_Input *inpEmail;
-extern Fl_Input *inpComment1;
-extern Fl_Input *inpComment2;
+extern Fl_Input2 *inpEmail;
+extern Fl_Input2 *inpComment1;
+extern Fl_Input2 *inpComment2;
 extern Fl_Output *out_sorted_by;
 
 extern Fl_Menu_Item menu_mbarMain[];

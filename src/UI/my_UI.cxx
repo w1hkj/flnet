@@ -36,11 +36,12 @@
 #include <cmath>
 
 #include <FL/Fl.H>
-#include <FL/Fl_Input.H>
 #include <FL/Fl_Box.H>
 #include <FL/Fl_Browser.H>
 #include <FL/fl_ask.H>
 
+#include "icons.h"
+#include "flinput2.h"
 #include "my_UI.h"
 #include "loglist.h"
 #include "netshared.h"

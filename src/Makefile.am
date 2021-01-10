@@ -343,6 +343,7 @@ flnet_SOURCES += \
 	support/timeops.cxx \
 	support/util.cxx \
 	support/xml_io.cxx \
+	UI/flinput2.cxx \
 	UI/my_UI.cxx \
 	UI/netedits.cxx \
 	UI/net_ui.cxx \
@@ -362,6 +363,7 @@ flnet_SOURCES += \
 	include/my_UI.h \
 	include/netedits.h \
 	include/net_icon.h \
+	include/flinput2.h \
 	include/flnetrc.h \
 	include/locator.h \
 	include/masterdb.h \

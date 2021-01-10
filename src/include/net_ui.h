@@ -31,7 +31,6 @@
 #include <FL/Fl_Group.H>
 #include <FL/Fl_Box.H>
 #include <FL/Fl_Tabs.H>
-#include <FL/Fl_Input.H>
 #include <FL/Fl_Output.H>
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Check_Button.H>
@@ -40,6 +39,7 @@
 #include <FL/fl_show_colormap.H>
 #include <FL/Fl_Choice.H>
 
+#include "flinput2.h"
 #include "my_UI.h"
 
 extern Fl_Menu_Bar *mnu_bar;
@@ -97,12 +97,12 @@ extern Fl_Button *btnFg[5];
 extern Fl_Button *btnBg[5];
 extern Fl_Group *tabGroupPriority;
 
-extern Fl_Input *cfgP1;
-extern Fl_Input *inpStatesList1;
-extern Fl_Input *cfgP2;
-extern Fl_Input *inpStatesList2;
-extern Fl_Input *cfgP3;
-extern Fl_Input *inpStatesList3;
+extern Fl_Input2 *cfgP1;
+extern Fl_Input2 *inpStatesList1;
+extern Fl_Input2 *cfgP2;
+extern Fl_Input2 *inpStatesList2;
+extern Fl_Input2 *cfgP3;
+extern Fl_Input2 *inpStatesList3;
 extern Fl_Check_Button *chkAutoPriority;
 
 extern void cb_btnCloseConfig(Fl_Return_Button*, void*);

@@ -230,7 +230,7 @@ void refresh_logins()
 	SortByPreferred();
 }
 
-extern Fl_Input *inpCallsign;
+extern Fl_Input2 *inpCallsign;
 
 void AddNewRecord (const char *prefix, const char *area, const char *suffix)
 {

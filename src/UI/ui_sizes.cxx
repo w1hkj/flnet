@@ -23,10 +23,12 @@
 //
 // =====================================================================
 
-#include "net_ui.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+
+#include "icons.h"
+#include "net_ui.h"
 #include "netshared.h"
 #include "status.h"
 

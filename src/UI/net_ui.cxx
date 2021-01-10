@@ -27,6 +27,8 @@
 #include <FL/fl_ask.H>
 #include <FL/Fl_File_Chooser.H>
 
+#include "icons.h"
+#include "flinput2.h"
 #include "net_ui.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -48,32 +50,32 @@ Fl_Group *tabGroupLookup = (Fl_Group *)0;
 Fl_Group *tabGroupUI = (Fl_Group *)0;
 Fl_Group *tabGroupMasterDB = (Fl_Group *)0;
 
-Fl_Input *cfgP1 = (Fl_Input *)0;
-Fl_Input *inpStatesList1 = (Fl_Input *)0;
-Fl_Input *cfgP2 = (Fl_Input *)0;
-Fl_Input *inpStatesList2 = (Fl_Input *)0;
-Fl_Input *cfgP3 = (Fl_Input *)0;
-Fl_Input *inpStatesList3 = (Fl_Input *)0;
+Fl_Input2 *cfgP1 = (Fl_Input2 *)0;
+Fl_Input2 *inpStatesList1 = (Fl_Input2 *)0;
+Fl_Input2 *cfgP2 = (Fl_Input2 *)0;
+Fl_Input2 *inpStatesList2 = (Fl_Input2 *)0;
+Fl_Input2 *cfgP3 = (Fl_Input2 *)0;
+Fl_Input2 *inpStatesList3 = (Fl_Input2 *)0;
 Fl_Check_Button *chkAutoPriority = (Fl_Check_Button *)0;
 
-Fl_Input *inp_myLocator = (Fl_Input *)0;
-Fl_Input *inp_user_name = (Fl_Input *)0;
-Fl_Input *inp_user_password = (Fl_Input *)0;
+Fl_Input2 *inp_myLocator = (Fl_Input2 *)0;
+Fl_Input2 *inp_user_name = (Fl_Input2 *)0;
+Fl_Input2 *inp_user_password = (Fl_Input2 *)0;
 Fl_Check_Button *chk_pwd = (Fl_Check_Button *)0;
 
 Fl_Check_Button *chk_callook = (Fl_Check_Button *)0;
-Fl_Input *inp_callookurl = (Fl_Input *)0;
+Fl_Input2 *inp_callookurl = (Fl_Input2 *)0;
 
 Fl_Check_Button *chk_hamqth = (Fl_Check_Button *)0;
-Fl_Input *inp_hamqthurl = (Fl_Input *)0;
+Fl_Input2 *inp_hamqthurl = (Fl_Input2 *)0;
 
 Fl_Check_Button *chk_hamcall = (Fl_Check_Button *)0;
-Fl_Input *inp_hamcallurl = (Fl_Input *)0;
+Fl_Input2 *inp_hamcallurl = (Fl_Input2 *)0;
 
 Fl_Check_Button *chk_qrz = (Fl_Check_Button *)0;
-Fl_Input *inp_qrzurl = (Fl_Input *)0;
+Fl_Input2 *inp_qrzurl = (Fl_Input2 *)0;
 
-Fl_Input *inp_masterdb = (Fl_Input *)0;
+Fl_Input2 *inp_masterdb = (Fl_Input2 *)0;
 Fl_Button *btn_masterdb = (Fl_Button *)0;
 Fl_Check_Button *chk_mdb_netnbr = (Fl_Check_Button *)0;
 
@@ -343,17 +345,17 @@ static void cb_btnBg3(Fl_Button*, void*) {
 	txtSample[4]->redraw();
 }
 
-static void cb_myLocator(Fl_Input *, void *)
+static void cb_myLocator(Fl_Input2 *, void *)
 {
 	progStatus.myLocator = inp_myLocator->value();
 }
 
-static void cb_user_name(Fl_Input *, void *)
+static void cb_user_name(Fl_Input2 *, void *)
 {
 	progStatus.user_name = inp_user_name->value();
 }
 
-static void cb_user_password(Fl_Input *, void *)
+static void cb_user_password(Fl_Input2 *, void *)
 {
 	progStatus.user_password = inp_user_password->value();
 }
@@ -380,7 +382,7 @@ static void cb_chk_callook(Fl_Check_Button *, void *)
 	progStatus.QRZXML = CALLOOK;
 }
 
-static void cb_callookurl(Fl_Input *, void *)
+static void cb_callookurl(Fl_Input2 *, void *)
 {
 	progStatus.callookurl = inp_callookurl->value();
 }
@@ -398,7 +400,7 @@ static void cb_chk_hamqth(Fl_Check_Button *, void *)
 	progStatus.QRZXML = HAMQTH;
 }
 
-static void cb_hamqthurl(Fl_Input *, void *)
+static void cb_hamqthurl(Fl_Input2 *, void *)
 {
 	progStatus.hamqthurl = inp_hamqthurl->value();
 }
@@ -416,7 +418,7 @@ static void cb_chk_hamcall(Fl_Check_Button *, void *)
 	progStatus.QRZXML = HAMCALLNET;
 }
 
-static void cb_hamcallurl(Fl_Input *, void *)
+static void cb_hamcallurl(Fl_Input2 *, void *)
 {
 	progStatus.hamcallurl = inp_hamcallurl->value();
 }
@@ -434,12 +436,12 @@ static void cb_chk_qrz(Fl_Check_Button *, void *)
 	progStatus.QRZXML = QRZNET;
 }
 
-static void cb_hamqrzurl(Fl_Input *, void *)
+static void cb_hamqrzurl(Fl_Input2 *, void *)
 {
 	progStatus.qrzurl = inp_qrzurl->value();
 }
 
-static void cb_masterdb(Fl_Input *, void *)
+static void cb_masterdb(Fl_Input2 *, void *)
 {
 	progStatus.masterdb = inp_masterdb->value();
 }
@@ -638,19 +640,19 @@ Fl_Double_Window* configDialog() {
 
 		tabGroupPriority = new Fl_Group(0, 35, 440, 185, "Priority");
 		tabGroupPriority->hide();
-			cfgP1 = new Fl_Input(160, 70, 20, 25, "Priority 1 character");
+			cfgP1 = new Fl_Input2(160, 70, 20, 25, "Priority 1 character");
 
-			inpStatesList1 = new Fl_Input(200, 70, 225, 25, "States List (ie: FL, AL, GA)");
+			inpStatesList1 = new Fl_Input2(200, 70, 225, 25, "States List (ie: FL, AL, GA)");
 			inpStatesList1->align(Fl_Align(FL_ALIGN_TOP_LEFT));
 
-			cfgP2 = new Fl_Input(160, 100, 20, 25, "Priority 2 character");
+			cfgP2 = new Fl_Input2(160, 100, 20, 25, "Priority 2 character");
 
-			inpStatesList2 = new Fl_Input(200, 100, 225, 25);
+			inpStatesList2 = new Fl_Input2(200, 100, 225, 25);
 			inpStatesList2->align(Fl_Align(FL_ALIGN_TOP_LEFT));
 
-			cfgP3 = new Fl_Input(160, 130, 20, 25, "Priority 3 character");
+			cfgP3 = new Fl_Input2(160, 130, 20, 25, "Priority 3 character");
 
-			inpStatesList3 = new Fl_Input(200, 130, 225, 25);
+			inpStatesList3 = new Fl_Input2(200, 130, 225, 25);
 			inpStatesList3->align(Fl_Align(FL_ALIGN_TOP_LEFT));
 
 			chkAutoPriority = new Fl_Check_Button(160, 165, 25, 25, "Auto By Priority");
@@ -662,17 +664,17 @@ Fl_Double_Window* configDialog() {
 		tabGroupLookup = new Fl_Group(0, 35, 440, 185, "Lookup");
 		tabGroupLookup->hide();
 
-			inp_myLocator = new Fl_Input(15, 60, 80, 24, "My Loc:");
+			inp_myLocator = new Fl_Input2(15, 60, 80, 24, "My Loc:");
 			inp_myLocator->value(progStatus.myLocator.c_str());
 			inp_myLocator->callback((Fl_Callback*)cb_myLocator);
 			inp_myLocator->align(FL_ALIGN_TOP_LEFT);
 
-			inp_user_name = new Fl_Input(100, 60, 110, 24, "Id:");
+			inp_user_name = new Fl_Input2(100, 60, 110, 24, "Id:");
 			inp_user_name->value(progStatus.user_name.c_str());
 			inp_user_name->callback((Fl_Callback*)cb_user_name);
 			inp_user_name->align(FL_ALIGN_TOP_LEFT);
 
-			inp_user_password = new Fl_Input(215, 60, 120, 24, "Pwd:");
+			inp_user_password = new Fl_Input2(215, 60, 120, 24, "Pwd:");
 			inp_user_password->value(progStatus.user_password.c_str());
 			inp_user_password->callback((Fl_Callback*)cb_user_password);
 			inp_user_password->type(FL_SECRET_INPUT);
@@ -686,7 +688,7 @@ Fl_Double_Window* configDialog() {
 			chk_callook->value(progStatus.QRZXML == CALLOOK);
 			chk_callook->callback((Fl_Callback*)cb_chk_callook);
 
-			inp_callookurl = new Fl_Input(140, 85, 280, 24, "");
+			inp_callookurl = new Fl_Input2(140, 85, 280, 24, "");
 			inp_callookurl->value(progStatus.callookurl.c_str());
 			inp_callookurl->callback((Fl_Callback*)cb_callookurl);
 
@@ -694,7 +696,7 @@ Fl_Double_Window* configDialog() {
 			chk_hamqth->value(progStatus.QRZXML == HAMQTH);
 			chk_hamqth->callback((Fl_Callback*)cb_chk_hamqth);
 
-			inp_hamqthurl = new Fl_Input(140, 110, 280, 24, "");
+			inp_hamqthurl = new Fl_Input2(140, 110, 280, 24, "");
 			inp_hamqthurl->value(progStatus.hamqthurl.c_str());
 			inp_hamqthurl->callback((Fl_Callback*)cb_hamqthurl);
 
@@ -702,7 +704,7 @@ Fl_Double_Window* configDialog() {
 			chk_hamcall->value(progStatus.QRZXML == HAMCALLNET);
 			chk_hamcall->callback((Fl_Callback*)cb_chk_hamcall);
 
-			inp_hamcallurl = new Fl_Input(140, 135, 280, 24, "");
+			inp_hamcallurl = new Fl_Input2(140, 135, 280, 24, "");
 			inp_hamcallurl->value(progStatus.hamcallurl.c_str());
 			inp_hamcallurl->callback((Fl_Callback*)cb_hamcallurl);
 
@@ -710,7 +712,7 @@ Fl_Double_Window* configDialog() {
 			chk_qrz->value(progStatus.QRZXML == QRZNET);
 			chk_qrz->callback((Fl_Callback*)cb_chk_qrz);
 
-			inp_qrzurl = new Fl_Input(140, 160, 280, 24, "");
+			inp_qrzurl = new Fl_Input2(140, 160, 280, 24, "");
 			inp_qrzurl->value(progStatus.qrzurl.c_str());
 			inp_qrzurl->callback((Fl_Callback*)cb_hamqrzurl);
 
@@ -719,7 +721,7 @@ Fl_Double_Window* configDialog() {
 		tabGroupMasterDB = new Fl_Group(0, 35, 440, 185, "Master DB");
 		tabGroupMasterDB->hide();
 
-			inp_masterdb = new Fl_Input(10, 60, 360, 24, "Master DB");
+			inp_masterdb = new Fl_Input2(10, 60, 360, 24, "Master DB");
 			inp_masterdb->value(progStatus.masterdb.c_str());
 			inp_masterdb->callback((Fl_Callback*)cb_masterdb);
 			inp_masterdb->align(FL_ALIGN_TOP_LEFT);
