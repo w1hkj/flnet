@@ -309,7 +309,7 @@ int csvdb::save()
 		for (size_t n = 0; n < dbrecs.size(); n++) {
 			strncpy(clist[n].prefix , dbrecs[n].prefix.c_str(), 3);
 			strncpy(clist[n].area, dbrecs[n].area.c_str(), 1);
-			strncpy(clist[n].suffix, dbrecs[n].suffix.c_str(), 4);
+			strncpy(clist[n].suffix, dbrecs[n].suffix.c_str(), 3);
 			clist[n].nbr = n;
 		}
 
