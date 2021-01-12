@@ -53,44 +53,52 @@ void cbConfig ()
 {
 	if (!cfgDialog)
 		cfgDialog = configDialog ();
+	btn_new_login_is_up->value(progStatus.disp_new_login);
+	btnOpenEditor->value(progStatus.open_editor);
+	btn_current_call_in_is_up->value(progStatus.callin_is_up);
+	chk_call_left_justify->value(progStatus.call_left_justify);
+	chk_name_left_justify->value(progStatus.name_left_justify);
+	combo_arc_conversion->value(progStatus.arc_conversion);
+
+	btn_sort_by_PAS->value(progStatus.preferred_sort_order == 0);
+	btn_sort_by_APS->value(progStatus.preferred_sort_order == 1);
+	btn_sort_by_SAP->value(progStatus.preferred_sort_order == 2);
+	btn_sort_by_NETNBR->value(progStatus.preferred_sort_order == 3);
+
+	txtSample[1]->value("Text");
+	txtSample[2]->value("Text");
+	txtSample[3]->value("Text");
+	txtSample[4]->value("Text");
+
 	cfgP1->value (progStatus.chP1.c_str());
 	cfgP2->value (progStatus.chP2.c_str());
 	cfgP3->value (progStatus.chP3.c_str());
 	inpStatesList1->value(progStatus.strP1.c_str());
 	inpStatesList2->value(progStatus.strP2.c_str());
 	inpStatesList3->value(progStatus.strP3.c_str());
-	if (progStatus.chAuto == 'y' || progStatus.chAuto == 'Y')
-		chkAutoPriority->value (1);
-	else
-		chkAutoPriority->value (0);
+	chkAutoPriority->value (progStatus.chAuto);
+
+	inp_myLocator->value(progStatus.myLocator.c_str());
+	inp_user_name->value(progStatus.user_name.c_str());
+	inp_user_password->value(progStatus.user_password.c_str());
+
+	chk_callook->value(progStatus.QRZXML == CALLOOK);
+	inp_callookurl->value(progStatus.callookurl.c_str());
+	chk_hamqth->value(progStatus.QRZXML == HAMQTH);
+	inp_hamqthurl->value(progStatus.hamqthurl.c_str());
+	chk_hamcall->value(progStatus.QRZXML == HAMCALLNET);
+	inp_hamcallurl->value(progStatus.hamcallurl.c_str());
+	chk_qrz->value(progStatus.QRZXML == QRZNET);
+	inp_qrzurl->value(progStatus.qrzurl.c_str());
+
+	inp_masterdb->value(progStatus.masterdb.c_str());
+	chk_mdb_netnbr->value(progStatus.mdb_netnbr);
+
 	cfgDialog->show();
 }
 
 void cbCloseConfig ()
 {
-	progStatus.chP1 = cfgP1->value();
-	if (progStatus.chP1.empty()) progStatus.chP1 = " ";
-	progStatus.chP2 = cfgP2->value();
-	if (progStatus.chP2.empty()) progStatus.chP2 = " ";
-	progStatus.chP3 = cfgP3->value();
-	if (progStatus.chP3.empty()) progStatus.chP3 = " ";
-
-	progStatus.strP1 = inpStatesList1->value();
-	progStatus.strP2 = inpStatesList2->value();
-	progStatus.strP3 = inpStatesList3->value();
-
-	callinlist.setPri_1 (progStatus.chP1[0]);
-	callinlist.setPri_2 (progStatus.chP2[0]);
-	callinlist.setPri_3 (progStatus.chP3[0]);
-
-	if (chkAutoPriority->value() == 1) {
-		progStatus.chAuto = 'y';
-		callinlist.AutoPriority (1);
-	} else {
-		progStatus.chAuto = ' ';
-		callinlist.AutoPriority (0);
-	}
-
-	cfgDialog->hide ();
-
+	if(cfgDialog)
+		cfgDialog->hide();
 }

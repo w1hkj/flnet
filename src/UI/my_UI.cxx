@@ -416,7 +416,7 @@ void my_UI::PickedToCallinsDB (size_t record_number)
 {
 	time_t the_time;
 	struct tm *tm_ptr;
-	char pr[3], ar[2], su[4],nm[15], st[3], sztime[6];
+	char sztime[6];
 
 	if (callinlist.inList(record_number)) {
 		fl_beep (FL_BEEP_ERROR);
@@ -431,29 +431,41 @@ void my_UI::PickedToCallinsDB (size_t record_number)
 	csvRecord rec;
 	netdb.get(record_number, rec);
 
-	memset(pr, 0, sizeof(pr));
-	memset(ar, 0, sizeof(ar));
-	memset(su, 0, sizeof(su));
-	memset(nm, 0, sizeof(nm));
-	memset(st, 0, sizeof(st));
+	std::string pr, ar, su, nm, st;
+	pr = uppercase (trim(rec.prefix));
+	ar = uppercase (trim(rec.area));
+	su = uppercase (trim(rec.suffix));
+	nm = trim(rec.name);
+	st = uppercase(trim(rec.state));
 
-	strncpy(pr, rec.prefix.c_str(), sizeof(pr)-1);
-	strncpy(ar, rec.area.c_str(), sizeof(ar)-1);
-	strncpy(su, rec.suffix.c_str(), sizeof(su)-1);
-	strncpy(nm, rec.name.c_str(), sizeof(nm)-1);
-	strncpy(st, rec.state.c_str(), sizeof(st)-1);
+	std::string strP1, strP2, strP3;
+	strP1 = uppercase(trim(progStatus.strP1));
+	strP2 = uppercase(trim(progStatus.strP2));
+	strP3 = uppercase(trim(progStatus.strP3));
 
-	if (!progStatus.strP1.empty() &&
-		progStatus.strP1.find(st) != std::string::npos) {
-		callinlist.add (record_number, pr, ar, su, nm, sztime, progStatus.chP1[0]);
-	} else if (!progStatus.strP2.empty() &&
-		progStatus.strP2.find(st) != std::string::npos) {
-		callinlist.add (record_number, pr, ar, su, nm, sztime, progStatus.chP2[0]);
-	} else if (!progStatus.strP3.empty() &&
-		progStatus.strP3.find(st) != std::string::npos) {
-		callinlist.add (record_number, pr, ar, su, nm, sztime, progStatus.chP3[0]);
+	if (!strP1.empty() &&
+		strP1.find(st) != std::string::npos) {
+		callinlist.add (
+			record_number, 
+			pr.c_str(), ar.c_str(), su.c_str(), nm.c_str(),
+			sztime, progStatus.chP1[0]);
+	} else if (!strP2.empty() &&
+		strP2.find(st) != std::string::npos) {
+		callinlist.add (
+			record_number, 
+			pr.c_str(), ar.c_str(), su.c_str(), nm.c_str(),
+			sztime, progStatus.chP2[0]);
+	} else if (!strP3.empty() &&
+		strP3.find(st) != std::string::npos) {
+		callinlist.add (
+			record_number,
+			pr.c_str(), ar.c_str(), su.c_str(), nm.c_str(),
+			sztime, progStatus.chP3[0]);
 	} else {
-		callinlist.add (record_number, pr, ar, su, nm, sztime);
+		callinlist.add (
+			record_number, 
+			pr.c_str(), ar.c_str(), su.c_str(), nm.c_str(),
+			sztime);
 	}
 	dispCallIns (false);
 	clearPickList ();

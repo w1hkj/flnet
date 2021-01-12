@@ -268,9 +268,7 @@ int loglist::Pri_0 (int n)
 	char ch;
 	for (int i = BLANKS; i < nlist; i++) {
 		ch = llist[i].chPriority;
-		if (cP1 != ' ' && ch == cP1) continue;
-		if (cP2 != ' ' && ch == cP2) continue;
-		if (cP3 != ' ' && ch == cP3) continue;
+		if (ch == cP1 || ch == cP2 || ch == cP3) continue;
 		newpos = i;
 		for (int j = nlist; j > newpos; j--)
 			llist[j] = llist[j-1];
@@ -293,15 +291,16 @@ int loglist::Pri_1 (int n)
 	if (n == 0 || iAutoPriority == 0) return n;
 	_logged thiscall = llist[nn];
 	del (n);
+	char ch;
 	for (int i = BLANKS; i < nlist; i++) {
-		if (llist[i].chPriority != cP1) {
-			newpos = i;
-			for (int j = nlist; j > newpos; j--)
-				llist[j] = llist[j-1];
-			llist[newpos] = thiscall;
-			nlist++;
-			return newpos - BLANKS;
-		}
+		ch = llist[i].chPriority;
+		if (ch == cP1) continue;
+		newpos = i;
+		for (int j = nlist; j > newpos; j--)
+			llist[j] = llist[j-1];
+		llist[newpos] = thiscall;
+		nlist++;
+		return newpos - BLANKS;
 	}
 	llist[nn] = thiscall;
 	return n;
@@ -320,8 +319,7 @@ int loglist::Pri_2 (int n)
 	char ch;
 	for (int i = BLANKS; i < nlist; i++) {
 		ch = llist[i].chPriority;
-		if (cP1 != ' ' && ch == cP1) continue;
-		if (ch == cP2) continue;
+		if (ch == cP1 || ch == cP2) continue;
 		newpos = i;
 		for (int j = nlist; j > newpos; j--)
 			llist[j] = llist[j-1];
@@ -346,8 +344,7 @@ int loglist::Pri_3 (int n)
 	char ch;
 	for (int i = BLANKS; i < nlist; i++) {
 		ch = llist[i].chPriority;
-		if (cP1 != ' ' && ch == cP1) continue;
-		if (cP2 != ' ' && ch == cP2) continue;
+		if (ch == cP1 || ch == cP2 || ch == cP3) continue;
 		newpos = i;
 		for (int j = nlist; j > newpos; j--)
 			llist[j] = llist[j-1];

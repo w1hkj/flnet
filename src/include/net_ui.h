@@ -85,17 +85,22 @@ extern Fl_Menu_Item menu_mnu_bar[];
 #define mnu_Content (menu_mnu_bar+9)
 #define mnu_About (menu_mnu_bar+10)
 
-extern Fl_Tabs *tabsConfig;
+extern void cb_btnCloseConfig(Fl_Return_Button*, void*);
+extern Fl_Return_Button *btnConfigOK;
 
-extern Fl_Check_Button *btn_new_login_is_up;
-extern Fl_Check_Button *btnOpenEditor;
-extern Fl_Check_Button *btn_current_call_in_is_up;
+extern Fl_Double_Window* configDialog();
+
+extern Fl_Browser *log_in_view;
+extern Fl_Button *btn_copy_to_clipboard;
+extern Fl_Button *btn_close_log_ins;
+extern Fl_Double_Window* Log_ins_dialog();
+
 extern Fl_Group *tabGroupColors;
-
-extern Fl_Output *txtSample[5];
-extern Fl_Button *btnFg[5];
-extern Fl_Button *btnBg[5];
 extern Fl_Group *tabGroupPriority;
+extern Fl_Group *tabGroupLookup;
+extern Fl_Group *tabGroupUI;
+extern Fl_Group *tabGroupMasterDB;
+extern Fl_Group *grp_sort_order;
 
 extern Fl_Input2 *cfgP1;
 extern Fl_Input2 *inpStatesList1;
@@ -103,14 +108,40 @@ extern Fl_Input2 *cfgP2;
 extern Fl_Input2 *inpStatesList2;
 extern Fl_Input2 *cfgP3;
 extern Fl_Input2 *inpStatesList3;
+extern Fl_Input2 *inp_myLocator;
+extern Fl_Input2 *inp_user_name;
+extern Fl_Input2 *inp_user_password;
+extern Fl_Input2 *inp_callookurl;
+extern Fl_Input2 *inp_hamqthurl;
+extern Fl_Input2 *inp_hamcallurl;
+extern Fl_Input2 *inp_qrzurl;
+extern Fl_Input2 *inp_masterdb;
+
+extern Fl_Button *btn_masterdb;
+extern Fl_Button *btnFg[];
+extern Fl_Button *btnBg[];
+
 extern Fl_Check_Button *chkAutoPriority;
+extern Fl_Check_Button *chk_pwd;
+extern Fl_Check_Button *chk_callook;
+extern Fl_Check_Button *chk_hamqth;
+extern Fl_Check_Button *chk_hamcall;
+extern Fl_Check_Button *chk_qrz;
+extern Fl_Check_Button *chk_mdb_netnbr;
+extern Fl_Check_Button *chk_call_left_justify;
+extern Fl_Check_Button *chk_name_left_justify;
+extern Fl_Check_Button *btn_sort_by_PAS;
+extern Fl_Check_Button *btn_sort_by_APS;
+extern Fl_Check_Button *btn_sort_by_SAP;
+extern Fl_Check_Button *btn_sort_by_NETNBR;
+extern Fl_Check_Button *btn_new_login_is_up;
+extern Fl_Check_Button *btnOpenEditor;
+extern Fl_Check_Button *btn_current_call_in_is_up;
 
-extern void cb_btnCloseConfig(Fl_Return_Button*, void*);
 extern Fl_Return_Button *btnConfigOK;
-Fl_Double_Window* configDialog();
 
-extern Fl_Browser *log_in_view;
-extern Fl_Button *btn_copy_to_clipboard;
-extern Fl_Button *btn_close_log_ins;
-Fl_Double_Window* Log_ins_dialog();
+extern Fl_Choice *combo_arc_conversion;
+
+extern Fl_Output *txtSample[];
+
 #endif

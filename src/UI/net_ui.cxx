@@ -92,6 +92,15 @@ Fl_Check_Button *btn_sort_by_APS = (Fl_Check_Button*)0;
 Fl_Check_Button *btn_sort_by_SAP = (Fl_Check_Button*)0;
 Fl_Check_Button *btn_sort_by_NETNBR = (Fl_Check_Button*)0;
 
+Fl_Tabs *tabsConfig=(Fl_Tabs *)0;
+
+Fl_Check_Button *btn_new_login_is_up=(Fl_Check_Button *)0;
+Fl_Check_Button *btnOpenEditor=(Fl_Check_Button *)0;
+Fl_Check_Button *btn_current_call_in_is_up=(Fl_Check_Button *)0;
+Fl_Output *txtSample[5]={(Fl_Output *)0};
+Fl_Button *btnFg[5]={(Fl_Button *)0};
+Fl_Button *btnBg[5]={(Fl_Button *)0};
+
 //----------------------------------------------------------------------
 // main dialog
 //----------------------------------------------------------------------
@@ -271,21 +280,13 @@ Fl_Double_Window* newNetControl() {
 	return w;
 }
 
-Fl_Tabs *tabsConfig=(Fl_Tabs *)0;
-
-Fl_Check_Button *btn_new_login_is_up=(Fl_Check_Button *)0;
-
 static void cb_btn_new_login_is_up(Fl_Check_Button* o, void*) {
 	progStatus.disp_new_login = o->value();
 }
 
-Fl_Check_Button *btnOpenEditor=(Fl_Check_Button *)0;
-
 static void cb_btnOpenEditor(Fl_Check_Button* o, void*) {
 	progStatus.open_editor = o->value();
 }
-
-Fl_Check_Button *btn_current_call_in_is_up=(Fl_Check_Button *)0;
 
 static void cb_btn_current_call_in_is_up(Fl_Check_Button* o, void*) {
 	progStatus.callin_is_up = o->value();
@@ -327,17 +328,11 @@ static void cb_btnBg2(Fl_Button*, void*) {
 	txtSample[3]->redraw();
 }
 
-Fl_Output *txtSample[5]={(Fl_Output *)0};
-
-Fl_Button *btnFg[5]={(Fl_Button *)0};
-
 static void cb_btnFg3(Fl_Button*, void*) {
 	progStatus.fgColors[4] = fl_show_colormap(progStatus.fgColors[4]);
 	txtSample[4]->textcolor(progStatus.fgColors[4]);
 	txtSample[4]->redraw();
 }
-
-Fl_Button *btnBg[5]={(Fl_Button *)0};
 
 static void cb_btnBg3(Fl_Button*, void*) {
 	progStatus.bgColors[4] = fl_show_colormap(progStatus.bgColors[4]);
@@ -524,6 +519,46 @@ static void cb_sort_by_NETNBR (Fl_Check_Button *, void *)
 	btn_sort_by_SAP->value(0);
 }
 
+void cb_cfgP1 (Fl_Input2 *w, void *)
+{
+	progStatus.chP1 = cfgP1->value();
+}
+
+void cb_cfgP2 (Fl_Input2 *w, void *)
+{
+	progStatus.chP2 = cfgP2->value();
+}
+
+void cb_cfgP3 (Fl_Input2 *w, void *)
+{
+	progStatus.chP3 = cfgP3->value();
+}
+
+void cb_inpStatesList1 (Fl_Input2 *w, void *)
+{
+	progStatus.strP1 = inpStatesList1->value();
+}
+
+void cb_inpStatesList2 (Fl_Input2 *w, void *)
+{
+	progStatus.strP2 = inpStatesList2->value();
+}
+
+void cb_inpStatesList3 (Fl_Input2 *w, void *)
+{
+	progStatus.strP3 = inpStatesList3->value();
+}
+
+void cb_chkAutoPriority (Fl_Check_Button *w, void *)
+{
+	progStatus.chAuto = chkAutoPriority->value();
+}
+
+void cb_chk_mdb_netnbr (Fl_Check_Button *w, void *)
+{
+	progStatus.mdb_netnbr = chk_mdb_netnbr->value();
+}
+
 Fl_Double_Window* configDialog() {
 	Fl_Double_Window* w = new Fl_Double_Window(440, 250, "Net Configuration");
 
@@ -641,23 +676,37 @@ Fl_Double_Window* configDialog() {
 		tabGroupPriority = new Fl_Group(0, 35, 440, 185, "Priority");
 		tabGroupPriority->hide();
 			cfgP1 = new Fl_Input2(160, 70, 20, 25, "Priority 1 character");
+			cfgP1->callback((Fl_Callback*)cb_cfgP1);
+			cfgP1->when(FL_WHEN_CHANGED);
 
 			inpStatesList1 = new Fl_Input2(200, 70, 225, 25, "States List (ie: FL, AL, GA)");
 			inpStatesList1->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+			inpStatesList1->callback((Fl_Callback*)cb_inpStatesList1);
+			inpStatesList1->when(FL_WHEN_CHANGED);
 
 			cfgP2 = new Fl_Input2(160, 100, 20, 25, "Priority 2 character");
+			cfgP2->callback((Fl_Callback*)cb_cfgP2);
+			cfgP2->when(FL_WHEN_CHANGED);
 
 			inpStatesList2 = new Fl_Input2(200, 100, 225, 25);
 			inpStatesList2->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+			inpStatesList2->callback((Fl_Callback*)cb_inpStatesList2);
+			inpStatesList2->when(FL_WHEN_CHANGED);
 
 			cfgP3 = new Fl_Input2(160, 130, 20, 25, "Priority 3 character");
+			cfgP3->callback((Fl_Callback*)cb_cfgP3);
+			cfgP3->when(FL_WHEN_CHANGED);
 
 			inpStatesList3 = new Fl_Input2(200, 130, 225, 25);
 			inpStatesList3->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+			inpStatesList3->callback((Fl_Callback*)cb_inpStatesList3);
+			inpStatesList3->when(FL_WHEN_CHANGED);
 
 			chkAutoPriority = new Fl_Check_Button(160, 165, 25, 25, "Auto By Priority");
 			chkAutoPriority->down_box(FL_DOWN_BOX);
 			chkAutoPriority->align(Fl_Align(FL_ALIGN_LEFT));
+			chkAutoPriority->callback((Fl_Callback*)cb_chkAutoPriority);
+			chkAutoPriority->when(FL_WHEN_CHANGED);
 
 		tabGroupPriority->end();
 
@@ -730,9 +779,9 @@ Fl_Double_Window* configDialog() {
 			btn_masterdb->callback((Fl_Callback*)cb_select_masterdb);
 
 			chk_mdb_netnbr = new Fl_Check_Button(20, 90, 18, 18, "Include net nbr");
-			chk_mdb_netnbr->value(false);
+			chk_mdb_netnbr->value(progStatus.mdb_netnbr);
 			chk_mdb_netnbr->align(FL_ALIGN_RIGHT);
-//			chk_mdb_netnbr->callback((Fl_Callback*)cb_chk_pwd);
+			chk_mdb_netnbr->callback((Fl_Callback*)cb_chk_mdb_netnbr);
 
 		tabGroupMasterDB->end();
 
