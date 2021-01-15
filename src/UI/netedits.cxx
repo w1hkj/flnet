@@ -148,6 +148,8 @@ static void cb_lookup_masterdb_record(Fl_Menu_ *, void *) {
 		inpLocator->value(mrec.locator.c_str());
 		inpLocator->do_callback();
 		inpCountry->value(mrec.country.c_str());
+		if (progStatus.mdb_netnbr)
+			inpNetNbr->value(mrec.netnbr.c_str());
 	}
 }
 
