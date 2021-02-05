@@ -42,6 +42,8 @@ struct status {
 	int				call_left_justify;
 	int				name_left_justify;
 	int				arc_conversion;
+	int				preferred_sort_order;
+	int				mdb_netnbr;
 
 	std::string		chP1;
 	std::string		chP2;

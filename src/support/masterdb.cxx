@@ -63,7 +63,7 @@ SEARCH_REC *master_recs = (SEARCH_REC *)0;
 // p = search prefix
 // a = search area
 // s = search suffix
-static int  binary_search_call(int l, int r, std::string &p, std::string &a, std::string &s) 
+int  binary_search_masterdb(int l, int r, std::string &p, std::string &a, std::string &s) 
 { 
 	std::string p2, a2, s2;
 	if (r >= l) { 
@@ -71,12 +71,12 @@ static int  binary_search_call(int l, int r, std::string &p, std::string &a, std
 		p2 = master_recs[mid].prefix;
 		a2 = master_recs[mid].area;
 		s2 = master_recs[mid].suffix;
-		if (s2 > s) return binary_search_call(l, mid - 1, p, a, s);
-		if (s2 < s) return binary_search_call(mid + 1, r, p, a, s);
-		if (a2 > a) return binary_search_call(l, mid - 1, p, a, s);
-		if (a2 < a) return binary_search_call(mid + 1, r, p, a, s);
-		if (p2 > p) return binary_search_call(l, mid - 1, p, a, s);
-		if (p2 < p) return binary_search_call(mid + 1, r, p, a, s);
+		if (s2 > s) return binary_search_masterdb(l, mid - 1, p, a, s);
+		if (s2 < s) return binary_search_masterdb(mid + 1, r, p, a, s);
+		if (a2 > a) return binary_search_masterdb(l, mid - 1, p, a, s);
+		if (a2 < a) return binary_search_masterdb(mid + 1, r, p, a, s);
+		if (p2 > p) return binary_search_masterdb(l, mid - 1, p, a, s);
+		if (p2 < p) return binary_search_masterdb(mid + 1, r, p, a, s);
 		return mid;
 	} 
 	return -1; 
@@ -104,35 +104,52 @@ void load_master_recs()
 	if (master_recs)
 		delete [] master_recs;
 	master_recs = new SEARCH_REC[masterdb->numrecs()];
-	for (int n = 0; n < masterdb->numrecs(); n++) {
+	for (size_t n = 0; n < masterdb->numrecs(); n++) {
 		masterdb->get(n, rec);
+		memset(master_recs[n].area, 0, sizeof(master_recs[n].area));
 		strncpy(master_recs[n].area, rec.area.c_str(), 1);
+		memset(master_recs[n].prefix, 0, sizeof(master_recs[n].prefix));
 		strncpy(master_recs[n].prefix, rec.prefix.c_str(), 2);
+		memset(master_recs[n].suffix, 0, sizeof(master_recs[n].suffix));
 		strncpy(master_recs[n].suffix, rec.suffix.c_str(), 3);
 		master_recs[n].recN = n;
 	}
 	sort_master_recs();
 }
 
+bool open_masterdb()
+{
+	if (progStatus.masterdb == netdb.filename()) {
+		fl_alert2("You are editing the %s master DB", netdb.filename().c_str());
+		return false;
+	}
+	masterdb = new csvdb();
+	masterdb->filename(progStatus.masterdb);
+	if (masterdb->load()) {
+		delete masterdb;
+		masterdb = (csvdb *)0;
+		return false;
+	}
+	load_master_recs();
+	return true;
+}
+
 bool from_masterdb(const char *p, const char *a, const char *s, csvRecord *mrec)
 {
 	if (!masterdb) {
-		masterdb = new csvdb();
-		masterdb->filename(progStatus.masterdb);
-		if (masterdb->load()) {
-			delete masterdb;
-			masterdb = (csvdb *)0;
+		if (!open_masterdb() )
 			return false;
-		}
-		load_master_recs();
 	}
 	std::string sp = p;
 	std::string sa = a;
 	std::string ss = s; 
-	int recn = binary_search_call(0, masterdb->numrecs() - 1, sp, sa, ss);
 
-	if (recn < 0)
+	int recn = binary_search_masterdb(0, masterdb->numrecs() - 1, sp, sa, ss);
+
+	if (recn < 0) {
+		fl_alert2("Not in Master DB");
 		return false;
+	}
 
 	csvRecord rec;
 
@@ -153,27 +170,22 @@ bool from_masterdb(const char *p, const char *a, const char *s, csvRecord *mrec)
 	mrec->email = rec.email;
 	mrec->locator = rec.locator;
 	mrec->country = rec.country;
+	if (progStatus.mdb_netnbr)
+		mrec->netnbr = rec.netnbr;
 
 	return true;
 }
 
-void to_masterdb(const char *p, const char *a, const char *s, csvRecord *mrec)
+void to_masterdb(csvRecord &mrec)
 {
-	if (!masterdb) {
-		masterdb = new csvdb();
-		masterdb->filename(progStatus.masterdb);
-		if (masterdb->load()) {
-			delete masterdb;
-			masterdb = (csvdb *)0;
-			return;
-		}
-		load_master_recs();
-	}
+	if (!masterdb) return;
+	masterdb->add(mrec);
 }
 
 void close_masterdb()
 {
 	if (!masterdb) return;
+	masterdb->save();
 	delete masterdb;
 	masterdb = (csvdb *)0;
 }

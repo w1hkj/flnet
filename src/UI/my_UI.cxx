@@ -1,4 +1,4 @@
-// =====================================================================
+ // =====================================================================
 //
 // my_UI.cxx
 //
@@ -287,6 +287,9 @@ void updateLogins (bool closing = false)
 	char sztemp[40];
 	csvRecord rec;
 
+	if (callinlist.numlist() == 0)
+		return;
+
 	struct tm tim;
 	time_t t;
 	time(&t);
@@ -309,7 +312,6 @@ void updateLogins (bool closing = false)
 		strcpy (szLine, callinlist.displine(i));
 		fprintf (fToday, "%s\n", szLine);
 		if (closing) {
-std::cout << "closing" << std::endl;
 			rc = callinlist.recN (i);
 			if (rc >= 0 && rc < (long)netdb.numrecs()) {
 				netdb.get(rc, rec);
@@ -355,10 +357,10 @@ void my_UI::fillPickList ()
 {
 	int i;
 	int cmp;
-	int rc;
+	size_t rc;
 	char padded[4];
 
-	if (!brwsData) getBrwsData ();
+	if (!indexed_list) getindexed_list ();
 	SortBySAP ();
 
 	clearPickList ();
@@ -366,16 +368,16 @@ void my_UI::fillPickList ()
 	while (strlen(padded) < 3) strcat (padded, " ");
 
 	i = 0; rc = 0;
-	while (rc < netdb.numrecs() && padded[0] > brwsData[rc].suffix[0]) rc++;
+	while (rc < netdb.numrecs() && padded[0] > indexed_list[rc].suffix[0]) rc++;
 
 	while (rc < netdb.numrecs()) {
-		cmp = strcmp(padded, brwsData[rc].suffix);
+		cmp = strcmp(padded, indexed_list[rc].suffix);
 		if (cmp < 0) break;
 		if (cmp == 0 && i < NPICKITEMS) {
-			Pick[i].recN = brwsData[rc].recN;
-			strcpy (Pick[i].callsign, brwsData[rc].prefix);
-			strcat (Pick[i].callsign, brwsData[rc].area);
-			strcat (Pick[i].callsign, brwsData[rc].suffix);
+			Pick[i].recN = indexed_list[rc].recN;
+			strcpy (Pick[i].callsign, indexed_list[rc].prefix);
+			strcat (Pick[i].callsign, indexed_list[rc].area);
+			strcat (Pick[i].callsign, indexed_list[rc].suffix);
 			txtPick[i]->label (Pick[i].callsign);
 			if (i == 0)
 				txtPick[i]->labelcolor (FL_RED);
@@ -438,13 +440,16 @@ void my_UI::PickedToCallinsDB (size_t record_number)
 	strncpy(ar, rec.area.c_str(), sizeof(ar)-1);
 	strncpy(su, rec.suffix.c_str(), sizeof(su)-1);
 	strncpy(nm, rec.name.c_str(), sizeof(nm)-1);
-	strncpy(st, rec.status.c_str(), sizeof(st)-1);
+	strncpy(st, rec.state.c_str(), sizeof(st)-1);
 
-	if (progStatus.strP1.find(st) != std::string::npos) {
+	if (!progStatus.strP1.empty() &&
+		progStatus.strP1.find(st) != std::string::npos) {
 		callinlist.add (record_number, pr, ar, su, nm, sztime, progStatus.chP1[0]);
-	} else if (progStatus.strP2.find(st) != std::string::npos) {
+	} else if (!progStatus.strP2.empty() &&
+		progStatus.strP2.find(st) != std::string::npos) {
 		callinlist.add (record_number, pr, ar, su, nm, sztime, progStatus.chP2[0]);
-	} else if (progStatus.strP3.find(st) != std::string::npos) {
+	} else if (!progStatus.strP3.empty() &&
+		progStatus.strP3.find(st) != std::string::npos) {
 		callinlist.add (record_number, pr, ar, su, nm, sztime, progStatus.chP3[0]);
 	} else {
 		callinlist.add (record_number, pr, ar, su, nm, sztime);

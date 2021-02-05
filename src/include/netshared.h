@@ -38,7 +38,7 @@ extern std::string selected_file;
 
 extern csvdb netdb;
 
-struct brwsStruct {
+struct index_struct {
 	int  recN;
 	char prefix[4];
 	char area[2];
@@ -53,7 +53,7 @@ enum schema {ORIG, EXTENDED};
 extern Fl_Window *main_window;
 //extern Fl_Window *editor;
 
-extern brwsStruct *brwsData;
+extern index_struct *indexed_list;
 extern State editstate;
 
 extern size_t currec;
@@ -72,16 +72,18 @@ extern std::string trim (std::string s);
 
 extern void toggleState ();
 
-extern void getBrwsData ();
+extern void getindexed_list ();
 extern int NetNbrCompare (const void *, const void *);
 extern int SAPCompare (const void *, const void *);
 extern int APSCompare (const void *, const void *);
 extern void AddNewRecord (const char *prefix, const char *area, const char *suffix);
 extern void setAddState ();
 
+extern void SortByPAS ();
+extern void SortByAPS ();
 extern void SortBySAP ();
 extern void SortByNetNbr ();
-extern void SortByAPS ();
+extern void SortByPreferred ();
 
 extern void closeDB ();
 extern void openDB (char *);

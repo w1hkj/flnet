@@ -36,7 +36,7 @@ enum logStatus{EMPTY,LOGIN,FIRST,SECOND,LOGOUT};
 #define BLANKS 4
 
 struct _logged {
-	long    recN;
+	size_t    recN;
 	logStatus status;
 	char szPrefix[3];
 	char szArea[2];
@@ -63,6 +63,7 @@ public:
 
 	int  numlist (void) { return nlist - BLANKS; }
 	long recN (int n);
+	void recN (int n, size_t N);
 	logStatus status (int n);
 	void status(int n, logStatus st);
 	int add (long N,
@@ -79,7 +80,7 @@ public:
 	char *prefix (int n);
 	char *area (int n);
 	char *suffix (long n);
-	int inList (long N);
+	int inList (size_t N);
 	int Pri_0 (int n);
 	int Pri_1 (int n);
 	int Pri_2 (int n);

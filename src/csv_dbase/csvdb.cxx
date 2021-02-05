@@ -23,6 +23,8 @@
 //======================================================================
 
 #include "csvdb.h"
+#include "util.h"
+#include "threads.h"
 
 //szFields on 10 char spacing
 static string szFields = "\
@@ -191,6 +193,8 @@ int csvdb::load()
 {
 #define LINESIZE 2048
 	char buff[LINESIZE + 1];
+
+	backup(dbfilename);
 	fstream dbfile(dbfilename.c_str(), ios::in | ios::binary);
 	if (!dbfile) {
 		dbrecs.clear();
@@ -222,7 +226,7 @@ int csvdb::load()
 
 string csvdb::trim(string s)
 {
-	string trimmed;
+	static string trimmed;
 	trimmed.assign(s);
 	while (trimmed.length() && trimmed[0] == ' ') trimmed.erase(0);
 	while (trimmed.length() && trimmed[trimmed.length()-1] == ' ')
@@ -292,33 +296,35 @@ void csvdb::join(csvRecord &rec, string &str)
 
 int csvdb::save()
 {
-	if (dbrecs.size() == 0) return - 1;
-
 	fstream dbfile(dbfilename.c_str(), ios::out | ios::binary);
 	if (!dbfile) return -1;
 
-	static struct callsigns *clist = new callsigns[dbrecs.size()];
-
-	for (size_t n = 0; n < dbrecs.size(); n++) {
-		strncpy(clist[n].prefix , dbrecs[n].prefix.c_str(), 3);
-		strncpy(clist[n].area, dbrecs[n].area.c_str(), 1);
-		strncpy(clist[n].suffix, dbrecs[n].suffix.c_str(), 4);
-		clist[n].nbr = n;
-	}
-	qsort ( (void *)(&clist[0]), dbrecs.size(), sizeof(callsigns), callsign_comp);
-	for (size_t n = 0; n < dbrecs.size(); n++) {
-	}
-
 	// csv file header line
 	dbfile << csvFields << "\n";
-	// records
-	string line;
-	for (size_t n = 0; n < dbrecs.size(); n++) {
-		join(dbrecs[clist[n].nbr], line);
-		dbfile << line << "\n";
+
+	if (dbrecs.size() > 0) {
+
+		callsigns clist[dbrecs.size()];
+
+		for (size_t n = 0; n < dbrecs.size(); n++) {
+			strncpy(clist[n].prefix , dbrecs[n].prefix.c_str(), 3);
+			strncpy(clist[n].area, dbrecs[n].area.c_str(), 1);
+			strncpy(clist[n].suffix, dbrecs[n].suffix.c_str(), 4);
+			clist[n].nbr = n;
+		}
+
+		qsort ( &(clist[0]), dbrecs.size(), sizeof(callsigns), callsign_comp);
+
+		// records
+		string line;
+		size_t n;
+		for (n = 0; n < dbrecs.size(); n++) {
+			join(dbrecs[clist[n].nbr], line);
+			dbfile << line << "\n";
+		}
 	}
+
 	dbfile.close();
-	delete [] clist;
 
 	return 0;
 }

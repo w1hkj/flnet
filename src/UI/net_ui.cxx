@@ -39,12 +39,14 @@
 #include "lookupcall.h"
 #include "status.h"
 #include "combo.h"
+#include "masterdb.h"
 
 Fl_Menu_Bar *mnu_bar=(Fl_Menu_Bar *)0;
 Fl_Group *tabGroupColors=(Fl_Group *)0;
 Fl_Group *tabGroupPriority = (Fl_Group *)0;
 Fl_Group *tabGroupLookup = (Fl_Group *)0;
 Fl_Group *tabGroupUI = (Fl_Group *)0;
+Fl_Group *tabGroupMasterDB = (Fl_Group *)0;
 
 Fl_Input *cfgP1 = (Fl_Input *)0;
 Fl_Input *inpStatesList1 = (Fl_Input *)0;
@@ -73,6 +75,7 @@ Fl_Input *inp_qrzurl = (Fl_Input *)0;
 
 Fl_Input *inp_masterdb = (Fl_Input *)0;
 Fl_Button *btn_masterdb = (Fl_Button *)0;
+Fl_Check_Button *chk_mdb_netnbr = (Fl_Check_Button *)0;
 
 Fl_Check_Button *chk_call_left_justify = (Fl_Check_Button *)0;
 Fl_Check_Button *chk_name_left_justify = (Fl_Check_Button *)0;
@@ -80,6 +83,12 @@ Fl_Check_Button *chk_name_left_justify = (Fl_Check_Button *)0;
 Fl_Choice *combo_arc_conversion = (Fl_Choice *)0;
 
 Fl_Return_Button *btnConfigOK = (Fl_Return_Button *)0;
+
+Fl_Group *grp_sort_order = (Fl_Group*)0;
+Fl_Check_Button *btn_sort_by_PAS = (Fl_Check_Button*)0;
+Fl_Check_Button *btn_sort_by_APS = (Fl_Check_Button*)0;
+Fl_Check_Button *btn_sort_by_SAP = (Fl_Check_Button*)0;
+Fl_Check_Button *btn_sort_by_NETNBR = (Fl_Check_Button*)0;
 
 //----------------------------------------------------------------------
 // main dialog
@@ -442,8 +451,10 @@ static void cb_select_masterdb( Fl_Button *, void *)
 		"Select master DB file", "*.csv", 
 		open_dir.c_str(), 0);
 	if (!p) return;
+	close_masterdb(); // function will test for valid masterdb
 	progStatus.masterdb = p;
 	inp_masterdb->value(progStatus.masterdb.c_str());
+	open_masterdb();
 }
 
 static void cb_call_left_justify(Fl_Check_Button *, void *)
@@ -463,46 +474,113 @@ static void cb_arc_conversion (Fl_Choice *w, void *)
 	updateCallins(false);
 }
 
+static void cb_sort_by_PAS (Fl_Check_Button *, void *)
+{
+	if (btn_sort_by_PAS->value() == 0) {
+		btn_sort_by_PAS->value(1);
+		return;
+	}
+	progStatus.preferred_sort_order = 0;
+	btn_sort_by_APS->value(0);
+	btn_sort_by_SAP->value(0);
+	btn_sort_by_NETNBR->value(0);
+}
+
+static void cb_sort_by_APS (Fl_Check_Button *, void *)
+{
+	if (btn_sort_by_APS->value() == 0) {
+		btn_sort_by_APS->value(1);
+		return;
+	}
+	progStatus.preferred_sort_order = 1;
+	btn_sort_by_PAS->value(0);
+	btn_sort_by_SAP->value(0);
+	btn_sort_by_NETNBR->value(0);
+}
+
+static void cb_sort_by_SAP (Fl_Check_Button *, void *)
+{
+	if (btn_sort_by_SAP->value() == 0) {
+		btn_sort_by_SAP->value(1);
+		return;
+	}
+	progStatus.preferred_sort_order = 2;
+	btn_sort_by_APS->value(0);
+	btn_sort_by_PAS->value(0);
+	btn_sort_by_NETNBR->value(0);
+}
+
+static void cb_sort_by_NETNBR (Fl_Check_Button *, void *)
+{
+	if (btn_sort_by_NETNBR->value() == 0) {
+		btn_sort_by_NETNBR->value(1);
+		return;
+	}
+	progStatus.preferred_sort_order = 3;
+	btn_sort_by_APS->value(0);
+	btn_sort_by_PAS->value(0);
+	btn_sort_by_SAP->value(0);
+}
+
 Fl_Double_Window* configDialog() {
 	Fl_Double_Window* w = new Fl_Double_Window(440, 250, "Net Configuration");
 
 	tabsConfig = new Fl_Tabs(0, 10, 440, 210);
 	tabsConfig->color((Fl_Color)44);
-		tabGroupUI = new Fl_Group(0,035, 440, 185, "UI behavior");
-			btn_new_login_is_up = new Fl_Check_Button(30, 50, 70, 15, "New login is up");
+		tabGroupUI = new Fl_Group(0, 35, 440, 185, "UI behavior");
+			btn_new_login_is_up = new Fl_Check_Button(20, 50, 70, 15, "New login is up");
 			btn_new_login_is_up->tooltip("Move new login to the >...<\nspot in the calll in list");
 			btn_new_login_is_up->down_box(FL_DOWN_BOX);
 			btn_new_login_is_up->callback((Fl_Callback*)cb_btn_new_login_is_up);
 			btn_new_login_is_up->value(progStatus.disp_new_login);
 
-			btnOpenEditor = new Fl_Check_Button(30, 75, 70, 15, "Open editor for new login");
+			btnOpenEditor = new Fl_Check_Button(20, 75, 70, 15, "Open editor for new login");
 			btnOpenEditor->tooltip("Open editor for new call in\nNew login is up must be enabled");
 			btnOpenEditor->down_box(FL_DOWN_BOX);
 			btnOpenEditor->callback((Fl_Callback*)cb_btnOpenEditor);
 			btnOpenEditor->value(progStatus.open_editor);
 
-			btn_current_call_in_is_up = new Fl_Check_Button(30, 100, 70, 15, "Current call in is up");
+			btn_current_call_in_is_up = new Fl_Check_Button(20, 100, 70, 15, "Current call in is up");
 			btn_current_call_in_is_up->tooltip("Move last login to the >...<\nspot in the calll in list");
 			btn_current_call_in_is_up->down_box(FL_DOWN_BOX);
 			btn_current_call_in_is_up->callback((Fl_Callback*)cb_btn_current_call_in_is_up);
 			btn_current_call_in_is_up->value(progStatus.callin_is_up);
 
-			chk_call_left_justify = new Fl_Check_Button(30, 125, 120, 24, "Left_Justify callsign");
+			chk_call_left_justify = new Fl_Check_Button(20, 125, 120, 24, "Left_Justify callsign");
 			chk_call_left_justify->value(progStatus.call_left_justify);
 			chk_call_left_justify->callback((Fl_Callback*)cb_call_left_justify);
 
-			chk_name_left_justify = new Fl_Check_Button(30, 150, 120, 24, "Left_Justify nickname");
+			chk_name_left_justify = new Fl_Check_Button(20, 150, 120, 24, "Left_Justify nickname");
 			chk_name_left_justify->value(progStatus.name_left_justify);
 			chk_name_left_justify->callback((Fl_Callback*)cb_name_left_justify);
 
-			combo_arc_conversion = new Fl_Choice (30, 175, 120, 24, "Arc Distance");
-//			combo_arc_conversion->type(1);
+			combo_arc_conversion = new Fl_Choice (20, 180, 120, 24, "Arc Distance");
 			combo_arc_conversion->add("Kilometers");
 			combo_arc_conversion->add("Nautical Miles");
 			combo_arc_conversion->add("Statute Miles");
 			combo_arc_conversion->align(FL_ALIGN_RIGHT);
 			combo_arc_conversion->value(progStatus.arc_conversion);
 			combo_arc_conversion->callback((Fl_Callback*)cb_arc_conversion);
+
+			grp_sort_order = new Fl_Group(240, 50, 180, 125, "Preferred Sort Order");
+			grp_sort_order->box(FL_ENGRAVED_BOX);
+			grp_sort_order->align(FL_ALIGN_TOP_LEFT | FL_ALIGN_INSIDE);
+
+				btn_sort_by_PAS = new Fl_Check_Button(250, 75, 90, 15, "P/A/S");
+				btn_sort_by_PAS->value(progStatus.preferred_sort_order == 0);
+				btn_sort_by_PAS->callback((Fl_Callback*)cb_sort_by_PAS);
+
+				btn_sort_by_APS = new Fl_Check_Button(250, 100, 90, 15, "A/P/S");
+				btn_sort_by_APS->value(progStatus.preferred_sort_order == 1);
+				btn_sort_by_APS->callback((Fl_Callback*)cb_sort_by_APS);
+
+				btn_sort_by_SAP = new Fl_Check_Button(250, 125, 90, 15, "S/A/P");
+				btn_sort_by_SAP->value(progStatus.preferred_sort_order == 2);
+				btn_sort_by_SAP->callback((Fl_Callback*)cb_sort_by_SAP);
+
+				btn_sort_by_NETNBR = new Fl_Check_Button(250, 150, 90, 15, "Net Nbr");
+				btn_sort_by_NETNBR->value(progStatus.preferred_sort_order == 3);
+				btn_sort_by_NETNBR->callback((Fl_Callback*)cb_sort_by_NETNBR);
 
 		tabGroupUI->end();
 
@@ -584,67 +662,77 @@ Fl_Double_Window* configDialog() {
 		tabGroupLookup = new Fl_Group(0, 35, 440, 185, "Lookup");
 		tabGroupLookup->hide();
 
-			inp_myLocator = new Fl_Input(15, 50, 80, 24, "My Loc:");
+			inp_myLocator = new Fl_Input(15, 60, 80, 24, "My Loc:");
 			inp_myLocator->value(progStatus.myLocator.c_str());
 			inp_myLocator->callback((Fl_Callback*)cb_myLocator);
 			inp_myLocator->align(FL_ALIGN_TOP_LEFT);
 
-			inp_user_name = new Fl_Input(100, 50, 110, 24, "Id:");
+			inp_user_name = new Fl_Input(100, 60, 110, 24, "Id:");
 			inp_user_name->value(progStatus.user_name.c_str());
 			inp_user_name->callback((Fl_Callback*)cb_user_name);
 			inp_user_name->align(FL_ALIGN_TOP_LEFT);
 
-			inp_user_password = new Fl_Input(215, 50, 120, 24, "Pwd:");
+			inp_user_password = new Fl_Input(215, 60, 120, 24, "Pwd:");
 			inp_user_password->value(progStatus.user_password.c_str());
 			inp_user_password->callback((Fl_Callback*)cb_user_password);
 			inp_user_password->type(FL_SECRET_INPUT);
 			inp_user_password->align(FL_ALIGN_TOP_LEFT);
 
-			chk_pwd = new Fl_Check_Button(340, 50, 40, 18, "Show pwd");
+			chk_pwd = new Fl_Check_Button(340, 60, 40, 18, "Show pwd");
 			chk_pwd->value(false);
 			chk_pwd->callback((Fl_Callback*)cb_chk_pwd);
 
-			chk_callook = new Fl_Check_Button(23, 78, 50, 18, "callook.info:");
+			chk_callook = new Fl_Check_Button(23, 88, 50, 18, "callook.info:");
 			chk_callook->value(progStatus.QRZXML == CALLOOK);
 			chk_callook->callback((Fl_Callback*)cb_chk_callook);
 
-			inp_callookurl = new Fl_Input(140, 75, 280, 24, "");
+			inp_callookurl = new Fl_Input(140, 85, 280, 24, "");
 			inp_callookurl->value(progStatus.callookurl.c_str());
 			inp_callookurl->callback((Fl_Callback*)cb_callookurl);
 
-			chk_hamqth = new Fl_Check_Button(23, 103, 50, 18, "hamqth.com:");
+			chk_hamqth = new Fl_Check_Button(23, 113, 50, 18, "hamqth.com:");
 			chk_hamqth->value(progStatus.QRZXML == HAMQTH);
 			chk_hamqth->callback((Fl_Callback*)cb_chk_hamqth);
 
-			inp_hamqthurl = new Fl_Input(140, 100, 280, 24, "");
+			inp_hamqthurl = new Fl_Input(140, 110, 280, 24, "");
 			inp_hamqthurl->value(progStatus.hamqthurl.c_str());
 			inp_hamqthurl->callback((Fl_Callback*)cb_hamqthurl);
 
-			chk_hamcall = new Fl_Check_Button(23, 128, 50, 18, "hamcall.net:");
+			chk_hamcall = new Fl_Check_Button(23, 138, 50, 18, "hamcall.net:");
 			chk_hamcall->value(progStatus.QRZXML == HAMCALLNET);
 			chk_hamcall->callback((Fl_Callback*)cb_chk_hamcall);
 
-			inp_hamcallurl = new Fl_Input(140, 125, 280, 24, "");
+			inp_hamcallurl = new Fl_Input(140, 135, 280, 24, "");
 			inp_hamcallurl->value(progStatus.hamcallurl.c_str());
 			inp_hamcallurl->callback((Fl_Callback*)cb_hamcallurl);
 
-			chk_qrz = new Fl_Check_Button(23, 153, 50, 18, "qrz.com:");
+			chk_qrz = new Fl_Check_Button(23, 163, 50, 18, "qrz.com:");
 			chk_qrz->value(progStatus.QRZXML == QRZNET);
 			chk_qrz->callback((Fl_Callback*)cb_chk_qrz);
 
-			inp_qrzurl = new Fl_Input(140, 150, 280, 24, "");
+			inp_qrzurl = new Fl_Input(140, 160, 280, 24, "");
 			inp_qrzurl->value(progStatus.qrzurl.c_str());
 			inp_qrzurl->callback((Fl_Callback*)cb_hamqrzurl);
 
-			inp_masterdb = new Fl_Input(10, 190, 360, 24, "Master DB");
+		tabGroupLookup->end();
+
+		tabGroupMasterDB = new Fl_Group(0, 35, 440, 185, "Master DB");
+		tabGroupMasterDB->hide();
+
+			inp_masterdb = new Fl_Input(10, 60, 360, 24, "Master DB");
 			inp_masterdb->value(progStatus.masterdb.c_str());
 			inp_masterdb->callback((Fl_Callback*)cb_masterdb);
 			inp_masterdb->align(FL_ALIGN_TOP_LEFT);
 
-			btn_masterdb = new Fl_Button(375, 190, 60, 24, "Select");
+			btn_masterdb = new Fl_Button(375, 60, 60, 24, "Select");
 			btn_masterdb->callback((Fl_Callback*)cb_select_masterdb);
 
-		tabGroupLookup->end();
+			chk_mdb_netnbr = new Fl_Check_Button(20, 90, 18, 18, "Include net nbr");
+			chk_mdb_netnbr->value(false);
+			chk_mdb_netnbr->align(FL_ALIGN_RIGHT);
+//			chk_mdb_netnbr->callback((Fl_Callback*)cb_chk_pwd);
+
+		tabGroupMasterDB->end();
 
 	tabsConfig->end();
 

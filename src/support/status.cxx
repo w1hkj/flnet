@@ -49,6 +49,13 @@ status progStatus = {
 	0,								// int			open_editor;
 	0,								// int			callin_is_up;
 	1,								// int			QRZXML;
+	2,								// int			preferred_sort_order
+									//				0 - PAS
+									//				1 - APS
+									//				2 - SAP
+									//				3 - NETNBR
+	0,								// int			mdb_netnbr
+									// 1 - transfer netnbr to/from master db
 
 	'n',							// int			chAuto;
 	false,							// int			call_left_justify
@@ -106,6 +113,8 @@ void status::saveLastState()
 	flnetpref.set("open_editor", open_editor);
 	flnetpref.set("callin_is_up", callin_is_up);
 	flnetpref.set("QRZXML", QRZXML);
+	flnetpref.set("preferred_sort_order", preferred_sort_order);
+	flnetpref.set("mdb_netnbr", mdb_netnbr);
 
 	flnetpref.set("chAuto", chAuto);
 
@@ -159,6 +168,8 @@ void status::loadLastState()
 	flnetpref.get("open_editor", open_editor, open_editor);
 	flnetpref.get("callin_is_up", callin_is_up, callin_is_up);
 	flnetpref.get("QRZXML", QRZXML, QRZXML);
+	flnetpref.get("preferred_sort_order", preferred_sort_order, preferred_sort_order);
+	flnetpref.get("mdb_netnbr", mdb_netnbr, mdb_netnbr);
 
 	flnetpref.get("chAuto", chAuto, chAuto);
 

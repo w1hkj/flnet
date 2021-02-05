@@ -34,6 +34,13 @@
 
 #include "csvdb.h"
 
+struct SEARCH_REC {
+	int  recN;
+	char prefix[4];
+	char area[2];
+	char suffix[4];
+};
+
 extern std::string uppercase (std::string s);
 extern std::string trim (std::string s);
 
@@ -42,17 +49,12 @@ extern long is_in_masterdb(const char *p, const char *a, const char *s);
 
 extern void save_to_masterdb ();
 
-struct SEARCH_REC {
-	int  recN;
-	char prefix[4];
-	char area[2];
-	char suffix[4];
-};
+extern int  binary_search_masterdb(int l, int r, std::string &p, std::string &a, std::string &s);
+extern bool from_masterdb(const char *p, const char *a, const char *s, csvRecord *mrec);
+extern void to_masterdb(csvRecord &mrec);
 
-bool from_masterdb(const char *p, const char *a, const char *s, csvRecord *mrec);
-void to_masterdb(const char *p, const char *a, const char *s, csvRecord *mrec);
-
-void close_masterdb();
+extern bool open_masterdb();
+extern void close_masterdb();
 
 #endif
 

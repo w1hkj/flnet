@@ -190,6 +190,13 @@ deprecated__ typeof(sprintf) sprintf;
 #  define PATH_SEP "\\"
 #endif
 
+#include <iostream>
+#include <fstream>
+#include <string>
+
+void fcopy(std::string from, std::string to);
+void backup(std::string filename);
+
 #endif /* UTIL_H */
 
 /*

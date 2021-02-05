@@ -57,6 +57,7 @@
 #include "xml_io.h"
 #include "status.h"
 #include "debug.h"
+#include "masterdb.h"
 
 #ifdef WIN32
 #  include "flnetrc.h"
@@ -319,6 +320,8 @@ int main(int argc, char **argv)
 		openDB (selected_file);
 		LOG_INFO("Opened: %s", selected_file.c_str());
 	}
+	if (!progStatus.masterdb.empty())
+		open_masterdb();
 
 	open_xmlrpc();
 

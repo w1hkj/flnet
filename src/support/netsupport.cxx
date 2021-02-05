@@ -31,6 +31,7 @@
 #include <FL/fl_ask.H>
 #include <FL/Fl_File_Chooser.H>
 
+#include "my_UI.h"
 #include "net_ui.h"
 #include "netshared.h"
 #include "netversion.h"
@@ -38,6 +39,7 @@
 #include "netsupport.h"
 #include "xml_io.h"
 #include "debug.h"
+#include "masterdb.h"
 
 #include "config.h"
 
@@ -55,12 +57,16 @@ void cb_mnuOpen(Fl_Menu_*mnu, void *d)
 		"Select .csv file", "*.csv", 
 		open_dir.c_str(), 0);
 	if (!p) return;
-	selected_file = p;
 
-	clear_outfilename();
 	updateLogins (true);
+	closeDB();
+
+	selected_file = p;
+	clear_outfilename();
 	callinlist.clear ();
-	updateCallins (false);
+	getindexed_list ();
+	WhoIsUp = 0;
+	updateCallins ();
 
 	LOG_INFO("Open database %s", selected_file.c_str());
 	openDB (selected_file.c_str());
@@ -77,7 +83,9 @@ void cb_mnuNew(Fl_Menu_*mnu, void *d)
 	clear_outfilename();
 	updateLogins (true);
 	callinlist.clear ();
-	updateCallins (false);
+	getindexed_list ();
+	WhoIsUp = 0;
+	updateCallins ();
 
 	LOG_INFO("New database %s", selected_file.c_str());
 	openDB (selected_file.c_str());
@@ -110,6 +118,7 @@ void cleanExit(void)
 {
 	updateLogins (true);
 	closeDB();
+	close_masterdb();
 	close_xmlrpc();
 	debug::stop();
 	close_config();

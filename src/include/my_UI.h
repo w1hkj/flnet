@@ -29,7 +29,7 @@
 #include "loglist.h"
 
 extern int WhoIsUp;
-extern void updateCallins (bool);
+extern void updateCallins (bool fldigi_flag = false);
 extern loglist callinlist;
 
 #define NPICKITEMS 32

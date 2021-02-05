@@ -38,6 +38,7 @@
 
 #include "config.h"
 #include "util.h"
+#include "threads.h"
 
 #ifdef __MINGW32__
 #  include "compat.h"
@@ -481,3 +482,58 @@ const char * create_directory( const char * dir )
 		if( errno != EEXIST ) return strerror(errno);
 	return NULL ;
 }
+
+//======================================================================
+// create back up files
+//======================================================================
+static pthread_mutex_t backup_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+//----------------------------------------------------------------------
+// create copy of file 'from' --> 'to'
+//----------------------------------------------------------------------
+
+void fcopy(std::string from, std::string to)
+{
+	char buffer[65536];
+	FILE *fp_from, *fp_to;
+	size_t n;
+	if ((fp_from = fopen(from.c_str(), "rb")) != NULL) {
+		if ((fp_to = fopen(to.c_str(), "wb")) != NULL) {
+			while(1) {
+				if (feof(fp_from))
+					break;
+				memset(buffer, 0, sizeof(buffer));
+				if ((n = fread(buffer, 1, sizeof(buffer), fp_from)) > 0)
+					n = fwrite(buffer, 1, n, fp_to);
+				else
+					break;
+			}
+			fflush(fp_to);
+			fclose(fp_to);
+		}
+		fclose(fp_from);
+	}
+}
+
+//----------------------------------------------------------------------
+// backup a file with up to two aging copies
+// fname.ext --> fname.ext.1 --> fname.ext.2
+// use mutex to prevent reentry or use by more than 1 thread at a time
+//----------------------------------------------------------------------
+
+void backup(std::string filename)
+{
+	guard_lock rlock(&backup_mutex);
+
+	std::string oldfn, newfn;
+	const char *ext[] = {".1", ".2"};
+
+	for (int i = 1; i > 0; i--) {
+		newfn.assign(filename).append(ext[i]);
+		oldfn.assign(filename).append(ext[i - 1]);
+		fcopy(oldfn, newfn);
+	}
+	newfn.assign(filename).append(ext[0]);
+	fcopy(filename, newfn);
+}
+

@@ -55,19 +55,19 @@ csvdb netdb;
 
 extern loglist callinlist;
 
-int  binary_search_call(int l, int r, std::string &p, std::string &a, std::string &s);
+int  binary_search_SAP(int l, int r, std::string &p, std::string &a, std::string &s);
 int  binary_search_netnbr(int l, int r, int x);
 
 short	rc;
 int		fc, nrecs;
 
-brwsStruct *brwsData = NULL;
+index_struct *indexed_list = NULL;
 static int brwstabs[] = { 80, 0 };
 
 State editState = UPDATE;
 
 size_t		currec;
-size_t		brwsnum;
+size_t		list_index;
 size_t		AddedRecNbr;
 
 string sSimpleName;
@@ -195,8 +195,8 @@ long IsInDB (const char *p, const char *a, const char *s)
 
 	SortBySAP ();
 
-	for (int n = 0; n < netdb.numrecs(); n++) {
-		cmp = suffix.compare( trim (brwsData[n].suffix) );
+	for (size_t n = 0; n < netdb.numrecs(); n++) {
+		cmp = suffix.compare( trim (indexed_list[n].suffix) );
 		if (cmp > 0) continue;
 		if (cmp < 0) break;
 		// only looking for a suffix match
@@ -204,21 +204,36 @@ long IsInDB (const char *p, const char *a, const char *s)
 			found = n;
 			break;
 		}
-		if (prefix.compare (trim (brwsData[n].prefix) ) == 0 &&
-			area.compare (trim (brwsData[n].area) ) == 0) {
+		if (prefix.compare (trim (indexed_list[n].prefix) ) == 0 &&
+			area.compare (trim (indexed_list[n].area) ) == 0) {
 			found = n;
 			break;
 		}
 	}
-	if (found >= 0) return brwsData[found].recN;
+	if (found >= 0) return indexed_list[found].recN;
 	return found;
+}
+
+// execute after database record modification of any kind
+void refresh_logins()
+{
+	std::string p, a, s;
+	SortBySAP();
+	int rn;
+	for (int i = 0; i < callinlist.numlist(); i++) {
+		p = callinlist.prefix(i);
+		a = callinlist.area(i);
+		s = callinlist.suffix(i);
+		rn = binary_search_SAP(0, netdb.numrecs(), p, a ,s);
+		callinlist.recN(i, rn);
+	}
+	SortByPreferred();
 }
 
 extern Fl_Input *inpCallsign;
 
 void AddNewRecord (const char *prefix, const char *area, const char *suffix)
 {
-//std::cout << "AddNewRecord(" << prefix << area << suffix << ")" << std::endl;
 	clearEditForm ();
 	inpPrefix->value (prefix);
 	inpArea->value (area);
@@ -239,47 +254,48 @@ void ModifyRecord (long N)
 }
 
 int get_cnt = 0;
-void getBrwsData()
+void getindexed_list()
 {
-//std::cout << "genBrwsData() " << ++get_cnt << std::endl;
+	if (indexed_list) {
+		delete [] indexed_list;
+		indexed_list = NULL;
+	}
+
 	if (!netdb.numrecs()) {
+		update_select_label();
 		return;
 	}
 
 	update_select_label();
 
 	currec = netdb.recnbr();
-	if (brwsData) {
-//std::cout << "numrecs " << netdb.numrecs() << std::endl;
-//std::cout << "brwsData " << brwsData << std::endl;
-//std::cout << "sizeof(brwsdata) " << sizeof(brwsData) << std::endl;
-		delete [] brwsData;
-		brwsData = NULL;
-	}
 
 	csvRecord rec;
-	brwsData = new brwsStruct[netdb.numrecs()];
-	for (int n = 0; n < netdb.numrecs(); n++) {
+	indexed_list = new index_struct[netdb.numrecs()];
+
+	for (size_t n = 0; n < netdb.numrecs(); n++) {
 		netdb.get(n, rec);
-		brwsData[n].recN = n;
-		memset(brwsData[n].netnbr, 0, 5);
-		memset(brwsData[n].prefix, 0, 4);
-		memset(brwsData[n].area, 0, 2);
-		memset(brwsData[n].suffix, 0, 4);
-		strncpy (brwsData[n].netnbr, rec.netnbr.c_str(), 4);
-		strncpy (brwsData[n].prefix, rec.prefix.c_str(), 3);
-		strncpy (brwsData[n].area, rec.area.c_str(), 1);
-		strncpy (brwsData[n].suffix, rec.suffix.c_str(), 3);
-		while (strlen(brwsData[n].suffix) < 3)
-			strcat (brwsData[n].suffix, " ");
+		indexed_list[n].recN = n;
+		memset(indexed_list[n].netnbr, 0, 5);
+		memset(indexed_list[n].prefix, 0, 4);
+		memset(indexed_list[n].area, 0, 2);
+		memset(indexed_list[n].suffix, 0, 4);
+		strncpy (indexed_list[n].netnbr, rec.netnbr.c_str(), 4);
+		strncpy (indexed_list[n].prefix, rec.prefix.c_str(), 3);
+		strncpy (indexed_list[n].area, rec.area.c_str(), 1);
+		strncpy (indexed_list[n].suffix, rec.suffix.c_str(), 3);
+
+
+		while (strlen(indexed_list[n].suffix) < 3)
+			strcat (indexed_list[n].suffix, " ");
 	}
 	netdb.get(currec, rec);
 }
 
 int NetNbrCompare (const void *p1, const void *p2)
 {
-	brwsStruct *s1 = (brwsStruct *)p1;
-	brwsStruct *s2 = (brwsStruct *)p2;
+	index_struct *s1 = (index_struct *)p1;
+	index_struct *s2 = (index_struct *)p2;
 	int n1 = atoi(s1->netnbr);
 	int n2 = atoi(s2->netnbr);
 	if (n1 == n2) return 0;
@@ -291,8 +307,8 @@ int NetNbrCompare (const void *p1, const void *p2)
 
 int SAPcompare (const void *p1, const void *p2)
 {
-	brwsStruct *s1 = (brwsStruct *)p1;
-	brwsStruct *s2 = (brwsStruct *)p2;
+	index_struct *s1 = (index_struct *)p1;
+	index_struct *s2 = (index_struct *)p2;
 	int cmp;
 	if ((cmp = strcmp(s1->suffix, s2->suffix)) != 0) return cmp;
 	if ((cmp = strcmp(s1->area, s2->area)) != 0) return cmp;
@@ -301,30 +317,56 @@ int SAPcompare (const void *p1, const void *p2)
 
 int APScompare (const void *p1, const void *p2)
 {
-	brwsStruct *s1 = (brwsStruct *)p1;
-	brwsStruct *s2 = (brwsStruct *)p2;
+	index_struct *s1 = (index_struct *)p1;
+	index_struct *s2 = (index_struct *)p2;
 	int cmp;
 	if ((cmp = strcmp(s1->area, s2->area)) != 0) return cmp;
 	if ((cmp = strcmp(s1->prefix, s2->prefix)) != 0) return cmp;
 	return strcmp(s1->suffix, s2->suffix);
 }
 
+int PAScompare (const void *p1, const void *p2)
+{
+	index_struct *s1 = (index_struct *)p1;
+	index_struct *s2 = (index_struct *)p2;
+	int cmp;
+	if ((cmp = strcmp(s1->prefix, s2->prefix)) != 0) return cmp;
+	if ((cmp = strcmp(s1->area, s2->area)) != 0) return cmp;
+	return strcmp(s1->suffix, s2->suffix);
+}
+
 void SortBySAP()
 {
-	if (!brwsData || !netdb.numrecs()) return;
-	qsort ( &(brwsData[0]), netdb.numrecs(), sizeof(brwsStruct), SAPcompare);
+	if (!indexed_list || !netdb.numrecs()) return;
+	qsort ( &(indexed_list[0]), netdb.numrecs(), sizeof(index_struct), SAPcompare);
 }
 
 void SortByNetNbr()
 {
-	if (!brwsData || !netdb.numrecs()) return;
-	qsort ( &(brwsData[0]), netdb.numrecs(), sizeof(brwsStruct), NetNbrCompare);
+	if (!indexed_list || !netdb.numrecs()) return;
+	qsort ( &(indexed_list[0]), netdb.numrecs(), sizeof(index_struct), NetNbrCompare);
 }
 
 void SortByAPS()
 {
-	if (!brwsData || !netdb.numrecs()) return;
-	qsort ( &(brwsData[0]), netdb.numrecs(), sizeof(brwsStruct), APScompare);
+	if (!indexed_list || !netdb.numrecs()) return;
+	qsort ( &(indexed_list[0]), netdb.numrecs(), sizeof(index_struct), APScompare);
+}
+
+void SortByPAS()
+{
+	if (!indexed_list || !netdb.numrecs()) return;
+	qsort ( &(indexed_list[0]), netdb.numrecs(), sizeof(index_struct), PAScompare);
+}
+
+void SortByPreferred()
+{
+	switch (progStatus.preferred_sort_order) {
+		case 0 : SortByPAS (); break;
+		case 1 : SortByAPS (); break;
+		case 2 : SortBySAP (); break;
+		case 3 : SortByNetNbr (); break;
+	}
 }
 
 void closeDB()
@@ -342,7 +384,7 @@ void closeDB()
 void update_select_label()
 {
 	char dispname[30];
-	snprintf(dispname, sizeof(dispname), "%s (%d)", sSimpleName.c_str(), netdb.numrecs());
+	snprintf(dispname, sizeof(dispname), "%s (%lu)", sSimpleName.c_str(), (unsigned long)netdb.numrecs());
 	dbSelectLabel->value(dispname);
 	dbSelectLabel->redraw();
 }
@@ -360,7 +402,7 @@ void openDB(string fname)
 		callinlist.setPri_2 (progStatus.chP2[0]);
 		callinlist.setPri_3 (progStatus.chP3[0]);
 		if (progStatus.chAuto == 'y') callinlist.AutoPriority (1);
-		getBrwsData();
+		getindexed_list();
 	} else {
 		update_select_label();
 	}
@@ -488,19 +530,17 @@ void saveCurRecord ()
 
 void appendNewRecord ()
 {
-//std::cout << "appendNewRecord()" << std::endl;
 	csvRecord rec;
 	setFields (rec);
 	netdb.add(rec);
-	getBrwsData ();
+	getindexed_list ();
 }
 
 void appendNewRecord (csvRecord &rec)
 {
-//std::cout << "appendNewRecord(rec)" << std::endl;
 	setFields (rec);
 	netdb.add(rec);
-	getBrwsData ();
+	getindexed_list ();
 }
 
 
@@ -561,7 +601,7 @@ int add_fldigi_record(void)
 		rec->locator   = "";
 
 		netdb.add(*rec);
-		getBrwsData ();
+		getindexed_list ();
 	}
 
 	delete data;
@@ -627,7 +667,7 @@ void cb_mnuFldigiEditor(Fl_Menu_*, void*)
 {
 	int rn = add_fldigi_record();
 	if(rn < 0) return;
-	gotoRec(brwsData[rn].recN);
+	gotoRec(indexed_list[rn].recN);
 }
 
 void cb_F12(int WhoIsUp)
@@ -650,8 +690,7 @@ void cb_F12(int WhoIsUp)
 	tmp.assign(trim(prefix)).append(trim(area)).append(trim(suffix));
 
 	SortBySAP ();
-
-	int rnbr = binary_search_call(0, netdb.numrecs(), prefix, area, suffix);
+	int rnbr = binary_search_SAP(0, netdb.numrecs(), prefix, area, suffix);
 
 	if (rnbr < 0) {
 		csvRecord *rec = new csvRecord;
@@ -692,30 +731,32 @@ void cb_F12(int WhoIsUp)
 		rec->locator.clear();
 
 		netdb.add(*rec);
-		getBrwsData ();
+		getindexed_list ();
 
 		SortBySAP();
-		rnbr = binary_search_call(0, netdb.numrecs(), prefix, area, suffix);
+		rnbr = binary_search_SAP(0, netdb.numrecs(), prefix, area, suffix);
 	}
+	SortByPreferred ();
 	editor->show();
-	ModifyRecord(brwsData[rnbr].recN);
+	show_sort_order ();
+	ModifyRecord(rnbr);
 }
 
 void cb_ShiftF12(void)
 {
 	int rn = add_fldigi_record();
 	if(rn < 0) return;
-	myUI->PickedToCallinsDB((size_t) brwsData[rn].recN);
+	myUI->PickedToCallinsDB((size_t) indexed_list[rn].recN);
 }
 
 void cbEditor ()
 {
 	Fl_Window *editor = getEditWindow();
-//	editor->resize(main_window->x() + main_window->w() + 10, main_window->y(), 535, 460);
 
-	SortBySAP ();
-	clearEditForm ();
+	SortByPreferred ();
 	editor->show ();
+	show_sort_order();
+	clearEditForm ();
 	editState = UPDATE;
 	showState ();
 	cbGoFirstRec (NULL, NULL);
@@ -724,12 +765,12 @@ void cbEditor ()
 void cbCloseEditor ()
 {
 	Fl_Window *editor = getEditWindow();
-//	getBrwsData ();
-//	SortBySAP ();
 	editState = UPDATE;
 	showState ();
 	editor->hide ();
-	myUI->dispCallIns (false);
+	getindexed_list ();
+	refresh_logins ();
+	updateCallins ();
 }
 void cb_btnCancelCallsignSearch(Fl_Button*, void*)
 {
@@ -741,8 +782,8 @@ void cb_OkCallsignSearch(Fl_Button*, void*)
 	int selrec = brwsCallsign->value();
 	CallsignBrowse->hide();
 	if (selrec != 0) {
-		brwsnum = selrec - 1;
-		gotoRec ( brwsData[brwsnum].recN);
+		list_index = selrec - 1;
+		gotoRec ( indexed_list[list_index].recN);
 	}
 }
 
@@ -750,16 +791,18 @@ void cb_mnuBrowseCallsign (Fl_Menu_*, void*)
 {
 	char brwsLine[30];
 	if (!CallsignBrowse) CallsignBrowse = winCallsignBrowse();
-	getBrwsData();
-	SortByAPS();
+	getindexed_list();
+	SortByPAS();
+	out_sorted_by->value("P/A/S");
+	out_sorted_by->redraw();
 	brwsCallsign->column_widths(brwstabs);
 	brwsCallsign->clear ();
-	for (int i = 0; i < netdb.numrecs(); i++) {
-		strcpy(brwsLine, brwsData[i].netnbr);
+	for (size_t i = 0; i < netdb.numrecs(); i++) {
+		strcpy(brwsLine, indexed_list[i].netnbr);
 		strcat(brwsLine, "\t");
-		strcat(brwsLine, brwsData[i].prefix);
-		strcat(brwsLine, brwsData[i].area);
-		strcat(brwsLine, brwsData[i].suffix);
+		strcat(brwsLine, indexed_list[i].prefix);
+		strcat(brwsLine, indexed_list[i].area);
+		strcat(brwsLine, indexed_list[i].suffix);
 		brwsCallsign->add (brwsLine);
 	}
 	CallsignBrowse->show();
@@ -775,8 +818,8 @@ void cb_OkNetNbrSearch(Fl_Button*, void*)
 	int selrec = brwsNetNbr->value();
 	NetNbrBrowse->hide();
 	if (selrec != 0) {
-		brwsnum = selrec - 1;
-		gotoRec (brwsData[brwsnum].recN);
+		list_index = selrec - 1;
+		gotoRec (indexed_list[list_index].recN);
 	}
 }
 
@@ -784,16 +827,18 @@ void cb_mnuBrowseNetNbr (Fl_Menu_*, void*)
 {
 	char brwsLine[30];
 	if (!NetNbrBrowse) NetNbrBrowse = winNetNbrBrowse();
-	getBrwsData();
+	getindexed_list();
 	SortByNetNbr();
+	out_sorted_by->value("Net Nbr");
+	out_sorted_by->redraw();
 	brwsNetNbr->clear ();
 	brwsNetNbr->column_widths(brwstabs);
-	for (int i = 0; i < netdb.numrecs(); i++) {
-		strcpy(brwsLine, brwsData[i].netnbr);
+	for (size_t i = 0; i < netdb.numrecs(); i++) {
+		strcpy(brwsLine, indexed_list[i].netnbr);
 		strcat(brwsLine, "\t");
-		strcat(brwsLine, brwsData[i].prefix);
-		strcat(brwsLine, brwsData[i].area);
-		strcat(brwsLine, brwsData[i].suffix);
+		strcat(brwsLine, indexed_list[i].prefix);
+		strcat(brwsLine, indexed_list[i].area);
+		strcat(brwsLine, indexed_list[i].suffix);
 		brwsNetNbr->add (brwsLine);
 	}
 	NetNbrBrowse->show();
@@ -809,21 +854,77 @@ void cb_btnSearchCancel(Fl_Button *b, void *d)
 // p = search prefix
 // a = search area
 // s = search suffix
-int  binary_search_call(int l, int r, std::string &p, std::string &a, std::string &s) 
-{ 
+// indexed_list must be sorted in SAP order
+int  binary_search_SAP(int l, int r, std::string &p, std::string &a, std::string &s) 
+{
+	if (!indexed_list | (netdb.numrecs() == 0)) return -1;
 	std::string p2, a2, s2;
 	if (r >= l) { 
 		int mid = l + (r - l) / 2; 
-		p2 = trim(brwsData[mid].prefix);
-		a2 = trim(brwsData[mid].area);
-		s2 = trim(brwsData[mid].suffix);
-		if (s2 > s) return binary_search_call(l, mid - 1, p, a, s);
-		if (s2 < s) return binary_search_call(mid + 1, r, p, a, s);
-		if (a2 > a) return binary_search_call(l, mid - 1, p, a, s);
-		if (a2 < a) return binary_search_call(mid + 1, r, p, a, s);
-		if (p2 > p) return binary_search_call(l, mid - 1, p, a, s);
-		if (p2 < p) return binary_search_call(mid + 1, r, p, a, s);
-		return mid;
+		p2 = trim(indexed_list[mid].prefix);
+		a2 = trim(indexed_list[mid].area);
+		s2 = trim(indexed_list[mid].suffix);
+		// compare suffix
+		if (s2 > s) return binary_search_SAP(l, mid - 1, p, a, s);
+		if (s2 < s) return binary_search_SAP(mid + 1, r, p, a, s);
+		// compare area
+		if (a2 > a) return binary_search_SAP(l, mid - 1, p, a, s);
+		if (a2 < a) return binary_search_SAP(mid + 1, r, p, a, s);
+		// compare prefix
+		if (p2 > p) return binary_search_SAP(l, mid - 1, p, a, s);
+		if (p2 < p) return binary_search_SAP(mid + 1, r, p, a, s);
+		list_index = mid;
+		return indexed_list[mid].recN;
+	} 
+	return -1; 
+} 
+
+// indexed_list must be sorted in PAS order
+int  binary_search_PAS(int l, int r, std::string &p, std::string &a, std::string &s) 
+{
+	if (!indexed_list | (netdb.numrecs() == 0)) return -1;
+	std::string p2, a2, s2;
+	if (r >= l) { 
+		int mid = l + (r - l) / 2; 
+		p2 = trim(indexed_list[mid].prefix);
+		a2 = trim(indexed_list[mid].area);
+		s2 = trim(indexed_list[mid].suffix);
+		// compare prefix
+		if (p2 > p) return binary_search_SAP(l, mid - 1, p, a, s);
+		if (p2 < p) return binary_search_SAP(mid + 1, r, p, a, s);
+		// compare area
+		if (a2 > a) return binary_search_SAP(l, mid - 1, p, a, s);
+		if (a2 < a) return binary_search_SAP(mid + 1, r, p, a, s);
+		// compare suffix
+		if (s2 > s) return binary_search_SAP(l, mid - 1, p, a, s);
+		if (s2 < s) return binary_search_SAP(mid + 1, r, p, a, s);
+		list_index = mid;
+		return indexed_list[mid].recN;
+	} 
+	return -1; 
+} 
+
+// indexed_list must be sorted in APS order
+int  binary_search_APS(int l, int r, std::string &p, std::string &a, std::string &s) 
+{
+	if (!indexed_list | (netdb.numrecs() == 0)) return -1;
+	std::string p2, a2, s2;
+	if (r >= l) { 
+		int mid = l + (r - l) / 2; 
+		p2 = trim(indexed_list[mid].prefix);
+		a2 = trim(indexed_list[mid].area);
+		s2 = trim(indexed_list[mid].suffix);
+		// compare area
+		if (a2 > a) return binary_search_SAP(l, mid - 1, p, a, s);
+		if (a2 < a) return binary_search_SAP(mid + 1, r, p, a, s);
+		// compare prefix
+		if (p2 > p) return binary_search_SAP(l, mid - 1, p, a, s);
+		if (p2 < p) return binary_search_SAP(mid + 1, r, p, a, s);
+		// compare suffix
+		if (s2 > s) return binary_search_SAP(l, mid - 1, p, a, s);
+		if (s2 < s) return binary_search_SAP(mid + 1, r, p, a, s);
+		list_index = mid;
+		return indexed_list[mid].recN;
 	} 
 	return -1; 
 } 
@@ -831,18 +932,21 @@ int  binary_search_call(int l, int r, std::string &p, std::string &a, std::strin
 void cb_btnSearchOK(Fl_Return_Button *b, void *d)
 {
 	long found;
-	if (!brwsData) return;
+	if (!indexed_list) return;
 
 	CallsignSearch->hide ();
 
 	SortBySAP();
+	out_sorted_by->value("S/A/P");
+	out_sorted_by->redraw();
+
 	std::string p = trim(uppercase(sSrchPrefix->value()));
 	std::string a = trim(uppercase(sSrchArea->value()));
 	std::string s = trim(uppercase(sSrchSuffix->value()));
-	found = binary_search_call(	0, netdb.numrecs() - 1, p, a, s);
+	found = binary_search_SAP(	0, netdb.numrecs() - 1, p, a, s);
 
 	if (found > -1) {
-		gotoRec(brwsData[found].recN);
+		gotoRec(found);
 	}
 }
 
@@ -864,32 +968,39 @@ void cb_btnSearchNetNbrCancel (Fl_Button *b, void *d)
 // l = left element in search interval
 // r = right element in search interval
 // x = search value
+// index_list sorted by netnbr
 int  binary_search_netnbr(int l, int r, int x) 
 { 
+	if (!indexed_list | (netdb.numrecs() == 0)) return -1;
 	int snbr;
-    if (r >= l) { 
-        int mid = l + (r - l) / 2; 
-        snbr = atol(brwsData[mid].netnbr);
-        if (snbr == x) return mid; 
-        if (snbr > x) return binary_search_netnbr(l, mid - 1, x); 
-        return binary_search_netnbr(mid + 1, r, x); 
-    } 
-    return -1; 
+	if (r >= l) { 
+		int mid = l + (r - l) / 2; 
+		snbr = atol(indexed_list[mid].netnbr);
+		if (snbr == x) {
+			list_index = mid;
+			return mid; 
+		}
+		if (snbr > x) return binary_search_netnbr(l, mid - 1, x); 
+		return binary_search_netnbr(mid + 1, r, x); 
+	} 
+	return -1; 
 } 
 
 void cb_btnSearchNetNbrOK (Fl_Return_Button *b, void *d)
 {
-	if (!brwsData) return;
+	if (!indexed_list) return;
 	int srchnbr = atol(sSrchNetNbr->value());
 	int found = -1;
 	NetNbrSearch->hide ();
 
 	SortByNetNbr ();
+	out_sorted_by->value("Net Nbr");
+	out_sorted_by->redraw();
 	found = binary_search_netnbr(0, netdb.numrecs() - 1, srchnbr);
 
 	if (found == -1) return;
 
-	gotoRec(brwsData[found].recN);
+	gotoRec(indexed_list[found].recN);
 }
 
 void cb_mnuSearchNetNbr (Fl_Menu_ *m, void *d)
@@ -909,43 +1020,51 @@ void cb_btnUpdateCancel(Fl_Button *b, void *d)
 {
 	Fl_Window *editor = getEditWindow();
 
-	if (editState == ADD) {
-		toggleState ();
-		editor->hide ();
-		return;
-	}
-	if (editState == NEW) {
-		clearEditForm ();
-		dispRec ();
-		toggleState ();
-		return;
-	}
-	if (editState == MODIFY) {
-		callinlist.modify (WhoIsUp, currec,
+	switch (editState) {
+		case ADD :
+			toggleState ();
+			editor->hide ();
+			break;
+		case NEW :
+			clearEditForm ();
+			dispRec ();
+			toggleState ();
+			break;
+		case MODIFY :
+			callinlist.modify (WhoIsUp, currec,
 						   inpPrefix->value(),
 						   inpArea->value (),
 						   inpSuffix->value (),
 						   inpNickname->value ());
-		saveCurRecord ();
-		getBrwsData ();
-		SortBySAP ();
-		toggleState ();
-		editor->hide ();
-		updateCallins (false);
-	} else { // must be an UPDATE in normal editor mode
-		if (netdb.numrecs() > 0) {
 			saveCurRecord ();
-			getBrwsData ();
-			SortBySAP ();
-			update_select_label();
-		}
+			getindexed_list ();
+			toggleState ();
+			editor->hide ();
+			refresh_logins ();
+			updateCallins ();
+			break;
+		default : // must be an UPDATE
+			if (netdb.numrecs() > 0) {
+				std::string p, a, s;
+				p = inpPrefix->value();
+				a = inpArea->value();
+				s = inpSuffix->value();
+				saveCurRecord ();
+				currec = binary_search_SAP(0, netdb.numrecs(), p, a, s);
+				gotoRec (currec);
+				update_select_label();
+			}
+			getindexed_list ();
+			refresh_logins ();
 	}
 }
 
 void cb_btnDelete(Fl_Button *b, void *d)
 {
 	if (fl_choice("Confirm Delete", "cancel", "OK", NULL) == 1) {
-		netdb.erase(currec);
+		netdb.erase (currec);
+		getindexed_list ();
+		refresh_logins ();
 		cbGoFirstRec (NULL,NULL);
 		update_select_label();
 	}
@@ -953,30 +1072,36 @@ void cb_btnDelete(Fl_Button *b, void *d)
 
 void cbGoFirstRec(Fl_Button *b, void *d)
 {
-	if (!brwsData) return;
-	brwsnum = 0;
-	gotoRec (brwsData[brwsnum].recN);
+	if (!indexed_list) {
+		clearEditForm ();
+		lblNumRecs->value ("Recs: 0");
+		return;
+	}
+	list_index = 0;
+	gotoRec (indexed_list[list_index].recN);
 }
 
 void cbGoPrevRec(Fl_Button *b, void *d)
 {
-	if (!brwsData || brwsnum == 0) return;
-	brwsnum--;
-	gotoRec (brwsData[brwsnum].recN);
+	if (!indexed_list || list_index == 0) return;
+	list_index--;
+	if (list_index < 0) list_index = 0;
+	gotoRec (indexed_list[list_index].recN);
 }
 
 void cbGoNextRec(Fl_Button *b, void *d)
 {
-	if (!brwsData || (int)brwsnum == (netdb.numrecs() - 1)) return;
-	brwsnum++;
-	gotoRec (brwsData[brwsnum].recN);
+	if (!indexed_list || list_index == (netdb.numrecs() - 1)) return;
+	list_index++;
+	if (list_index >= netdb.numrecs()) list_index = netdb.numrecs() - 1;
+	gotoRec (indexed_list[list_index].recN);
 }
 
 void cbGoLastRec(Fl_Button *b, void *d)
 {
-	if (!brwsData) return;
-	brwsnum = netdb.numrecs() - 1;
-	gotoRec (brwsData[brwsnum].recN);
+	if (!indexed_list) return;
+	list_index = netdb.numrecs() - 1;
+	gotoRec (indexed_list[list_index].recN);
 }
 
 void cb_btnNewSave(Fl_Button *b, void *d)
@@ -1016,7 +1141,7 @@ void cb_btnNewSave(Fl_Button *b, void *d)
 				myUI->UpdateWhoIsUp (netdb.numrecs() - 1);
 				toggleState ();
 				editor->hide ();
-				updateCallins (false);
+				updateCallins ();
 				return;
 			}
 			update_select_label();

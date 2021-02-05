@@ -187,6 +187,11 @@ long loglist::recN (int n)
 	return -1L;
 }
 
+void loglist::recN (int n, size_t N)
+{
+	llist[n + BLANKS].recN = N;
+}
+
 logStatus loglist::status (int n)
 {
 	int nn = n + BLANKS;
@@ -226,7 +231,7 @@ int loglist::del (int n)
 	return 1;
 }
 
-int loglist::inList (long N)
+int loglist::inList (size_t N)
 {
 	for (int i = BLANKS; i <= nlist; i++)
 		if (llist[i].recN == N) return 1;
@@ -246,6 +251,35 @@ char * loglist::area (int n)
 char * loglist::suffix (long n)
 {
 	return llist[n + BLANKS].szSuffix;
+}
+
+int loglist::Pri_0 (int n)
+{
+	int nn = n + BLANKS;
+	int newpos;
+	if (llist[nn].chPriority == ' ') return n;
+	llist[nn].chPriority = ' ';
+	CreateDispLine (nn);
+
+	if (nn == nlist - 1) return n;
+	if (iAutoPriority == 0) return n;
+	_logged thiscall = llist[nn];
+	del (n);
+	char ch;
+	for (int i = BLANKS; i < nlist; i++) {
+		ch = llist[i].chPriority;
+		if (cP1 != ' ' && ch == cP1) continue;
+		if (cP2 != ' ' && ch == cP2) continue;
+		if (cP3 != ' ' && ch == cP3) continue;
+		newpos = i;
+		for (int j = nlist; j > newpos; j--)
+			llist[j] = llist[j-1];
+		llist[newpos] = thiscall;
+		nlist++;
+		return newpos - BLANKS;
+	}
+	llist[nn] = thiscall;
+	return n;
 }
 
 int loglist::Pri_1 (int n)
@@ -314,35 +348,6 @@ int loglist::Pri_3 (int n)
 		ch = llist[i].chPriority;
 		if (cP1 != ' ' && ch == cP1) continue;
 		if (cP2 != ' ' && ch == cP2) continue;
-		newpos = i;
-		for (int j = nlist; j > newpos; j--)
-			llist[j] = llist[j-1];
-		llist[newpos] = thiscall;
-		nlist++;
-		return newpos - BLANKS;
-	}
-	llist[nn] = thiscall;
-	return n;
-}
-
-int loglist::Pri_0 (int n)
-{
-	int nn = n + BLANKS;
-	int newpos;
-	if (llist[nn].chPriority == ' ') return n;
-	llist[nn].chPriority = ' ';
-	CreateDispLine (nn);
-
-	if (nn == nlist - 1) return n;
-	if (iAutoPriority == 0) return n;
-	_logged thiscall = llist[nn];
-	del (n);
-	char ch;
-	for (int i = BLANKS; i < nlist; i++) {
-		ch = llist[i].chPriority;
-		if (cP1 != ' ' && ch == cP1) continue;
-		if (cP2 != ' ' && ch == cP2) continue;
-		if (cP3 != ' ' && ch == cP3) continue;
 		newpos = i;
 		for (int j = nlist; j > newpos; j--)
 			llist[j] = llist[j-1];

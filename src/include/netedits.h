@@ -98,6 +98,7 @@ extern Fl_DateInput *inpJoined;
 extern Fl_Input *inpEmail;
 extern Fl_Input *inpComment1;
 extern Fl_Input *inpComment2;
+extern Fl_Output *out_sorted_by;
 
 extern Fl_Menu_Item menu_mbarMain[];
 
@@ -113,5 +114,6 @@ extern Fl_Menu_Item menu_mbarMain[];
 #define mnuBrowseNetNbr (menu_mbarMain+11)
 
 extern void close_editor(void);
+extern void show_sort_order();
 
 #endif

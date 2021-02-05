@@ -110,9 +110,10 @@ public:
 	}
 	~csvdb() {}
 	void filename(string fname) { dbfilename.assign(fname); }
+	string filename() { return dbfilename; }
 	int save();
 	int load();
-	int numrecs() { return (int)dbrecs.size(); }
+	size_t numrecs() { return dbrecs.size(); }
 	int get(size_t n, csvRecord &rec);
 	int put(size_t n, csvRecord &rec);
 	int add(csvRecord &rec);
