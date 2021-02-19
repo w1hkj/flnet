@@ -112,17 +112,17 @@ Fl_Button *btnBg[5]={(Fl_Button *)0};
 
 my_UI *myUI=(my_UI *)0;
 Fl_Group *net_grp1=(Fl_Group *)0;
-Fl_Output *out_callins=(Fl_Output *)0;
+Fl_Box *box_callins=(Fl_Box *)0;
 Fl_Box *ptr_left=(Fl_Box *)0;
 Fl_Box *ptr_right=(Fl_Box *)0;
 Fl_Group *net_grp2=(Fl_Group *)0;
 Fl_Box *txtTitles=(Fl_Box *)0;
 Fl_Box *txtLine[15]={(Fl_Box *)0};
-Fl_Output *dbSelectLabel=(Fl_Output *)0;
+Fl_Box *box_db_select=(Fl_Box *)0;
 Fl_Group *dbSelectGroup=(Fl_Group *)0;
-Fl_Box *inpLoginSuffix=(Fl_Box *)0;
-Fl_Box *inpLoginPrefix=(Fl_Box *)0;
-Fl_Box *inpLoginArea=(Fl_Box *)0;
+Fl_Box *boxLoginSuffix=(Fl_Box *)0;
+Fl_Box *boxLoginPrefix=(Fl_Box *)0;
+Fl_Box *boxLoginArea=(Fl_Box *)0;
 Fl_Group *net_grp3=(Fl_Group *)0;
 Fl_Box *txtPick[NPICKITEMS]={(Fl_Box *)0};
 Fl_Box *txtPickArrows=(Fl_Box *)0;
@@ -130,6 +130,7 @@ Fl_Box *bx_suffix=(Fl_Box *)0;
 Fl_Box *bx_prefix=(Fl_Box *)0;
 Fl_Box *bx_area=(Fl_Box *)0;
 Fl_Box *txtInfo=(Fl_Box *)0;
+Fl_Input *dummy_widget=(Fl_Input *)0;
 
 
 static void cb_mnuLogIns(Fl_Menu_*, void*) {
@@ -160,12 +161,12 @@ Fl_Menu_Item menu_mnu_bar[] = {
 
 Fl_Double_Window* newNetControl() {
 	Fl_Double_Window* w = new Fl_Double_Window(390, 455, "flnet");
-		w->box(FL_BORDER_BOX);
+	w->box(FL_BORDER_BOX);
 
-		mnu_bar = new Fl_Menu_Bar(0, 0, 390, 25);
-		mnu_bar->menu(menu_mnu_bar);
+	mnu_bar = new Fl_Menu_Bar(0, 0, 390, 25);
+	mnu_bar->menu(menu_mnu_bar);
 
-		myUI = new my_UI(0, 25, 390, 430);
+	myUI = new my_UI(0, 25, 390, 430);
 		myUI->box(FL_NO_BOX);
 		myUI->color(FL_BACKGROUND_COLOR);
 		myUI->selection_color(FL_BACKGROUND_COLOR);
@@ -176,11 +177,10 @@ Fl_Double_Window* newNetControl() {
 		myUI->align(Fl_Align(FL_ALIGN_TOP));
 		myUI->when(FL_WHEN_RELEASE);
 
-		out_callins = new Fl_Output( 20, 24, 180, 22, "");
-		out_callins->color(FL_BACKGROUND_COLOR);
-		out_callins->box(FL_FLAT_BOX);
-		out_callins->align(FL_ALIGN_CENTER);
-		out_callins->value("");
+		box_callins = new Fl_Box( 20, 24, 180, 22, "Check-ins: 0");
+		box_callins->color(FL_BACKGROUND_COLOR);
+		box_callins->box(FL_FLAT_BOX);
+		box_callins->align(FL_ALIGN_INSIDE | FL_ALIGN_LEFT);
 
 		net_grp1 = new Fl_Group(0, 45, 225, 255, "");
 		net_grp1->tooltip("Use UP/DN arrow keys to scroll list");
@@ -216,34 +216,37 @@ Fl_Double_Window* newNetControl() {
 
 		net_grp1->end();
 
-		dbSelectLabel = new Fl_Output(200, 27, 155, 18);
-		dbSelectLabel->color(FL_BACKGROUND_COLOR);
-		dbSelectLabel->box(FL_FLAT_BOX);
+		box_db_select = new Fl_Box(200, 27, 155, 18, "");
+		box_db_select->color(FL_BACKGROUND_COLOR);
+		box_db_select->box(FL_FLAT_BOX);
+		box_db_select->align(FL_ALIGN_INSIDE | FL_ALIGN_LEFT);
+
+		dummy_widget = new Fl_Input( 355, 24, 0, 0, "");
 
 		dbSelectGroup = new Fl_Group(230, 45, 155, 250);
 		dbSelectGroup->box(FL_ENGRAVED_FRAME);
 		dbSelectGroup->align(Fl_Align(FL_ALIGN_TOP_LEFT));
 
-			inpLoginSuffix = new Fl_Box(240, 65, 40, 22);
-			inpLoginSuffix->tooltip("Enter SUFFIX, Esc to abort");
-			inpLoginSuffix->box(FL_DOWN_BOX);
-			inpLoginSuffix->color(FL_BACKGROUND2_COLOR);
-			inpLoginSuffix->labelfont(FL_SCREEN);
-			inpLoginSuffix->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
+			boxLoginSuffix = new Fl_Box(240, 65, 40, 22);
+			boxLoginSuffix->tooltip("Enter SUFFIX, Esc to abort");
+			boxLoginSuffix->box(FL_DOWN_BOX);
+			boxLoginSuffix->color(FL_BACKGROUND2_COLOR);
+			boxLoginSuffix->labelfont(FL_SCREEN);
+			boxLoginSuffix->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
 
-			inpLoginPrefix = new Fl_Box(285, 65, 30, 22);
-			inpLoginPrefix->tooltip("Enter PREFIX Esc to abort");
-			inpLoginPrefix->box(FL_DOWN_BOX);
-			inpLoginPrefix->color(FL_BACKGROUND2_COLOR);
-			inpLoginPrefix->labelfont(FL_SCREEN);
-			inpLoginPrefix->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
+			boxLoginPrefix = new Fl_Box(285, 65, 30, 22);
+			boxLoginPrefix->tooltip("Enter PREFIX Esc to abort");
+			boxLoginPrefix->box(FL_DOWN_BOX);
+			boxLoginPrefix->color(FL_BACKGROUND2_COLOR);
+			boxLoginPrefix->labelfont(FL_SCREEN);
+			boxLoginPrefix->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
 
-			inpLoginArea = new Fl_Box(320, 65, 40, 22);
-			inpLoginArea->tooltip("Enter AREA Esc to abort");
-			inpLoginArea->box(FL_DOWN_BOX);
-			inpLoginArea->color(FL_BACKGROUND2_COLOR);
-			inpLoginArea->labelfont(FL_SCREEN);
-			inpLoginArea->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
+			boxLoginArea = new Fl_Box(320, 65, 40, 22);
+			boxLoginArea->tooltip("Enter AREA Esc to abort");
+			boxLoginArea->box(FL_DOWN_BOX);
+			boxLoginArea->color(FL_BACKGROUND2_COLOR);
+			boxLoginArea->labelfont(FL_SCREEN);
+			boxLoginArea->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
 
 			net_grp3 = new Fl_Group(235, 95, 146, 12*NPICKITEMS/2 + 4);
 			net_grp3->tooltip("Use UP/DN arrow keys to select callsign");
@@ -282,6 +285,9 @@ Fl_Double_Window* newNetControl() {
 	txtInfo->labelfont(FL_SCREEN);
 	txtInfo->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
 
+	w->end();
+
+	Fl::focus(dummy_widget);
 	return w;
 }
 

@@ -47,7 +47,7 @@ UI_SIZES UI_small[] = {
 	{   0,   0, 390, 460, FL_COURIER, 12}, // window  0
 	{   0,   0, 390,  25, FL_COURIER, 12}, // menu_ bar 1
 	{   0,  25, 390, 430, FL_COURIER, 12}, // myUI 2
-	{  15,  26, 120,  19, FL_COURIER_BOLD, 12}, // out_callins
+	{  15,  26, 120,  19, FL_COURIER_BOLD, 12}, // box_callins
 	{   0,  45, 230, 255, FL_COURIER, 12}, // net_grp1  4
 	{   2, 125,  15,  25, FL_COURIER, 12}, // ptr_left  4
 	{ 215, 125,  15,  25, FL_COURIER, 12}, // ptr_right  6
@@ -69,11 +69,12 @@ UI_SIZES UI_small[] = {
 	{  17, 265, 196,  16, FL_COURIER, 12}, // txtLine[13]  22
 	{  17, 280, 196,  16, FL_COURIER, 12}, // txtLine[14]  23
 
-	{ 135,  27, 250,  18, FL_COURIER_BOLD, 12}, // dbSelectLabel
+	{ 135,  27, 250,  18, FL_COURIER_BOLD, 12}, // box_db_select
+	{ 135,  27,   0,   0, FL_COURIER, 12}, // dummy_widget
 	{ 230,  45, 155, 255, FL_COURIER, 12}, // dbSelectGroup  24
-	{ 240,  65,  40,  25, FL_COURIER, 12}, // inpLoginSuffix  25
-	{ 285,  65,  30,  25, FL_COURIER, 12}, // inpLoginPrefix  26
-	{ 320,  65,  40,  25, FL_COURIER, 12}, // inpLoginArea  27
+	{ 240,  65,  40,  25, FL_COURIER, 12}, // boxLoginSuffix  25
+	{ 285,  65,  30,  25, FL_COURIER, 12}, // boxLoginPrefix  26
+	{ 320,  65,  40,  25, FL_COURIER, 12}, // boxLoginArea  27
 
 	{ 235,  95, 146, (NPICKITEMS/2)*12+8, FL_COURIER, 12}, // net_grp3  28
 	{ 238,  98,  70,  12, FL_COURIER, 12}, // txtPick[0]   29
@@ -90,7 +91,7 @@ UI_SIZES UI_big[] = {
 	{   0,   0, 475, 635, FL_COURIER, 16}, // window
 	{   0,   0, 475,  25, FL_COURIER, 12}, // menu_ bar
 	{   0,  25, 475, 414, FL_COURIER, 16}, // myUI
-	{  17,  26, 143,  32, FL_COURIER_BOLD, 15}, // out_callins
+	{  17,  26, 143,  32, FL_COURIER_BOLD, 15}, // box_callins
 	{   0,  49, 275, 396, FL_COURIER, 14}, // net_grp1
 	{   2, 180,  15,  24, FL_COURIER, 16}, // ptr_left
 	{ 270, 180,  15,  24, FL_COURIER, 16}, // ptr_right
@@ -112,11 +113,12 @@ UI_SIZES UI_big[] = {
 	{  17, 396, 251,  24, FL_COURIER, 15}, // txtLine[13]
 	{  17, 420, 251,  24, FL_COURIER, 15}, // txtLine[14]
 
-	{ 160,  26, 310,  32, FL_COURIER_BOLD, 15}, // dbSelectLabel
+	{ 160,  26, 310,  32, FL_COURIER_BOLD, 15}, // box_db_select
+	{ 160,  26,   0,   0, FL_COURIER, 12}, // dummy_widget
 	{ 284,  60, 185, 380, FL_COURIER, 18}, // dbSelectGroup
-	{ 291,  87,  60,  30, FL_COURIER, 18}, // inpLoginSuffix
-	{ 355,  87,  60,  30, FL_COURIER, 18}, // inpLoginPrefix
-	{ 419,  87,  40,  30, FL_COURIER, 18}, // inpLoginArea
+	{ 291,  87,  60,  30, FL_COURIER, 18}, // boxLoginSuffix
+	{ 355,  87,  60,  30, FL_COURIER, 18}, // boxLoginPrefix
+	{ 419,  87,  40,  30, FL_COURIER, 18}, // boxLoginArea
 
 	{ 291, 125, 170, (NPICKITEMS/2)*16+4, FL_COURIER, 16}, // net_grp3  28
 	{ 293, 127,  83,  16, FL_COURIER, 16}, // txtPick[0]   29
@@ -144,9 +146,9 @@ void ui_size(int sz, int X, int Y)
 	ui++;
 	myUI->resize(ui->x, ui->y, ui->w, ui->h);
 	ui++;
-	out_callins->resize(ui->x, ui->y, ui->w, ui->h);
-	out_callins->textfont(ui->fnt);
-	out_callins->textsize(ui->size);
+	box_callins->resize(ui->x, ui->y, ui->w, ui->h);
+	box_callins->labelfont(ui->fnt);
+	box_callins->labelsize(ui->size);
 	ui++;
 	net_grp1->resize(ui->x, ui->y, ui->w, ui->h);
 	net_grp1->labelfont(ui->fnt);
@@ -224,25 +226,29 @@ void ui_size(int sz, int X, int Y)
 	txtLine[14]->labelfont(ui->fnt);
 	txtLine[14]->labelsize(ui->size);
 	ui++;
-	dbSelectLabel->resize(ui->x, ui->y, ui->w, ui->h);
-	dbSelectLabel->textfont(ui->fnt);
-	dbSelectLabel->textsize(ui->size);
+	box_db_select->resize(ui->x, ui->y, ui->w, ui->h);
+	box_db_select->labelfont(ui->fnt);
+	box_db_select->labelsize(ui->size);
+	ui++;
+	dummy_widget->resize(ui->x, ui->y, ui->w, ui->h);
+	dummy_widget->textfont(ui->fnt);
+	dummy_widget->textsize(ui->size);
 	ui++;
 	dbSelectGroup->resize(ui->x, ui->y, ui->w, ui->h);
 	dbSelectGroup->labelfont(ui->fnt);
 	dbSelectGroup->labelsize(ui->size);
 	ui++;
-	inpLoginSuffix->resize(ui->x, ui->y, ui->w, ui->h);
-	inpLoginSuffix->labelfont(ui->fnt);
-	inpLoginSuffix->labelsize(ui->size);
+	boxLoginSuffix->resize(ui->x, ui->y, ui->w, ui->h);
+	boxLoginSuffix->labelfont(ui->fnt);
+	boxLoginSuffix->labelsize(ui->size);
 	ui++;
-	inpLoginPrefix->resize(ui->x, ui->y, ui->w, ui->h);
-	inpLoginPrefix->labelfont(ui->fnt);
-	inpLoginPrefix->labelsize(ui->size);
+	boxLoginPrefix->resize(ui->x, ui->y, ui->w, ui->h);
+	boxLoginPrefix->labelfont(ui->fnt);
+	boxLoginPrefix->labelsize(ui->size);
 	ui++;
-	inpLoginArea->resize(ui->x, ui->y, ui->w, ui->h);
-	inpLoginArea->labelfont(ui->fnt);
-	inpLoginArea->labelsize(ui->size);
+	boxLoginArea->resize(ui->x, ui->y, ui->w, ui->h);
+	boxLoginArea->labelfont(ui->fnt);
+	boxLoginArea->labelsize(ui->size);
 	ui++;
 	net_grp3->resize(ui->x, ui->y, ui->w, ui->h);
 	net_grp3->labelsize(ui->size);

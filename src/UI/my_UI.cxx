@@ -137,7 +137,11 @@ void updateCallins (bool fldigi_flag)
 
 	static char lbl[50];
 	snprintf(lbl, sizeof(lbl), "Check-ins: %d", callinlist.numlist());
-	out_callins->value(lbl);
+	while (strlen(lbl) < 15) strcat(lbl, " ");
+	box_callins->label(lbl);
+	box_callins->redraw_label();
+
+	Fl::focus(dummy_widget);
 
 	long rc = callinlist.recN(WhoIsUp);
 
@@ -411,7 +415,7 @@ int my_UI::PickedToCallinsDB (size_t record_number)
 {
 
 	if (callinlist.inList(record_number)) {
-		fl_beep (FL_BEEP_ERROR);
+//		fl_beep (FL_BEEP_ERROR);
 		clearPickList ();
 		clearSAP ();
 		return -1;
@@ -419,7 +423,7 @@ int my_UI::PickedToCallinsDB (size_t record_number)
 
 	csvRecord rec;
 	netdb.get(record_number, rec);
-
+//std::cout << "record_number " << record_number << " : " << rec.print() << std::endl;
 	std::string pr, ar, su, nm, st;
 	pr = uppercase (trim(rec.prefix));
 	ar = uppercase (trim(rec.area));
@@ -477,39 +481,29 @@ Fl_Group(x,y,w,h)
 void my_UI::clearSAP ()
 {
 	szPrefix.clear(); szArea.clear(); szSuffix.clear();
-	inpLoginSuffix->labelcolor (FL_BLACK);
-	inpLoginSuffix->color (FL_WHITE);
-	inpLoginPrefix->labelcolor (FL_BLACK);
-	inpLoginPrefix->color (FL_WHITE);
-	inpLoginArea->labelcolor (FL_BLACK);
-	inpLoginArea->color (FL_WHITE);
-	inpLoginPrefix->label (szPrefix.c_str());
-	inpLoginArea->label (szArea.c_str());
-	inpLoginSuffix->label (szSuffix.c_str());
+	boxLoginSuffix->labelcolor (FL_BLACK);
+	boxLoginSuffix->color (FL_WHITE);
+	boxLoginPrefix->labelcolor (FL_BLACK);
+	boxLoginPrefix->color (FL_WHITE);
+	boxLoginArea->labelcolor (FL_BLACK);
+	boxLoginArea->color (FL_WHITE);
+	boxLoginPrefix->label (szPrefix.c_str());
+	boxLoginArea->label (szArea.c_str());
+	boxLoginSuffix->label (szSuffix.c_str());
 	my_status = LOGLIST;
-}
-
-static int keywait = 0;
-static double delaysecs = 0.10;
-
-void updnDelay (void *d)
-{
-	keywait = 0;
 }
 
 static bool ignore_event = false;
 int my_UI::handle (int e)
 {
+	if (Fl::focus() != dummy_widget) return 0;
+
 	int k;
 
-	if (e == FL_KEYDOWN) {
+	if (e == FL_KEYUP) {
 		k = Fl::event_key();
 		if (k) {
 			if (my_status == LOGLIST) {
-				if ((k == FL_Up || k == FL_Down) && keywait)
-					return 1;
-				keywait = 1;
-				Fl::add_timeout (delaysecs, updnDelay);
 				if (k == FL_Up) {
 					WhoIsUp--;
 					if (WhoIsUp < 0)
@@ -645,8 +639,9 @@ int my_UI::handle (int e)
 							updateLogins();
 							dispCallIns (false);
 						}
-						myUI->set_visible_focus();
 					}
+					dummy_widget->set_visible_focus();
+					Fl::focus(dummy_widget);
 					ignore_event = true;
 					return 1;
 				}
@@ -686,9 +681,9 @@ int my_UI::handle (int e)
 
 			if (my_status == SUFFIX && (k == FL_Down || k == FL_Up)) {
 				if (nbrPicked) {
-					inpLoginSuffix->color (FL_DARK_RED);
-					inpLoginSuffix->labelcolor (FL_WHITE);
-					inpLoginSuffix->redraw ();
+					boxLoginSuffix->color (FL_DARK_RED);
+					boxLoginSuffix->labelcolor (FL_WHITE);
+					boxLoginSuffix->redraw ();
 					if (nbrPicked > 1)
 						if (k == FL_Down)
 							whoPicked = 1;
@@ -726,26 +721,26 @@ int my_UI::handle (int e)
 					case LOGLIST :
 						szSuffix.clear();
 						szSuffix = keyval;
-						inpLoginSuffix->label (szSuffix.c_str());
+						boxLoginSuffix->label (szSuffix.c_str());
 						fillPickList ();
 						my_status = SUFFIX;
-						inpLoginSuffix->labelcolor (FL_WHITE);
-						inpLoginSuffix->color (FL_DARK_BLUE);
+						boxLoginSuffix->labelcolor (FL_WHITE);
+						boxLoginSuffix->color (FL_DARK_BLUE);
 						break;
 					case SUFFIX :
 						szSuffix.append(keyval);
 						if (szSuffix.length() > 3) szSuffix.erase(0,1);
-						inpLoginSuffix->label (szSuffix.c_str());
+						boxLoginSuffix->label (szSuffix.c_str());
 						fillPickList ();
 						break;
 					case PREFIX :
 						szPrefix.append(keyval);
 						if (szPrefix.length() > 2) szPrefix.erase(0,1);
-						inpLoginPrefix->label (szPrefix.c_str());
+						boxLoginPrefix->label (szPrefix.c_str());
 						break;
 					case AREA :
 						szArea = keyval;
-						inpLoginArea->label (szArea.c_str());
+						boxLoginArea->label (szArea.c_str());
 						break;
 					default : ;
 				}
@@ -754,19 +749,19 @@ int my_UI::handle (int e)
 			if (k == FL_Tab) {
 				switch (my_status) {
 					case SUFFIX :
-						inpLoginSuffix->labelcolor (FL_BLACK);
-						inpLoginSuffix->color (FL_WHITE);
-						inpLoginPrefix->labelcolor (FL_WHITE);
-						inpLoginPrefix->color (FL_DARK_BLUE);
-						inpLoginPrefix->label (szPrefix.c_str());
+						boxLoginSuffix->labelcolor (FL_BLACK);
+						boxLoginSuffix->color (FL_WHITE);
+						boxLoginPrefix->labelcolor (FL_WHITE);
+						boxLoginPrefix->color (FL_DARK_BLUE);
+						boxLoginPrefix->label (szPrefix.c_str());
 						my_status = PREFIX;
 						break;
 					case PREFIX :
-						inpLoginPrefix->labelcolor (FL_BLACK);
-						inpLoginPrefix->color (FL_WHITE);
-						inpLoginArea->labelcolor (FL_WHITE);
-						inpLoginArea->color (FL_DARK_BLUE);
-						inpLoginArea->label (szArea.c_str());
+						boxLoginPrefix->labelcolor (FL_BLACK);
+						boxLoginPrefix->color (FL_WHITE);
+						boxLoginArea->labelcolor (FL_WHITE);
+						boxLoginArea->color (FL_DARK_BLUE);
+						boxLoginArea->label (szArea.c_str());
 						my_status = AREA;
 						break;
 					case AREA :
@@ -790,9 +785,26 @@ int my_UI::handle (int e)
 				clearSAP ();
 				if (progStatus.disp_new_login && progStatus.open_editor) cb_F12 (WhoIsUp);
 				updateLogins();
+				return 1;
 			}
 		}
 	}
-	return 1;
+	return 0;
 }
 
+void add_to_callins(int rnbr)
+{
+//std::cout << "rnbr: " << rnbr << std::endl;
+	int recnbr = myUI->PickedToCallinsDB(rnbr);
+	csvRecord rec;
+	netdb.get(recnbr, rec);
+//	std::cout << "recnbr " << recnbr << " : " << rec.print() << std::endl;
+
+	if (progStatus.callin_is_up && recnbr >=0) {
+		WhoIsUp = callinlist.locate(rec.prefix, rec.area, rec.suffix);
+	}
+
+	updateLogins();
+//	myUI->UpdateWhoIsUp(WhoIsUp);
+	myUI->dispCallIns (false);
+}

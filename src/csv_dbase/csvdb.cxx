@@ -407,3 +407,66 @@ int csvdb::erase(size_t n)
 	}
 	return 1;
 }
+
+void csvdb::print(csvRecord &rec)
+{
+	std::cout <<
+	"prefix: " << rec.prefix <<
+	"area:   " << rec.area <<
+	"suffix: " << rec.suffix <<
+//	rec.callsign <<
+	"name:   " << rec.name <<
+	"netnbr: " << rec.netnbr <<
+//	rec.logdate <<
+//	rec.nbrlogins <<
+//	rec.status <<
+//	rec.joined <<
+//	rec.fname <<
+//	rec.lname <<
+//	rec.addr <<
+//	rec.city <<
+//	rec.state <<
+//	rec.zip <<
+//	rec.phone <<
+//	rec.birthdate <<
+//	rec.spouse <<
+//	rec.sp_birth <<
+//	rec.comment1 <<
+//	rec.comment2 <<
+//	rec.email <<
+//	rec.prevdate <<
+//	rec.locator <<
+//	rec.country << 
+	std::endl;
+}
+
+std::string csvdb::print(int n)
+{
+	static std::string retstr;
+	csvRecord rec = dbrecs[n];
+	retstr.clear();
+	retstr.append("call: ").append(rec.callsign);
+	retstr.append(", ").append(rec.name);
+	retstr.append(", ").append(rec.netnbr);
+	return retstr;
+	retstr.append(", ").append(rec.logdate);
+	retstr.append(", ").append(rec.nbrlogins);
+	retstr.append(", ").append(rec.status);
+	retstr.append(", ").append(rec.joined);
+	retstr.append(", ").append(rec.fname);
+	retstr.append(", ").append(rec.lname);
+	retstr.append(", ").append(rec.addr);
+	retstr.append(", ").append(rec.city);
+	retstr.append(", ").append(rec.state);
+	retstr.append(", ").append(rec.zip);
+	retstr.append(", ").append(rec.phone);
+	retstr.append(", ").append(rec.birthdate);
+	retstr.append(", ").append(rec.spouse);
+	retstr.append(", ").append(rec.sp_birth);
+	retstr.append(", ").append(rec.comment1);
+	retstr.append(", ").append(rec.comment2);
+	retstr.append(", ").append(rec.email);
+	retstr.append(", ").append(rec.prevdate);
+	retstr.append(", ").append(rec.locator);
+	retstr.append(", ").append(rec.country);
+}

@@ -136,7 +136,7 @@ static void cb_lookup_masterdb_record(Fl_Menu_ *, void *) {
 		inpLname->value(mrec.lname.c_str());
 		inpAddress->value(mrec.addr.c_str());
 		inpCity->value(mrec.city.c_str());
-		inpState->value(mrec.state.c_str());
+		inpState->value(uppercase(mrec.state).c_str());
 		inpZip->value(mrec.zip.c_str());
 		inpPhone->value(mrec.phone.c_str());
 		inpBirthday->value(mrec.birthdate.c_str());
@@ -169,7 +169,7 @@ void cb_add_record_to_masterdb(Fl_Menu_ *, void *) {
 	mrec.lname = inpLname->value();
 	mrec.addr = inpAddress->value();
 	mrec.city = inpCity->value();
-	mrec.state = inpState->value();
+	mrec.state = uppercase(inpState->value());
 	mrec.zip = inpZip->value();
 	mrec.phone = inpPhone->value();
 	mrec.birthdate = inpBirthday->value();
@@ -232,7 +232,8 @@ void close_editor(void)
 {
 	if (editor)
 		editor->hide();
-	myUI->set_visible_focus();
+	dummy_widget->set_visible_focus();
+	Fl::focus(dummy_widget);
 }
 
 void cb_locator(Fl_Input2 *, void *)

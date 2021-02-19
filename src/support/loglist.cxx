@@ -79,6 +79,8 @@ void loglist::CreateDispLine (int n)
 
 	call.assign(trim(llist[n].szPrefix)).append(trim(llist[n].szArea)).append(trim(llist[n].szSuffix));
 
+//std::cout << "loglist::CreateDispLine " << call << std::endl;
+
 	if (progStatus.call_left_justify) {
 		if (call.length() < 6) call.append(6 - call.length(), ' ');
 	} else {
@@ -103,6 +105,8 @@ void loglist::CreateDispLine (int n)
 
 	dline.append(" ");
 	dline += llist[n].chPriority;
+
+//std::cout << "loglist::CreateDispLine " << dline << std::endl;
 
 	memset (llist[n].displine, 0, DLINESIZE + 1);
 	strncpy (llist[n].displine, dline.c_str(), DLINESIZE);
@@ -129,6 +133,8 @@ int loglist::add (long N,
 				  const char *name, 
 				  char flg)
 {
+//std::cout << "loglist::add(" << N << ", " << p << a << s << ", " << name << ")" << std::endl;
+
 	if (nlist >= lsize) {
 		_logged *temp = new _logged[lsize + LISTINCR];
 		if (!temp) {
@@ -167,7 +173,11 @@ int loglist::add (long N,
 			 tm_ptr->tm_hour,
 			 tm_ptr->tm_min,
 			 tm_ptr->tm_sec);
-
+//std::cout << "llist[" << nlist << "]:" <<
+//	llist[nlist].szPrefix << llist[nlist].szArea << llist[nlist].szSuffix <<
+//	", " << llist[nlist].szName <<
+//	std::endl;
+//std::cout << "CreateDispLine (nlist) 001" << std::endl;
 	CreateDispLine (nlist);
 
 	nlist++;
@@ -187,6 +197,8 @@ void loglist::modify (int n,
 					  const char *p, const char *a, const char *s,
 					  const char *name)
 {
+//std::cout << "loglist::modify( " << n << ", " << p << a << s << ", " << name << std::endl;
+
 	int nn = n + BLANKS;
 
 	if (nn == nlist) return;
@@ -197,6 +209,7 @@ void loglist::modify (int n,
 	strcpy(llist[nn].szSuffix, s);
 	strncpy (llist[nn].szName, name, 14);
 
+//std::cout << "CreateDispLine (nn) 002" << std::endl;
 	CreateDispLine (nn);
 
 	return;
@@ -282,6 +295,8 @@ int loglist::Pri_0 (int n)
 	int newpos;
 	if (llist[nn].chPriority == ' ') return n;
 	llist[nn].chPriority = ' ';
+
+//std::cout << "CreateDispLine (nn) 003" << std::endl;
 	CreateDispLine (nn);
 
 	if (nn == BLANKS) return n;
@@ -306,6 +321,7 @@ int loglist::Pri_1 (int n)
 	int newpos;
 	if (cP1 == ' ') return n;
 	llist[nn].chPriority = cP1;
+//std::cout << "CreateDispLine (nn) 004" << std::endl;
 	CreateDispLine (nn);
 	if (nn == BLANKS) return n;
 	if (iAutoPriority == 0) return n;
@@ -329,6 +345,7 @@ int loglist::Pri_2 (int n)
 	int newpos;
 	if (cP2 == ' ') return n;
 	llist[nn].chPriority = cP2;
+//std::cout << "CreateDispLine (nn) 005" << std::endl;
 	CreateDispLine (nn);
 	if (nn == BLANKS) return n;
 	if (iAutoPriority == 0) return n;
@@ -352,6 +369,7 @@ int loglist::Pri_3 (int n)
 	int newpos;
 	if (cP3 == ' ') return n;
 	llist[nn].chPriority = cP3;
+//std::cout << "CreateDispLine (nn) 006" << std::endl;
 	CreateDispLine (nn);
 	if (nn == BLANKS) return n;
 	if (iAutoPriority == 0) return n;
@@ -410,6 +428,8 @@ int loglist::lastup ()
 
 int loglist::locate(std::string prefix, std::string area, std::string suffix)
 {
+//std::cout << "loglist::locate( " << prefix << area << suffix << std::endl;
+
 	bool b1 = false, b2 = false, b3 = false;
 	for (int i = BLANKS; i < nlist; i++) {
 		b1 = prefix == llist[i].szPrefix;
@@ -431,6 +451,7 @@ int comp_dt( const void *p1, const void *p2)
 	int comp;
 	std::string s1 = r1->szdt;
 	std::string s2 = r2->szdt;
+
 	comp = s1.compare(s2);
 
 	if (comp == 0) {
@@ -444,7 +465,9 @@ int comp_dt( const void *p1, const void *p2)
 		else if (r2->chPriority == _ch2) cp2 = 2;
 		else if (r2->chPriority == _ch3) cp2 = 1;
 
-		comp = ( cp1 < cp2 );
+		if ( cp1 < cp2 ) comp = 1;
+		if ( cp1 == cp2 ) comp = 0;
+		if ( cp1 > cp2 ) comp = -1;
 	}
 
 	return comp;
@@ -466,7 +489,9 @@ int comp_priority( const void *p1, const void *p2)
 	else if (r2->chPriority == _ch2) cp2 = 2;
 	else if (r2->chPriority == _ch3) cp2 = 1;
 
-	comp = ( cp1 < cp2 );
+	if ( cp1 < cp2 ) comp = 1;
+	if ( cp1 == cp2 ) comp = 0;
+	if ( cp1 > cp2 ) comp = -1;
 
 	if (comp == 0) {
 		std::string s1 = r1->szdt;

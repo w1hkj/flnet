@@ -30,6 +30,7 @@
 
 extern int WhoIsUp;
 extern void updateCallins (bool fldigi_flag = false);
+extern void add_to_callins(int rnbr);
 extern loglist callinlist;
 
 #define NPICKITEMS 32

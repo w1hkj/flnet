@@ -86,6 +86,37 @@ struct csvRecord {
 		comment1.clear(); comment2.clear(); email.clear(); prevdate.clear();
 		locator.clear(); country.clear();
 	}
+	std::string print() {
+		static std::string retstr;
+		retstr.clear();
+		retstr.append("call: ").append(callsign);
+		retstr.append(", ").append(name);
+		retstr.append(", ").append(netnbr);
+		return retstr;
+/*
+		retstr.append(", ").append(logdate);
+		retstr.append(", ").append(nbrlogins);
+		retstr.append(", ").append(status);
+		retstr.append(", ").append(joined);
+		retstr.append(", ").append(fname);
+		retstr.append(", ").append(lname);
+		retstr.append(", ").append(addr);
+		retstr.append(", ").append(city);
+		retstr.append(", ").append(state);
+		retstr.append(", ").append(zip);
+		retstr.append(", ").append(phone);
+		retstr.append(", ").append(birthdate);
+		retstr.append(", ").append(spouse);
+		retstr.append(", ").append(sp_birth);
+		retstr.append(", ").append(comment1);
+		retstr.append(", ").append(comment2);
+		retstr.append(", ").append(email);
+		retstr.append(", ").append(prevdate);
+		retstr.append(", ").append(locator);
+		retstr.append(", ").append(country);
+*/
+	}
+
 };
 
 class csvdb {
@@ -126,6 +157,8 @@ public:
 	void join(csvRecord &rec, string &s);
 	void clearrec(csvRecord &rec);
 	bool mapheader(string s);
+	void print(csvRecord &rec);
+	std::string print(int n);
 };
 
 #endif

@@ -112,6 +112,7 @@ void gotoRec (long L)
 {
 	currec = L;
 	dispRec ();
+//	std::cout << "Rec " << L << ": " << netdb.print( L ) << std::endl;
 }
 
 void showState ()
@@ -337,24 +338,28 @@ int PAScompare (const void *p1, const void *p2)
 
 void SortBySAP()
 {
+//std::cout << "Sort SAP" << std::endl;
 	if (!indexed_list || !netdb.numrecs()) return;
 	qsort ( &(indexed_list[0]), netdb.numrecs(), sizeof(index_struct), SAPcompare);
 }
 
 void SortByNetNbr()
 {
+//std::cout << "Sort NBR" << std::endl;
 	if (!indexed_list || !netdb.numrecs()) return;
 	qsort ( &(indexed_list[0]), netdb.numrecs(), sizeof(index_struct), NetNbrCompare);
 }
 
 void SortByAPS()
 {
+//std::cout << "Sort APS" << std::endl;
 	if (!indexed_list || !netdb.numrecs()) return;
 	qsort ( &(indexed_list[0]), netdb.numrecs(), sizeof(index_struct), APScompare);
 }
 
 void SortByPAS()
 {
+//std::cout << "Sort PAS" << std::endl;
 	if (!indexed_list || !netdb.numrecs()) return;
 	qsort ( &(indexed_list[0]), netdb.numrecs(), sizeof(index_struct), PAScompare);
 }
@@ -383,10 +388,11 @@ void closeDB()
 
 void update_select_label()
 {
-	char dispname[30];
+	static char dispname[31];
 	snprintf(dispname, sizeof(dispname), "%s (%lu)", sSimpleName.c_str(), (unsigned long)netdb.numrecs());
-	dbSelectLabel->value(dispname);
-	dbSelectLabel->redraw();
+	while (strlen(dispname) < 30) strcat(dispname, " ");
+	box_db_select->label(dispname);
+	box_db_select->redraw_label();
 }
 
 void openDB(string fname)
@@ -750,6 +756,8 @@ void cb_F12(int WhoIsUp)
 	ModifyRecord(rnbr);
 
 	editor->show();
+	dummy_widget->set_visible_focus();
+	Fl::focus(dummy_widget);
 }
 
 void cb_ShiftF12(void)
@@ -767,9 +775,10 @@ void cbEditor ()
 	clearEditForm ();
 	editState = UPDATE;
 	showState ();
-	cbGoFirstRec (NULL, NULL);
 	editor->show();
-
+	cbGoFirstRec (NULL, NULL);
+//	dummy_widget->set_visible_focus();
+//	Fl::focus(dummy_widget);
 }
 
 void cbCloseEditor ()
@@ -780,6 +789,8 @@ void cbCloseEditor ()
 	getindexed_list ();
 	refresh_logins ();
 	updateCallins ();
+	dummy_widget->set_visible_focus();
+	Fl::focus(dummy_widget);
 }
 
 void cb_btnCancelCallsignSearch(Fl_Button*, void*)
@@ -1023,7 +1034,7 @@ void cb_mnuSearchNetNbr (Fl_Menu_ *m, void *d)
 
 void cb_btn2Queue(Fl_Button *b, void *d)
 {
-	myUI->PickedToCallinsDB ((size_t)currec);
+	add_to_callins(indexed_list[list_index].recN);
 }
 
 void cb_btnUpdateCancel(Fl_Button *b, void *d)
@@ -1033,7 +1044,7 @@ void cb_btnUpdateCancel(Fl_Button *b, void *d)
 	switch (editState) {
 		case ADD :
 			toggleState ();
-			editor->hide ();
+//			editor->hide ();
 			break;
 		case NEW :
 			clearEditForm ();
@@ -1041,6 +1052,7 @@ void cb_btnUpdateCancel(Fl_Button *b, void *d)
 			toggleState ();
 			break;
 		case MODIFY :
+//std::cout << "modify record" << std::endl;
 			callinlist.modify (WhoIsUp, currec,
 						   inpPrefix->value(),
 						   inpArea->value (),
@@ -1049,16 +1061,18 @@ void cb_btnUpdateCancel(Fl_Button *b, void *d)
 			saveCurRecord ();
 			getindexed_list ();
 			toggleState ();
-			editor->hide ();
+//			editor->hide ();
 			refresh_logins ();
 			updateCallins ();
 			break;
 		default : // must be an UPDATE
+//std::cout << "default" << std::endl;
 			if (netdb.numrecs() > 0) {
 				std::string p, a, s;
 				p = inpPrefix->value();
 				a = inpArea->value();
 				s = inpSuffix->value();
+//std::cout << "save " << p << a << s << std::endl;
 				saveCurRecord ();
 				currec = binary_search_SAP(0, netdb.numrecs(), p, a, s);
 				gotoRec (currec);
@@ -1150,7 +1164,7 @@ void cb_btnNewSave(Fl_Button *b, void *d)
 				if (!editor) newEditWindow();
 				myUI->UpdateWhoIsUp (netdb.numrecs() - 1);
 				toggleState ();
-				editor->hide ();
+//				editor->hide ();
 				updateCallins ();
 				return;
 			}
