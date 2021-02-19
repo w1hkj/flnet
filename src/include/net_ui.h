@@ -118,6 +118,7 @@ extern Fl_Input2 *inp_qrzurl;
 extern Fl_Input2 *inp_masterdb;
 
 extern Fl_Button *btn_masterdb;
+extern Fl_Box    *box_mdb_isopen;
 extern Fl_Button *btnFg[];
 extern Fl_Button *btnBg[];
 

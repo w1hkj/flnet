@@ -26,6 +26,7 @@
 #ifndef _LOGLIST
 #define _LOGLIST
 
+#include <string>
 #include <stdlib.h>
 #include <string.h>
 
@@ -43,11 +44,14 @@ struct _logged {
 	char szSuffix[4];
 	char szName[15];
 	char szTime[6];
+	char szdt[15];
 	char chPriority;
 	char displine[DLINESIZE + 1];
 };
 
 class loglist {
+public:
+	enum {BYDATETIME, BYPRIORITY};
 private:
 	_logged *llist;
 	int nlist;
@@ -68,7 +72,7 @@ public:
 	void status(int n, logStatus st);
 	int add (long N,
 			 const char *prefix, const char *area, const char *suffix,
-			 const char *name, const char *szTime, char flg = ' ');
+			 const char *name, char flg = ' ');
 	void modify (int n,
 				 long N,
 				 const char *prefix, const char *area, const char *suffix,
@@ -95,6 +99,8 @@ public:
 	int MoveLater (int);
 	void lastup (int);
 	int  lastup ();
+	void sort (int by);
+	int  locate(std::string prefix, std::string area, std::string suffix);
 };
 
 #endif

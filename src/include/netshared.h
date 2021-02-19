@@ -93,7 +93,7 @@ extern void setFields ();
 extern void saveCurRecord ();
 extern void appendNewRecord ();
 extern void appendNewRecord (csvRecord &rec);
-extern int  add_fldigi_record(void);
+extern void add_fldigi_record(void);
 
 extern void cb_F12 (int);
 extern void cb_ShiftF12(void);
@@ -101,10 +101,13 @@ extern void cbEditor ();
 extern void cbCloseEditor ();
 extern void cbConfig ();
 extern void cbCloseConfig ();
+extern void create_config ();
 
 extern void ui_size(int, int, int);
 extern void change_size();
 extern bool split_call(std::string src, std::string &p, std::string &a, std::string &s);
+
+extern void refresh_logins();
 
 extern void update_select_label();
 

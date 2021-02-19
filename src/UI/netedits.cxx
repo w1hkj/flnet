@@ -121,7 +121,7 @@ void show_sort_order()
 		progStatus.preferred_sort_order == 2 ? "S/A/P" :
 		"Net Nbr");
 	out_sorted_by->redraw();
-	inpNickname->take_focus();
+//	inpNickname->take_focus();
 }
 
 static void cb_lookup_masterdb_record(Fl_Menu_ *, void *) {
@@ -210,8 +210,8 @@ Fl_Menu_Item menu_mbarMain[] = {
 	{"&NetNbr", 0,  (Fl_Callback*)cb_mnuBrowseNetNbr, 0, 0, 0, 0, 14, 56},
 	{0},
 	{"&Lookup", 0, 0, 0, 64, 0, 0, 14, 56},
-	{"On-line", 0, (Fl_Callback*)cb_LookupCall, 0, 0, 0, 0, 14, 56},
-	{"Fldigi", 0,  (Fl_Callback*)cb_mnuFldigiEditor, 0, 0, 0, 0, 14, 56},
+	{"&On-line", 0, (Fl_Callback*)cb_LookupCall, 0, 0, 0, 0, 14, 56},
+	{"&Fldigi", 0,  (Fl_Callback*)cb_mnuFldigiEditor, 0, 0, 0, 0, 14, 56},
 	{0},
 	{"&Sort", 0,  0, 0, 64, 0, 0, 14, 56},
 	{"&Prefix/Area/Suffix", 0,  (Fl_Callback*)cb_mnuSortByPAS, 0, 0, 0, 0, 14, 56},
@@ -220,26 +220,19 @@ Fl_Menu_Item menu_mbarMain[] = {
 	{"&Net Number", 0,  (Fl_Callback*)cb_mnuSortByNetNbr, 0, 0, 0, 0, 14, 56},
 	{0},
 	{"&Master DB", 0, 0, 0, 64, 0, 0, 14, 56},
-	{"Lookup Call", 0,  (Fl_Callback*)cb_lookup_masterdb_record, 0, 0, 0, 0, 14, 56},
-	{"Add current record", 0, (Fl_Callback*)cb_add_record_to_masterdb, 0, 0, 0, 0, 14, 56},
+	{"&Lookup Call", 0,  (Fl_Callback*)cb_lookup_masterdb_record, 0, 0, 0, 0, 14, 56},
+	{"&Add current record", 0, (Fl_Callback*)cb_add_record_to_masterdb, 0, 0, 0, 0, 14, 56},
 	{0},
 	{0}
 };
 
-static Fl_Window *editor = (Fl_Window *)0;
+Fl_Double_Window *editor = (Fl_Double_Window *)0;
 
 void close_editor(void)
 {
-	if(editor)
+	if (editor)
 		editor->hide();
-}
-
-Fl_Window * getEditWindow()
-{
-	if(!editor) {
-		editor = newEditWindow(false);
-	}
-	return editor;
+	myUI->set_visible_focus();
 }
 
 void cb_locator(Fl_Input2 *, void *)
@@ -286,17 +279,15 @@ void cb_suffix(Fl_Input2 *w, void *)
 	inpCallsign->redraw();
 }
 
-Fl_Window * newEditWindow(bool new_window_flag)
+void newEditWindow()
 {
+	if (editor) return;
 
-	if(editor && !new_window_flag)
-		return editor;
+	editor = new Fl_Double_Window(
+		main_window->x() + main_window->w() + 10, main_window->y(),
+		535, 460, "Database Editor");
 
-	Fl_Window *dlgNetEdit =
-	new Fl_Window(	main_window->x() + main_window->w() + 10,
-				  main_window->y(),
-				  535, 460, "Database Editor");
-	dlgNetEdit->color(52);
+	editor->color(52);
 
 	mbarMain = new Fl_Menu_Bar(0, 0, 370, 25);
 	mbarMain->menu(menu_mbarMain);
@@ -433,10 +424,8 @@ Fl_Window * newEditWindow(bool new_window_flag)
 	lblNumRecs->box(FL_BORDER_BOX);
 	lblNumRecs->color(53);
 
-	dlgNetEdit->end();
+	editor->end();
 
-	show_sort_order();
-
-	return dlgNetEdit;
+	return;
 }
 

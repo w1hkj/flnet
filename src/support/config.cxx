@@ -47,12 +47,19 @@ void close_config(void)
 {
 	if(cfgDialog)
 		cfgDialog->hide();
+	myUI->set_visible_focus();
+}
+
+void create_config()
+{
+	if (!cfgDialog)
+		cfgDialog = configDialog ();
 }
 
 void cbConfig ()
 {
-	if (!cfgDialog)
-		cfgDialog = configDialog ();
+	create_config();
+
 	btn_new_login_is_up->value(progStatus.disp_new_login);
 	btnOpenEditor->value(progStatus.open_editor);
 	btn_current_call_in_is_up->value(progStatus.callin_is_up);
@@ -93,7 +100,7 @@ void cbConfig ()
 
 	inp_masterdb->value(progStatus.masterdb.c_str());
 	chk_mdb_netnbr->value(progStatus.mdb_netnbr);
-
+	box_mdb_isopen->color(progStatus.mdb_isopen ? progStatus.mdb_color : FL_BACKGROUND2_COLOR);
 	cfgDialog->show();
 }
 

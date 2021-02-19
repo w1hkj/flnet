@@ -40,6 +40,8 @@
 #include "xml_io.h"
 #include "debug.h"
 #include "masterdb.h"
+#include "status.h"
+#include "icons.h"
 
 #include "config.h"
 
@@ -69,6 +71,12 @@ void cb_mnuOpen(Fl_Menu_*mnu, void *d)
 	updateCallins ();
 
 	LOG_INFO("Open database %s", selected_file.c_str());
+
+	if (progStatus.masterdb == selected_file) {
+		fl_alert2("You are using the master DB\n\n%s\n\nMaster db will be closed!", netdb.filename().c_str());
+		close_masterdb();
+	}
+
 	openDB (selected_file.c_str());
 }
 
@@ -117,16 +125,21 @@ extern void close_misc_dialogs(void);
 void cleanExit(void)
 {
 	updateLogins (true);
+	progStatus.saveLastState();
+
 	closeDB();
 	close_masterdb();
 	close_xmlrpc();
+
 	debug::stop();
+
 	close_config();
 	close_about();
 	close_editor();
 	close_login_list();
 	close_misc_dialogs();
 	close_main_window();
+
 	exit(0);
 }
 

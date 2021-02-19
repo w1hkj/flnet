@@ -58,6 +58,7 @@
 #include "status.h"
 #include "debug.h"
 #include "masterdb.h"
+#include "my_UI.h"
 
 #ifdef WIN32
 #  include "flnetrc.h"
@@ -197,8 +198,6 @@ void exit_main(Fl_Widget *w)
 
 void close_main_window(void)
 {
-	progStatus.saveLastState();
-
 	if(main_window)
 		main_window->hide();
 }
@@ -241,6 +240,7 @@ int main(int argc, char **argv)
 	Fl::add_handler (handle);
 
 	progStatus.loadLastState();
+	callinlist.AutoPriority(progStatus.chAuto);
 
 	std::string debug_file = home_dir;
 	debug_file.append("flnet_debug_log.txt");
@@ -320,7 +320,10 @@ int main(int argc, char **argv)
 		openDB (selected_file);
 		LOG_INFO("Opened: %s", selected_file.c_str());
 	}
-	if (!progStatus.masterdb.empty())
+	create_config();
+	newEditWindow();
+
+	if (!progStatus.masterdb.empty() && (progStatus.masterdb != selected_file) && progStatus.mdb_isopen)
 		open_masterdb();
 
 	open_xmlrpc();

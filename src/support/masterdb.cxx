@@ -51,6 +51,7 @@
 #include "status.h"
 #include "icons.h"
 #include "masterdb.h"
+#include "icons.h"
 
 csvdb *masterdb = (csvdb *)0;
 
@@ -120,7 +121,11 @@ void load_master_recs()
 bool open_masterdb()
 {
 	if (progStatus.masterdb == netdb.filename()) {
-		fl_alert2("You are editing the %s master DB", netdb.filename().c_str());
+		fl_alert2("Master db is already opened for editing\n\n%s", netdb.filename().c_str());
+		if (box_mdb_isopen) {
+			box_mdb_isopen->color(FL_BACKGROUND2_COLOR);
+			box_mdb_isopen->redraw();
+		}
 		return false;
 	}
 	masterdb = new csvdb();
@@ -128,16 +133,25 @@ bool open_masterdb()
 	if (masterdb->load()) {
 		delete masterdb;
 		masterdb = (csvdb *)0;
+		if (box_mdb_isopen) {
+			box_mdb_isopen->color(FL_BACKGROUND2_COLOR);
+			box_mdb_isopen->redraw();
+		}
 		return false;
 	}
 	load_master_recs();
+	if (box_mdb_isopen) {
+		box_mdb_isopen->color(progStatus.mdb_color);
+		box_mdb_isopen->redraw();
+	}
+	progStatus.mdb_isopen = true;
 	return true;
 }
 
 bool from_masterdb(const char *p, const char *a, const char *s, csvRecord *mrec)
 {
 	if (!masterdb) {
-		if (!open_masterdb() )
+		fl_alert2("Master db is not open");
 			return false;
 	}
 	std::string sp = p;
@@ -178,7 +192,10 @@ bool from_masterdb(const char *p, const char *a, const char *s, csvRecord *mrec)
 
 void to_masterdb(csvRecord &mrec)
 {
-	if (!masterdb) return;
+	if (!masterdb) {
+		fl_alert2("Master db is not open");
+		return;
+	}
 	masterdb->add(mrec);
 }
 
@@ -188,4 +205,9 @@ void close_masterdb()
 	masterdb->save();
 	delete masterdb;
 	masterdb = (csvdb *)0;
+	progStatus.mdb_isopen = false;
+	if (box_mdb_isopen) {
+		box_mdb_isopen->color(FL_BACKGROUND2_COLOR);
+		box_mdb_isopen->redraw();
+	}
 }

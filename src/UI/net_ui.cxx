@@ -26,6 +26,7 @@
 
 #include <FL/fl_ask.H>
 #include <FL/Fl_File_Chooser.H>
+#include <FL/Fl_Color_Chooser.H>
 
 #include "icons.h"
 #include "flinput2.h"
@@ -76,8 +77,12 @@ Fl_Check_Button *chk_qrz = (Fl_Check_Button *)0;
 Fl_Input2 *inp_qrzurl = (Fl_Input2 *)0;
 
 Fl_Input2 *inp_masterdb = (Fl_Input2 *)0;
+Fl_Box *box_mdb_isopen = (Fl_Box *)0;
 Fl_Button *btn_masterdb = (Fl_Button *)0;
+Fl_Button *btn_open_masterdb = (Fl_Button *)0;
+Fl_Button *btn_close_masterdb = (Fl_Button *)0;
 Fl_Check_Button *chk_mdb_netnbr = (Fl_Check_Button *)0;
+Fl_Button *mdb_color = (Fl_Button *)0;
 
 Fl_Check_Button *chk_call_left_justify = (Fl_Check_Button *)0;
 Fl_Check_Button *chk_name_left_justify = (Fl_Check_Button *)0;
@@ -293,51 +298,92 @@ static void cb_btn_current_call_in_is_up(Fl_Check_Button* o, void*) {
 }
 
 static void cb_btnFg(Fl_Button*, void*) {
-	progStatus.fgColors[1] = fl_show_colormap(progStatus.fgColors[1]);
+	unsigned char r,g,b;
+	Fl::get_color(progStatus.fgColors[1], r, g, b);
+	if (fl_color_chooser("Select Color", r, g, b)) {
+		progStatus.fgColors[1] = fl_rgb_color(r, g, b);
+	}
 	txtSample[1]->textcolor(progStatus.fgColors[1]);
 	txtSample[1]->redraw();
 }
 
 static void cb_btnBg(Fl_Button*, void*) {
-	progStatus.bgColors[1] = fl_show_colormap(progStatus.bgColors[1]);
+	unsigned char r,g,b;
+	Fl::get_color(progStatus.bgColors[1], r, g, b);
+	if (fl_color_chooser("Select Color", r, g, b)) {
+		progStatus.bgColors[1] = fl_rgb_color(r, g, b);
+	}
 	txtSample[1]->color(progStatus.bgColors[1]);
 	txtSample[1]->redraw();
 }
 
 static void cb_btnFg1(Fl_Button*, void*) {
-	progStatus.fgColors[2] = fl_show_colormap(progStatus.fgColors[2]);
+	unsigned char r,g,b;
+	Fl::get_color(progStatus.fgColors[2], r, g, b);
+	if (fl_color_chooser("Select Color", r, g, b)) {
+		progStatus.fgColors[2] = fl_rgb_color(r, g, b);
+	}
 	txtSample[2]->textcolor(progStatus.fgColors[2]);
 	txtSample[2]->redraw();
 }
 
 static void cb_btnBg1(Fl_Button*, void*) {
-	progStatus.bgColors[2] = fl_show_colormap(progStatus.bgColors[2]);
+	unsigned char r,g,b;
+	Fl::get_color(progStatus.bgColors[2], r, g, b);
+	if (fl_color_chooser("Select Color", r, g, b)) {
+		progStatus.bgColors[2] = fl_rgb_color(r, g, b);
+	}
 	txtSample[2]->color(progStatus.bgColors[2]);
 	txtSample[2]->redraw();
 }
 
 static void cb_btnFg2(Fl_Button*, void*) {
-	progStatus.fgColors[3] = fl_show_colormap(progStatus.fgColors[3]);
+	unsigned char r,g,b;
+	Fl::get_color(progStatus.fgColors[3], r, g, b);
+	if (fl_color_chooser("Select Color", r, g, b)) {
+		progStatus.fgColors[3] = fl_rgb_color(r, g, b);
+	}
 	txtSample[3]->textcolor(progStatus.fgColors[3]);
 	txtSample[3]->redraw();
 }
 
 static void cb_btnBg2(Fl_Button*, void*) {
-	progStatus.bgColors[3] = fl_show_colormap(progStatus.bgColors[3]);
+	unsigned char r,g,b;
+	Fl::get_color(progStatus.bgColors[3], r, g, b);
+	if (fl_color_chooser("Select Color", r, g, b)) {
+		progStatus.bgColors[3] = fl_rgb_color(r, g, b);
+	}
 	txtSample[3]->color(progStatus.bgColors[3]);
 	txtSample[3]->redraw();
 }
 
 static void cb_btnFg3(Fl_Button*, void*) {
-	progStatus.fgColors[4] = fl_show_colormap(progStatus.fgColors[4]);
+	unsigned char r,g,b;
+	Fl::get_color(progStatus.fgColors[4], r, g, b);
+	if (fl_color_chooser("Select Color", r, g, b)) {
+		progStatus.fgColors[4] = fl_rgb_color(r, g, b);
+	}
 	txtSample[4]->textcolor(progStatus.fgColors[4]);
 	txtSample[4]->redraw();
 }
 
 static void cb_btnBg3(Fl_Button*, void*) {
-	progStatus.bgColors[4] = fl_show_colormap(progStatus.bgColors[4]);
+	unsigned char r,g,b;
+	Fl::get_color(progStatus.bgColors[4], r, g, b);
+	if (fl_color_chooser("Select Color", r, g, b)) {
+		progStatus.bgColors[4] = fl_rgb_color(r, g, b);
+	}
 	txtSample[4]->color(progStatus.bgColors[4]);
 	txtSample[4]->redraw();
+}
+
+static void cb_mdb_color(Fl_Button *, void*) {
+	unsigned char r,g,b;
+	Fl::get_color(progStatus.mdb_color, r, g, b);
+	if (fl_color_chooser("Select Color", r, g, b)) {
+		progStatus.mdb_color = fl_rgb_color(r, g, b);
+	}
+	mdb_color->color(progStatus.mdb_color);
 }
 
 static void cb_myLocator(Fl_Input2 *, void *)
@@ -448,10 +494,21 @@ static void cb_select_masterdb( Fl_Button *, void *)
 		"Select master DB file", "*.csv", 
 		open_dir.c_str(), 0);
 	if (!p) return;
-	close_masterdb(); // function will test for valid masterdb
+	inp_masterdb->value(p);
 	progStatus.masterdb = p;
-	inp_masterdb->value(progStatus.masterdb.c_str());
+}
+
+static void cb_open_masterdb( Fl_Button *, void *)
+{
+	close_masterdb(); // function will test for valid masterdb
+	if (progStatus.masterdb.empty())
+		return;
 	open_masterdb();
+}
+
+static void cb_close_masterdb( Fl_Button *, void *)
+{
+	close_masterdb();
 }
 
 static void cb_call_left_justify(Fl_Check_Button *, void *)
@@ -552,6 +609,29 @@ void cb_inpStatesList3 (Fl_Input2 *w, void *)
 void cb_chkAutoPriority (Fl_Check_Button *w, void *)
 {
 	progStatus.chAuto = chkAutoPriority->value();
+
+	if (callinlist.numlist() == 0)
+		return;
+	std::string prefix = callinlist.prefix(WhoIsUp);
+	std::string area   = callinlist.area(WhoIsUp);
+	std::string suffix = callinlist.suffix(WhoIsUp);
+	if (progStatus.chAuto) {
+		callinlist.AutoPriority(1);
+		callinlist.sort(loglist::BYPRIORITY);
+	} else {
+		callinlist.AutoPriority(0);
+		callinlist.sort(loglist::BYDATETIME);
+	}
+
+	getindexed_list ();
+	refresh_logins ();
+
+	updateCallins ();
+
+	WhoIsUp = callinlist.locate(prefix, area, suffix);
+
+	myUI->dispCallIns(false);
+
 }
 
 void cb_chk_mdb_netnbr (Fl_Check_Button *w, void *)
@@ -566,13 +646,13 @@ Fl_Double_Window* configDialog() {
 	tabsConfig->color((Fl_Color)44);
 		tabGroupUI = new Fl_Group(0, 35, 440, 185, "UI behavior");
 			btn_new_login_is_up = new Fl_Check_Button(20, 50, 70, 15, "New login is up");
-			btn_new_login_is_up->tooltip("Move new login to the >...<\nspot in the calll in list");
+			btn_new_login_is_up->tooltip("Move first time login to the >...<\nspot in the call in list");
 			btn_new_login_is_up->down_box(FL_DOWN_BOX);
 			btn_new_login_is_up->callback((Fl_Callback*)cb_btn_new_login_is_up);
 			btn_new_login_is_up->value(progStatus.disp_new_login);
 
 			btnOpenEditor = new Fl_Check_Button(20, 75, 70, 15, "Open editor for new login");
-			btnOpenEditor->tooltip("Open editor for new call in\nNew login is up must be enabled");
+			btnOpenEditor->tooltip("Open editor for first time call in\nNew login is up must be enabled");
 			btnOpenEditor->down_box(FL_DOWN_BOX);
 			btnOpenEditor->callback((Fl_Callback*)cb_btnOpenEditor);
 			btnOpenEditor->value(progStatus.open_editor);
@@ -623,52 +703,56 @@ Fl_Double_Window* configDialog() {
 
 		tabGroupColors = new Fl_Group(0, 35, 440, 185, "Colors");
 		tabGroupColors->hide();
-			txtSample[1] = new Fl_Output(145, 60, 45, 25, "Logged In");
+			Fl_Box *gcbox = new Fl_Box(0, 45, 440, 20, "Color coding for call-in list");
+			gcbox->box(FL_FLAT_BOX);
+			gcbox->align(FL_ALIGN_CENTER);
+
+			txtSample[1] = new Fl_Output(145, 73, 45, 25, "Logged In");
 			txtSample[1]->textfont(FL_SCREEN);
 			txtSample[1]->value("Text");
 			txtSample[1]->color(progStatus.bgColors[1]);
 			txtSample[1]->textcolor(progStatus.fgColors[1]);
 
-			btnFg[1] = new Fl_Button(205, 60, 45, 25, "Fg");
+			btnFg[1] = new Fl_Button(205, 73, 45, 25, "Fg");
 			btnFg[1]->callback((Fl_Callback*)cb_btnFg);
 
-			btnBg[2] = new Fl_Button(270, 60, 45, 25, "Bg");
+			btnBg[2] = new Fl_Button(270, 73, 45, 25, "Bg");
 			btnBg[2]->callback((Fl_Callback*)cb_btnBg);
 
-			txtSample[2] = new Fl_Output(145, 95, 45, 25, "First Response");
+			txtSample[2] = new Fl_Output(145, 100, 45, 25, "First Response");
 			txtSample[2]->textfont(FL_SCREEN);
 			txtSample[2]->value("Text");
 			txtSample[2]->color(progStatus.bgColors[2]);
 			txtSample[2]->textcolor(progStatus.fgColors[2]);
 
-			btnFg[2] = new Fl_Button(205, 95, 45, 25, "Fg");
+			btnFg[2] = new Fl_Button(205, 100, 45, 25, "Fg");
 			btnFg[2]->callback((Fl_Callback*)cb_btnFg1);
 
-			btnBg[2] = new Fl_Button(270, 95, 45, 25, "Bg");
+			btnBg[2] = new Fl_Button(270, 100, 45, 25, "Bg");
 			btnBg[2]->callback((Fl_Callback*)cb_btnBg1);
 
-			txtSample[3] = new Fl_Output(145, 130, 45, 25, "Second Response");
+			txtSample[3] = new Fl_Output(145, 128, 45, 25, "Second Response");
 			txtSample[3]->textfont(FL_SCREEN);
 			txtSample[3]->value("Text");
 			txtSample[3]->color(progStatus.bgColors[3]);
 			txtSample[3]->textcolor(progStatus.fgColors[3]);
 
-			btnFg[3] = new Fl_Button(205, 130, 45, 25, "Fg");
+			btnFg[3] = new Fl_Button(205, 128, 45, 25, "Fg");
 			btnFg[3]->callback((Fl_Callback*)cb_btnFg2);
 
-			btnBg[3] = new Fl_Button(270, 130, 45, 25, "Bg");
+			btnBg[3] = new Fl_Button(270, 128, 45, 25, "Bg");
 			btnBg[3]->callback((Fl_Callback*)cb_btnBg2);
 
-			txtSample[4] = new Fl_Output(145, 165, 45, 25, "Logged Out");
+			txtSample[4] = new Fl_Output(145, 155, 45, 25, "Logged Out");
 			txtSample[4]->textfont(FL_SCREEN);
 			txtSample[4]->value("Text");
 			txtSample[4]->color(progStatus.bgColors[4]);
 			txtSample[4]->textcolor(progStatus.fgColors[4]);
 
-			btnFg[4] = new Fl_Button(205, 165, 45, 25, "Fg");
+			btnFg[4] = new Fl_Button(205, 155, 45, 25, "Fg");
 			btnFg[4]->callback((Fl_Callback*)cb_btnFg3);
 
-			btnBg[4] = new Fl_Button(270, 165, 45, 25, "Bg");
+			btnBg[4] = new Fl_Button(270, 155, 45, 25, "Bg");
 			btnBg[4]->callback((Fl_Callback*)cb_btnBg3);
 
 		tabGroupColors->end();
@@ -678,35 +762,42 @@ Fl_Double_Window* configDialog() {
 			cfgP1 = new Fl_Input2(160, 70, 20, 25, "Priority 1 character");
 			cfgP1->callback((Fl_Callback*)cb_cfgP1);
 			cfgP1->when(FL_WHEN_CHANGED);
+			cfgP1->tooltip("Character used to designate priority 1 call in");
 
 			inpStatesList1 = new Fl_Input2(200, 70, 225, 25, "States List (ie: FL, AL, GA)");
 			inpStatesList1->align(Fl_Align(FL_ALIGN_TOP_LEFT));
 			inpStatesList1->callback((Fl_Callback*)cb_inpStatesList1);
 			inpStatesList1->when(FL_WHEN_CHANGED);
+			inpStatesList1->tooltip("Comma separated list of priority 1 states");
 
 			cfgP2 = new Fl_Input2(160, 100, 20, 25, "Priority 2 character");
 			cfgP2->callback((Fl_Callback*)cb_cfgP2);
 			cfgP2->when(FL_WHEN_CHANGED);
+			cfgP2->tooltip("Character used to designate priority 2 call in");
 
 			inpStatesList2 = new Fl_Input2(200, 100, 225, 25);
 			inpStatesList2->align(Fl_Align(FL_ALIGN_TOP_LEFT));
 			inpStatesList2->callback((Fl_Callback*)cb_inpStatesList2);
 			inpStatesList2->when(FL_WHEN_CHANGED);
+			inpStatesList2->tooltip("Comma separated list of priority 2 states");
 
 			cfgP3 = new Fl_Input2(160, 130, 20, 25, "Priority 3 character");
 			cfgP3->callback((Fl_Callback*)cb_cfgP3);
 			cfgP3->when(FL_WHEN_CHANGED);
+			cfgP3->tooltip("Character used to designate priority 3 call in");
 
 			inpStatesList3 = new Fl_Input2(200, 130, 225, 25);
 			inpStatesList3->align(Fl_Align(FL_ALIGN_TOP_LEFT));
 			inpStatesList3->callback((Fl_Callback*)cb_inpStatesList3);
 			inpStatesList3->when(FL_WHEN_CHANGED);
+			inpStatesList3->tooltip("Comma separated list of priority 3 states");
 
 			chkAutoPriority = new Fl_Check_Button(160, 165, 25, 25, "Auto By Priority");
 			chkAutoPriority->down_box(FL_DOWN_BOX);
 			chkAutoPriority->align(Fl_Align(FL_ALIGN_LEFT));
 			chkAutoPriority->callback((Fl_Callback*)cb_chkAutoPriority);
 			chkAutoPriority->when(FL_WHEN_CHANGED);
+			chkAutoPriority->tooltip("ON - Sort call list entries by priority\nOFF - Sort by entry date-time");
 
 		tabGroupPriority->end();
 
@@ -717,17 +808,20 @@ Fl_Double_Window* configDialog() {
 			inp_myLocator->value(progStatus.myLocator.c_str());
 			inp_myLocator->callback((Fl_Callback*)cb_myLocator);
 			inp_myLocator->align(FL_ALIGN_TOP_LEFT);
+			inp_myLocator->tooltip("Maidenhead locator, i.e. EM64qv");
 
 			inp_user_name = new Fl_Input2(100, 60, 110, 24, "Id:");
 			inp_user_name->value(progStatus.user_name.c_str());
 			inp_user_name->callback((Fl_Callback*)cb_user_name);
 			inp_user_name->align(FL_ALIGN_TOP_LEFT);
+			inp_user_name->tooltip("User ID for selected on line database");
 
 			inp_user_password = new Fl_Input2(215, 60, 120, 24, "Pwd:");
 			inp_user_password->value(progStatus.user_password.c_str());
 			inp_user_password->callback((Fl_Callback*)cb_user_password);
 			inp_user_password->type(FL_SECRET_INPUT);
 			inp_user_password->align(FL_ALIGN_TOP_LEFT);
+			inp_user_password->tooltip("Password for selected on line database");
 
 			chk_pwd = new Fl_Check_Button(340, 60, 40, 18, "Show pwd");
 			chk_pwd->value(false);
@@ -736,34 +830,42 @@ Fl_Double_Window* configDialog() {
 			chk_callook = new Fl_Check_Button(23, 88, 50, 18, "callook.info:");
 			chk_callook->value(progStatus.QRZXML == CALLOOK);
 			chk_callook->callback((Fl_Callback*)cb_chk_callook);
+			chk_callook->tooltip("Query callook on line database");
 
 			inp_callookurl = new Fl_Input2(140, 85, 280, 24, "");
 			inp_callookurl->value(progStatus.callookurl.c_str());
 			inp_callookurl->callback((Fl_Callback*)cb_callookurl);
+			inp_callookurl->tooltip("Url for callook on line database");
 
 			chk_hamqth = new Fl_Check_Button(23, 113, 50, 18, "hamqth.com:");
 			chk_hamqth->value(progStatus.QRZXML == HAMQTH);
 			chk_hamqth->callback((Fl_Callback*)cb_chk_hamqth);
+			chk_hamqth->tooltip("Query hamqth on line database");
 
 			inp_hamqthurl = new Fl_Input2(140, 110, 280, 24, "");
 			inp_hamqthurl->value(progStatus.hamqthurl.c_str());
 			inp_hamqthurl->callback((Fl_Callback*)cb_hamqthurl);
+			inp_hamqthurl->tooltip("Url for Hamqth.com on line database");
 
 			chk_hamcall = new Fl_Check_Button(23, 138, 50, 18, "hamcall.net:");
 			chk_hamcall->value(progStatus.QRZXML == HAMCALLNET);
 			chk_hamcall->callback((Fl_Callback*)cb_chk_hamcall);
+			chk_hamcall->tooltip("Query Hamcall on line database");
 
 			inp_hamcallurl = new Fl_Input2(140, 135, 280, 24, "");
 			inp_hamcallurl->value(progStatus.hamcallurl.c_str());
 			inp_hamcallurl->callback((Fl_Callback*)cb_hamcallurl);
+			inp_hamcallurl->tooltip("Url for Hamcall");
 
 			chk_qrz = new Fl_Check_Button(23, 163, 50, 18, "qrz.com:");
 			chk_qrz->value(progStatus.QRZXML == QRZNET);
 			chk_qrz->callback((Fl_Callback*)cb_chk_qrz);
+			chk_qrz->tooltip("Query QRZ.com on line database");
 
 			inp_qrzurl = new Fl_Input2(140, 160, 280, 24, "");
 			inp_qrzurl->value(progStatus.qrzurl.c_str());
 			inp_qrzurl->callback((Fl_Callback*)cb_hamqrzurl);
+			inp_qrzurl->tooltip("Url for QRZ.com");
 
 		tabGroupLookup->end();
 
@@ -774,14 +876,35 @@ Fl_Double_Window* configDialog() {
 			inp_masterdb->value(progStatus.masterdb.c_str());
 			inp_masterdb->callback((Fl_Callback*)cb_masterdb);
 			inp_masterdb->align(FL_ALIGN_TOP_LEFT);
+			inp_masterdb->tooltip("Enter full pathname of master database");
 
 			btn_masterdb = new Fl_Button(375, 60, 60, 24, "Select");
 			btn_masterdb->callback((Fl_Callback*)cb_select_masterdb);
 
-			chk_mdb_netnbr = new Fl_Check_Button(20, 90, 18, 18, "Include net nbr");
+			box_mdb_isopen = new Fl_Box(20, 90, 14, 14, "Master DB is open");
+			box_mdb_isopen->box(FL_DOWN_BOX);
+			box_mdb_isopen->align(FL_ALIGN_RIGHT);
+			box_mdb_isopen->color(progStatus.mdb_isopen ? progStatus.mdb_color : FL_BACKGROUND2_COLOR);
+
+			chk_mdb_netnbr = new Fl_Check_Button(20, 120, 18, 18, "Include net nbr");
 			chk_mdb_netnbr->value(progStatus.mdb_netnbr);
 			chk_mdb_netnbr->align(FL_ALIGN_RIGHT);
 			chk_mdb_netnbr->callback((Fl_Callback*)cb_chk_mdb_netnbr);
+			chk_mdb_netnbr->tooltip("Transfer net # from master database");
+
+			btn_open_masterdb = new Fl_Button(375, 90, 60, 24, "Open");
+			btn_open_masterdb->callback((Fl_Callback*)cb_open_masterdb);
+			btn_open_masterdb->tooltip("Open the master database");
+
+			btn_close_masterdb = new Fl_Button(376, 120, 60, 24, "Close");
+			btn_close_masterdb->callback((Fl_Callback*)cb_close_masterdb);
+			btn_close_masterdb->tooltip("Close the master database");
+
+			mdb_color = new Fl_Button(20, 150, 24, 24, "Select Indicator Color");
+			mdb_color->align(FL_ALIGN_RIGHT);
+			mdb_color->color(progStatus.mdb_color);
+			mdb_color->callback((Fl_Callback*)cb_mdb_color);
+			mdb_color->tooltip("Select open indicator color");
 
 		tabGroupMasterDB->end();
 
@@ -789,6 +912,8 @@ Fl_Double_Window* configDialog() {
 
 	btnConfigOK = new Fl_Return_Button(355, w->h() - 26, 75, 24, "OK");
 	btnConfigOK->callback((Fl_Callback*)cb_btnCloseConfig);
+
+	w->end();
 
 	return w;
 }

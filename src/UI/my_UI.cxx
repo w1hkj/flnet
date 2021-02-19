@@ -135,12 +135,8 @@ void updateCallins (bool fldigi_flag)
 	szAzimuth.clear();
 	szDistance.clear();
 
-	static std::stringstream checkins;
-
 	static char lbl[50];
-	checkins.seekp(ios::beg);
-	checkins << "Check-ins: " << callinlist.numlist();
-	strncpy(lbl, checkins.str().c_str(), 18);
+	snprintf(lbl, sizeof(lbl), "Check-ins: %d", callinlist.numlist());
 	out_callins->value(lbl);
 
 	long rc = callinlist.recN(WhoIsUp);
@@ -287,7 +283,6 @@ void updateLogins (bool closing = false)
 	char szLine[40];
 	char sztemp[40];
 	csvRecord rec;
-
 	if (callinlist.numlist() == 0)
 		return;
 
@@ -407,26 +402,20 @@ void my_UI::dispCallIns (bool flag)
 	updateCallins (flag);
 }
 
-void my_UI::PickedToCallins (int n)
+int my_UI::PickedToCallins (int n)
 {
-	PickedToCallinsDB((size_t) Pick[n].recN);
+	return PickedToCallinsDB((size_t) Pick[n].recN);
 }
 
-void my_UI::PickedToCallinsDB (size_t record_number)
+int my_UI::PickedToCallinsDB (size_t record_number)
 {
-	time_t the_time;
-	struct tm *tm_ptr;
-	char sztime[6];
 
 	if (callinlist.inList(record_number)) {
 		fl_beep (FL_BEEP_ERROR);
 		clearPickList ();
 		clearSAP ();
-		return;
+		return -1;
 	}
-	time (&the_time);
-	tm_ptr = localtime (&the_time);
-	sprintf( sztime, "%02d:%02d", tm_ptr->tm_hour, tm_ptr->tm_min);
 
 	csvRecord rec;
 	netdb.get(record_number, rec);
@@ -443,33 +432,38 @@ void my_UI::PickedToCallinsDB (size_t record_number)
 	strP2 = uppercase(trim(progStatus.strP2));
 	strP3 = uppercase(trim(progStatus.strP3));
 
-	if (!strP1.empty() &&
-		strP1.find(st) != std::string::npos) {
+	if (st.empty()) {
 		callinlist.add (
 			record_number, 
-			pr.c_str(), ar.c_str(), su.c_str(), nm.c_str(),
-			sztime, progStatus.chP1[0]);
-	} else if (!strP2.empty() &&
-		strP2.find(st) != std::string::npos) {
-		callinlist.add (
-			record_number, 
-			pr.c_str(), ar.c_str(), su.c_str(), nm.c_str(),
-			sztime, progStatus.chP2[0]);
-	} else if (!strP3.empty() &&
-		strP3.find(st) != std::string::npos) {
-		callinlist.add (
-			record_number,
-			pr.c_str(), ar.c_str(), su.c_str(), nm.c_str(),
-			sztime, progStatus.chP3[0]);
+			pr.c_str(), ar.c_str(), su.c_str(), nm.c_str() );
 	} else {
-		callinlist.add (
-			record_number, 
-			pr.c_str(), ar.c_str(), su.c_str(), nm.c_str(),
-			sztime);
+		if (!strP1.empty() &&
+			strP1.find(st) != std::string::npos) {
+			callinlist.add (
+				record_number, 
+				pr.c_str(), ar.c_str(), su.c_str(), nm.c_str(),
+				progStatus.chP1[0]);
+		} else if (!strP2.empty() &&
+			strP2.find(st) != std::string::npos) {
+			callinlist.add (
+				record_number, 
+				pr.c_str(), ar.c_str(), su.c_str(), nm.c_str(),
+				progStatus.chP2[0]);
+		} else if (!strP3.empty() &&
+			strP3.find(st) != std::string::npos) {
+			callinlist.add (
+				record_number,
+				pr.c_str(), ar.c_str(), su.c_str(), nm.c_str(),
+				progStatus.chP3[0]);
+		} else {
+			callinlist.add (
+				record_number, 
+				pr.c_str(), ar.c_str(), su.c_str(), nm.c_str() );
+		}
 	}
-	dispCallIns (false);
 	clearPickList ();
 	clearSAP ();
+	return record_number;
 }
 
 my_UI::my_UI (int x, int y, int w, int h, const char *l) :
@@ -503,6 +497,7 @@ void updnDelay (void *d)
 	keywait = 0;
 }
 
+static bool ignore_event = false;
 int my_UI::handle (int e)
 {
 	int k;
@@ -553,6 +548,7 @@ int my_UI::handle (int e)
 				clearPickList ();
 				return 1;
 			}
+
 			if (my_status == LOGLIST) {
 				if (k == FL_Home) {
 					lastUp = WhoIsUp;
@@ -640,34 +636,40 @@ int my_UI::handle (int e)
 				}
 
 				if (k == FL_Delete) {
-					if (WhoIsUp == 0 && callinlist.status(WhoIsUp) == EMPTY) return 1;
-					fl_beep (FL_BEEP_QUESTION);
-					if (fl_choice("Confirm Delete", "cancel", "OK", NULL) == 1) {
-						callinlist.del(WhoIsUp);
-						WhoIsUp--;
-						if (WhoIsUp < 0) WhoIsUp = 0;
-						updateLogins();
-						dispCallIns (false);
-						return 1;
+					if (!((WhoIsUp == 0) && (callinlist.status(WhoIsUp) == EMPTY))) {
+//						fl_beep (FL_BEEP_QUESTION);
+						if (fl_choice("Confirm Delete", "cancel", "OK", NULL) == 1) {
+							callinlist.del(WhoIsUp);
+							WhoIsUp--;
+							if (WhoIsUp < 0) WhoIsUp = 0;
+							updateLogins();
+							dispCallIns (false);
+						}
+						myUI->set_visible_focus();
 					}
+					ignore_event = true;
+					return 1;
 				}
-			}
 
-			if (my_status == LOGLIST) {
 				if (k == FL_Enter || k == FL_KP_Enter) {
-					dispCallIns(updateFldigi);
+					if (!ignore_event) {
+						dispCallIns(updateFldigi);
+					}
+					ignore_event = false;
 					return 1;
 				}
 			}
 
 			if (my_status == PICKLIST) {
 				if (k == FL_Enter || k == FL_KP_Enter) {
-					PickedToCallins (whoPicked);
-					if (progStatus.callin_is_up) {
-						WhoIsUp = callinlist.numlist () - 1;
-						dispCallIns(false);
+					int recnbr = PickedToCallins (whoPicked);
+					if (progStatus.callin_is_up && recnbr >=0) {
+						csvRecord rec;
+						netdb.get(recnbr, rec);
+						WhoIsUp = callinlist.locate(rec.prefix, rec.area, rec.suffix);
 					}
 					updateLogins();
+					dispCallIns(false);
 					my_status = LOGLIST;
 				}
 				if (k == FL_Down) {
@@ -701,13 +703,16 @@ int my_UI::handle (int e)
 
 			if (my_status == SUFFIX && (k == FL_Enter || k == FL_KP_Enter)) {
 				if (nbrPicked) {
-					PickedToCallins (0);
-					if (progStatus.callin_is_up) {
-						WhoIsUp = callinlist.numlist () - 1;
-						dispCallIns(false);
+					whoPicked = 0;
+					int recnbr = PickedToCallins (whoPicked);
+					if (progStatus.callin_is_up && recnbr >=0) {
+						csvRecord rec;
+						netdb.get(recnbr, rec);
+						WhoIsUp = callinlist.locate(rec.prefix, rec.area, rec.suffix);
 					}
 					updateLogins();
 					my_status = LOGLIST;
+					dispCallIns (false);
 				}
 			}
 
@@ -774,16 +779,11 @@ int my_UI::handle (int e)
 				int found = IsInDB(szPrefix.c_str(), szArea.c_str(), szSuffix.c_str());
 				if (found >= 0) {
 					PickedToCallinsDB(found);
+					dispCallIns (false);
 					return 1;
 				}
 
-				time_t the_time;
-				struct tm *tm_ptr;
-				char sztime[6];
-				time (&the_time);
-				tm_ptr = localtime (&the_time);
-				sprintf( sztime, "%02d:%02d", tm_ptr->tm_hour, tm_ptr->tm_min);
-				callinlist.add (-1, szPrefix.c_str(), szArea.c_str(), szSuffix.c_str(), "", sztime );
+				callinlist.add (-1, szPrefix.c_str(), szArea.c_str(), szSuffix.c_str(), "" );
 				if (progStatus.disp_new_login) WhoIsUp = callinlist.numlist () - 1;
 				dispCallIns (false);
 				clearPickList ();

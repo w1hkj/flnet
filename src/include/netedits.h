@@ -26,6 +26,7 @@
 #define netedits_h
 #include <FL/Fl.H>
 #include <FL/Fl_Window.H>
+#include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Menu_Bar.H>
 #include <FL/Fl_Output.H>
 #include <FL/Fl_Button.H>
@@ -34,8 +35,8 @@
 #include "date.h"
 #include "calendar.h"
 
-Fl_Window *newEditWindow(bool);
-Fl_Window *getEditWindow(void);
+extern Fl_Double_Window *editor;
+void newEditWindow(void);
 
 extern Fl_Menu_Bar *mbarMain;
 extern void cb_mnuSearchCallsign(Fl_Menu_*, void*);

@@ -28,6 +28,8 @@
 
 #include "status.h"
 #include "netshared.h"
+#include "masterdb.h"
+#include "csvdb.h"
 
 status progStatus = {
 	50,								// int			mainX;
@@ -49,6 +51,13 @@ status progStatus = {
 	0,								// int			open_editor;
 	0,								// int			callin_is_up;
 	1,								// int			QRZXML;
+
+	false,							// int			chAuto;
+	false,							// int			call_left_justify
+	true,							// int			name_left_justify
+	0,								// int			distance conversion
+									//				0 - KM, 1 - NM, 2 - SM
+
 	2,								// int			preferred_sort_order
 									//				0 - PAS
 									//				1 - APS
@@ -56,12 +65,8 @@ status progStatus = {
 									//				3 - NETNBR
 	0,								// int			mdb_netnbr
 									// 1 - transfer netnbr to/from master db
-
-	'n',							// int			chAuto;
-	false,							// int			call_left_justify
-	true,							// int			name_left_justify
-	0,								// int			distance conversion
-									//				0 - KM, 1 - NM, 2 - SM
+	0,								// int			mdb_isopen;
+	FL_GREEN,						// int			mdb_color;
 
 	"A",							// std::string	chP1;
 	"B",							// std::string	chP2;
@@ -114,7 +119,10 @@ void status::saveLastState()
 	flnetpref.set("callin_is_up", callin_is_up);
 	flnetpref.set("QRZXML", QRZXML);
 	flnetpref.set("preferred_sort_order", preferred_sort_order);
+
 	flnetpref.set("mdb_netnbr", mdb_netnbr);
+	flnetpref.set("mdb_isopen", mdb_isopen);
+	flnetpref.set("mdb_color", mdb_color);
 
 	flnetpref.set("chAuto", chAuto);
 
@@ -169,7 +177,10 @@ void status::loadLastState()
 	flnetpref.get("callin_is_up", callin_is_up, callin_is_up);
 	flnetpref.get("QRZXML", QRZXML, QRZXML);
 	flnetpref.get("preferred_sort_order", preferred_sort_order, preferred_sort_order);
+
 	flnetpref.get("mdb_netnbr", mdb_netnbr, mdb_netnbr);
+	flnetpref.get("mdb_isopen", mdb_isopen, mdb_isopen);
+	flnetpref.get("mdb_color", mdb_color, mdb_color);
 
 	flnetpref.get("chAuto", chAuto, chAuto);
 

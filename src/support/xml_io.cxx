@@ -415,6 +415,7 @@ void update_fldigi_callsign(std::string szFirstName, std::string szCallSign)
 /*************************************************************
  *
  *************************************************************/
+// calling function must delete 'data'
 struct callsign_data *update_flnet_calldata(void)
 {
 	if(!fldigi_online) return (CALLSIGN_DATA *)0;

@@ -401,7 +401,10 @@ void openDB(string fname)
 		callinlist.setPri_1 (progStatus.chP1[0]);
 		callinlist.setPri_2 (progStatus.chP2[0]);
 		callinlist.setPri_3 (progStatus.chP3[0]);
-		if (progStatus.chAuto == 'y') callinlist.AutoPriority (1);
+		if (progStatus.chAuto)
+			callinlist.AutoPriority (1);
+		else
+			callinlist.AutoPriority (0);
 		getindexed_list();
 	} else {
 		update_select_label();
@@ -544,69 +547,77 @@ void appendNewRecord (csvRecord &rec)
 }
 
 
-int add_fldigi_record(void)
+void add_fldigi_record(void)
 {
 	std::string prefix, area, suffix;
 
 	if (!fldigi_online) {
 		fl_alert ("FLDIGI<->FLNET XMLRPC Commmunication failure!");
-		return -1;
+		return;
 	}
 
 	struct callsign_data *data = update_flnet_calldata();
 
-	if(!data) {
+	if (!data) {
 		fl_alert ("XMLRPC Internal Data transfer failure!");
-		return -1;
+		return;
 	}
 
-	if(split_call(data->callsign, prefix, area, suffix) == false) return -1;
+	if (split_call(data->callsign, prefix, area, suffix) == false) {
+		delete data;
+		return;
+	}
 
-	if(IsInDB (prefix.c_str(), area.c_str(), suffix.c_str()) < 0) {
-		csvRecord *rec = new csvRecord;
-		char date[32];
-		time_t rawtime = 0;
-		struct tm * timeinfo = 0;
+	int recn = IsInDB (prefix.c_str(), area.c_str(), suffix.c_str());
 
-		time (&rawtime);
-		timeinfo = localtime (&rawtime);
-		memset(date, 0, sizeof(date));
-		snprintf(date, sizeof(date)-1, "%04d%02d%02d", timeinfo->tm_year+1900, timeinfo->tm_mon+1, timeinfo->tm_mday);
+	if (recn >= 0) {	// existing record in data base
+		myUI->PickedToCallinsDB(recn);
+		delete data;
+		return;
+	}
 
-		rec->prefix    = trim(uppercase(prefix.c_str()));
-		rec->area      = trim(area.c_str());
-		rec->suffix    = trim(uppercase(suffix.c_str()));
-		rec->name      = trim(data->name.c_str());
-		rec->fname     = trim(data->name.c_str());
-		rec->city      = trim(data->qth.c_str());
-		rec->state     = trim(data->state.c_str());
-		rec->callsign  = trim(uppercase(data->callsign.c_str()));
-		rec->netnbr    = "";
-		rec->logdate   = date;
-		rec->lname     = "";
-		rec->addr      = "";
-		rec->zip       = "";
-		rec->phone     = "";
-		rec->birthdate = "";
-		rec->spouse    = "";
-		rec->sp_birth  = "";
-		rec->nbrlogins = "";
-		rec->status    = "";
-		rec->joined    = date;
-		rec->comment1  = "";
-		rec->comment2  = "";
-		rec->email     = "";
-		rec->prevdate  = "";
-		rec->country   = "";
-		rec->locator   = "";
+// not in data base
+// add new record with data received from fldigi
 
-		netdb.add(*rec);
-		getindexed_list ();
+	csvRecord rec;
+	rec.prefix.assign (prefix);
+	rec.area.assign (area);
+	rec.suffix.assign (suffix);
+	rec.name.assign (data->name);
+	rec.fname.assign (data->name);
+	rec.city.assign (data->qth);
+	rec.state.assign (data->state);
+	rec.callsign.assign (data->callsign);
+	rec.netnbr.clear ();
+	rec.logdate.clear ();
+	rec.lname.clear ();
+	rec.addr.clear ();
+	rec.zip.clear ();
+	rec.phone.clear ();
+	rec.birthdate.clear ();
+	rec.spouse.clear ();
+	rec.sp_birth.clear ();
+	rec.nbrlogins.clear ();
+	rec.status.clear ();
+	rec.joined.clear ();
+	rec.comment1.clear ();
+	rec.comment2.clear ();
+	rec.email.clear ();
+	rec.prevdate.clear ();
+	rec.country.clear ();
+	rec.locator.clear ();
+
+	netdb.add (rec);
+
+	getindexed_list ();
+
+	int found = IsInDB(prefix.c_str(), area.c_str(), suffix.c_str());
+	if (found >= 0) {
+		myUI->PickedToCallinsDB(found);
 	}
 
 	delete data;
 
-	return (int) IsInDB (prefix.c_str(), area.c_str(), suffix.c_str());
 }
 
 bool split_call(std::string src, std::string &pre, std::string &area, std::string &post)
@@ -665,15 +676,12 @@ bool split_call(std::string src, std::string &pre, std::string &area, std::strin
 
 void cb_mnuFldigiEditor(Fl_Menu_*, void*)
 {
-	int rn = add_fldigi_record();
-	if(rn < 0) return;
-	gotoRec(indexed_list[rn].recN);
+	add_fldigi_record();
 }
 
 void cb_F12(int WhoIsUp)
 {
-	Fl_Window *editor = getEditWindow();
-//	editor->resize(main_window->x() + main_window->w() + 10, main_window->y(), 535, 460);
+	if (!editor) return;
 
 	clearEditForm ();
 
@@ -693,7 +701,6 @@ void cb_F12(int WhoIsUp)
 	int rnbr = binary_search_SAP(0, netdb.numrecs(), prefix, area, suffix);
 
 	if (rnbr < 0) {
-		csvRecord *rec = new csvRecord;
 		char date[32];
 		time_t rawtime = 0;
 		struct tm * timeinfo = 0;
@@ -703,75 +710,78 @@ void cb_F12(int WhoIsUp)
 		memset(date, 0, sizeof(date));
 		snprintf(date, sizeof(date)-1, "%04d%02d%02d", timeinfo->tm_year+1900, timeinfo->tm_mon+1, timeinfo->tm_mday);
 
-		rec->prefix.assign(prefix);
-		rec->area.assign(area);
-		rec->suffix.assign(suffix);
-		rec->name.clear();
-		rec->fname.clear();
-		rec->city.clear();
-		rec->state.clear();
-		rec->callsign.assign(trim(prefix)).append(trim(area)).append(trim(suffix));
-		rec->netnbr.clear();
-		rec->logdate.clear();
-		rec->lname.clear();
-		rec->addr.clear();
-		rec->zip.clear();
-		rec->phone.clear();
-		rec->birthdate.clear();
-		rec->spouse.clear();
-		rec->sp_birth.clear();
-		rec->nbrlogins.clear();
-		rec->status.clear();
-		rec->joined.clear();
-		rec->comment1.clear();
-		rec->comment2.clear();
-		rec->email.clear();
-		rec->prevdate.clear();
-		rec->country.clear();
-		rec->locator.clear();
+		csvRecord rec;
+		rec.prefix.assign(prefix);
+		rec.area.assign(area);
+		rec.suffix.assign(suffix);
+		rec.name.clear();
+		rec.fname.clear();
+		rec.city.clear();
+		rec.state.clear();
+		rec.callsign.assign(trim(prefix)).append(trim(area)).append(trim(suffix));
+		rec.netnbr.clear();
+		rec.logdate.clear();
+		rec.lname.clear();
+		rec.addr.clear();
+		rec.zip.clear();
+		rec.phone.clear();
+		rec.birthdate.clear();
+		rec.spouse.clear();
+		rec.sp_birth.clear();
+		rec.nbrlogins.clear();
+		rec.status.clear();
+		rec.joined.clear();
+		rec.comment1.clear();
+		rec.comment2.clear();
+		rec.email.clear();
+		rec.prevdate.clear();
+		rec.country.clear();
+		rec.locator.clear();
 
-		netdb.add(*rec);
+		netdb.add(rec);
+
 		getindexed_list ();
 
 		SortBySAP();
 		rnbr = binary_search_SAP(0, netdb.numrecs(), prefix, area, suffix);
 	}
 	SortByPreferred ();
-	editor->show();
 	show_sort_order ();
 	ModifyRecord(rnbr);
+
+	editor->show();
 }
 
 void cb_ShiftF12(void)
 {
-	int rn = add_fldigi_record();
-	if(rn < 0) return;
-	myUI->PickedToCallinsDB((size_t) indexed_list[rn].recN);
+	add_fldigi_record();
+	return;
 }
 
 void cbEditor ()
 {
-	Fl_Window *editor = getEditWindow();
+	if (!editor) newEditWindow();
 
 	SortByPreferred ();
-	editor->show ();
 	show_sort_order();
 	clearEditForm ();
 	editState = UPDATE;
 	showState ();
 	cbGoFirstRec (NULL, NULL);
+	editor->show();
+
 }
 
 void cbCloseEditor ()
 {
-	Fl_Window *editor = getEditWindow();
-	editState = UPDATE;
-	showState ();
+	if (!editor) return;
+
 	editor->hide ();
 	getindexed_list ();
 	refresh_logins ();
 	updateCallins ();
 }
+
 void cb_btnCancelCallsignSearch(Fl_Button*, void*)
 {
 	CallsignBrowse->hide();
@@ -855,12 +865,12 @@ void cb_btnSearchCancel(Fl_Button *b, void *d)
 // a = search area
 // s = search suffix
 // indexed_list must be sorted in SAP order
-int  binary_search_SAP(int l, int r, std::string &p, std::string &a, std::string &s) 
+int  binary_search_SAP(int l, int r, std::string &p, std::string &a, std::string &s)
 {
 	if (!indexed_list | (netdb.numrecs() == 0)) return -1;
 	std::string p2, a2, s2;
-	if (r >= l) { 
-		int mid = l + (r - l) / 2; 
+	if (r >= l) {
+		int mid = l + (r - l) / 2;
 		p2 = trim(indexed_list[mid].prefix);
 		a2 = trim(indexed_list[mid].area);
 		s2 = trim(indexed_list[mid].suffix);
@@ -875,17 +885,17 @@ int  binary_search_SAP(int l, int r, std::string &p, std::string &a, std::string
 		if (p2 < p) return binary_search_SAP(mid + 1, r, p, a, s);
 		list_index = mid;
 		return indexed_list[mid].recN;
-	} 
-	return -1; 
-} 
+	}
+	return -1;
+}
 
 // indexed_list must be sorted in PAS order
-int  binary_search_PAS(int l, int r, std::string &p, std::string &a, std::string &s) 
+int  binary_search_PAS(int l, int r, std::string &p, std::string &a, std::string &s)
 {
 	if (!indexed_list | (netdb.numrecs() == 0)) return -1;
 	std::string p2, a2, s2;
-	if (r >= l) { 
-		int mid = l + (r - l) / 2; 
+	if (r >= l) {
+		int mid = l + (r - l) / 2;
 		p2 = trim(indexed_list[mid].prefix);
 		a2 = trim(indexed_list[mid].area);
 		s2 = trim(indexed_list[mid].suffix);
@@ -900,17 +910,17 @@ int  binary_search_PAS(int l, int r, std::string &p, std::string &a, std::string
 		if (s2 < s) return binary_search_SAP(mid + 1, r, p, a, s);
 		list_index = mid;
 		return indexed_list[mid].recN;
-	} 
-	return -1; 
-} 
+	}
+	return -1;
+}
 
 // indexed_list must be sorted in APS order
-int  binary_search_APS(int l, int r, std::string &p, std::string &a, std::string &s) 
+int  binary_search_APS(int l, int r, std::string &p, std::string &a, std::string &s)
 {
 	if (!indexed_list | (netdb.numrecs() == 0)) return -1;
 	std::string p2, a2, s2;
-	if (r >= l) { 
-		int mid = l + (r - l) / 2; 
+	if (r >= l) {
+		int mid = l + (r - l) / 2;
 		p2 = trim(indexed_list[mid].prefix);
 		a2 = trim(indexed_list[mid].area);
 		s2 = trim(indexed_list[mid].suffix);
@@ -925,9 +935,9 @@ int  binary_search_APS(int l, int r, std::string &p, std::string &a, std::string
 		if (s2 < s) return binary_search_SAP(mid + 1, r, p, a, s);
 		list_index = mid;
 		return indexed_list[mid].recN;
-	} 
-	return -1; 
-} 
+	}
+	return -1;
+}
 
 void cb_btnSearchOK(Fl_Return_Button *b, void *d)
 {
@@ -969,22 +979,22 @@ void cb_btnSearchNetNbrCancel (Fl_Button *b, void *d)
 // r = right element in search interval
 // x = search value
 // index_list sorted by netnbr
-int  binary_search_netnbr(int l, int r, int x) 
-{ 
+int  binary_search_netnbr(int l, int r, int x)
+{
 	if (!indexed_list | (netdb.numrecs() == 0)) return -1;
 	int snbr;
-	if (r >= l) { 
-		int mid = l + (r - l) / 2; 
+	if (r >= l) {
+		int mid = l + (r - l) / 2;
 		snbr = atol(indexed_list[mid].netnbr);
 		if (snbr == x) {
 			list_index = mid;
-			return mid; 
+			return mid;
 		}
-		if (snbr > x) return binary_search_netnbr(l, mid - 1, x); 
-		return binary_search_netnbr(mid + 1, r, x); 
-	} 
-	return -1; 
-} 
+		if (snbr > x) return binary_search_netnbr(l, mid - 1, x);
+		return binary_search_netnbr(mid + 1, r, x);
+	}
+	return -1;
+}
 
 void cb_btnSearchNetNbrOK (Fl_Return_Button *b, void *d)
 {
@@ -1018,7 +1028,7 @@ void cb_btn2Queue(Fl_Button *b, void *d)
 
 void cb_btnUpdateCancel(Fl_Button *b, void *d)
 {
-	Fl_Window *editor = getEditWindow();
+	if (!editor) newEditWindow();
 
 	switch (editState) {
 		case ADD :
@@ -1137,7 +1147,7 @@ void cb_btnNewSave(Fl_Button *b, void *d)
 			}
 
 			if (editState == ADD) {
-				Fl_Window *editor = getEditWindow();
+				if (!editor) newEditWindow();
 				myUI->UpdateWhoIsUp (netdb.numrecs() - 1);
 				toggleState ();
 				editor->hide ();

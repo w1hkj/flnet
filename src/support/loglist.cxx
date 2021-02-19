@@ -30,6 +30,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+
 #include "loglist.h"
 #include "netshared.h"
 #include "status.h"
@@ -41,6 +42,11 @@ void loglist::clear (void)
 		llist[i].status = LOGIN;
 		llist[i].displine[0] = 0;
 		llist[i].chPriority = ' ';
+		llist[i].szPrefix[0] = 0;
+		llist[i].szArea[0] = 0;
+		llist[i].szSuffix[0] = 0;
+		llist[i].szName[0] = 0;
+		llist[i].szdt[0] = 0;
 	}
 	nlist = BLANKS;
 	iLastup = BLANKS;
@@ -120,12 +126,12 @@ const char *loglist::report_line(int n)
 
 int loglist::add (long N,
 				  const char *p, const char *a, const char *s,
-				  const char *name, const char *szTime, char flg)
+				  const char *name, 
+				  char flg)
 {
 	if (nlist >= lsize) {
 		_logged *temp = new _logged[lsize + LISTINCR];
 		if (!temp) {
-			printf("out of memory!\n"); fflush (stdout);
 			return 0;
 		}
 		for (int i = 0; i < lsize + LISTINCR; i++) {
@@ -138,6 +144,7 @@ int loglist::add (long N,
 		llist = temp;
 		lsize += LISTINCR;
 	}
+
 	llist[nlist].recN = N;
 	llist[nlist].status = LOGIN;
 
@@ -146,16 +153,32 @@ int loglist::add (long N,
 	strcpy(llist[nlist].szSuffix, s);
 
 	strncpy (llist[nlist].szName, name, 14);
-	strcpy (llist[nlist].szTime, szTime);
+
+	time_t the_time;
+	struct tm *tm_ptr;
+	time (&the_time);
+	tm_ptr = localtime (&the_time);
+
+	sprintf( llist[nlist].szTime, "%02d:%02d", tm_ptr->tm_hour, tm_ptr->tm_min);
+	sprintf( llist[nlist].szdt,
+			 "%04d%03d%02d%02d%02d",
+			 tm_ptr->tm_year,
+			 tm_ptr->tm_yday,
+			 tm_ptr->tm_hour,
+			 tm_ptr->tm_min,
+			 tm_ptr->tm_sec);
 
 	CreateDispLine (nlist);
+
 	nlist++;
+
 	if (flg == cP1)
-		Pri_1 (nlist - 1 - BLANKS);
+		Pri_1 (nlist - BLANKS - 1);
 	else if (flg == cP2)
-		Pri_2 (nlist - 1 - BLANKS);
+		Pri_2 (nlist - BLANKS - 1);
 	else if (flg == cP3)
-		Pri_3 (nlist - 1 - BLANKS);
+		Pri_3 (nlist - BLANKS - 1);
+
 	return 1;
 }
 
@@ -261,22 +284,19 @@ int loglist::Pri_0 (int n)
 	llist[nn].chPriority = ' ';
 	CreateDispLine (nn);
 
-	if (nn == nlist - 1) return n;
+	if (nn == BLANKS) return n;
 	if (iAutoPriority == 0) return n;
 	_logged thiscall = llist[nn];
-	del (n);
 	char ch;
 	for (int i = BLANKS; i < nlist; i++) {
 		ch = llist[i].chPriority;
 		if (ch == cP1 || ch == cP2 || ch == cP3) continue;
 		newpos = i;
-		for (int j = nlist; j > newpos; j--)
+		for (int j = nlist-1; j > newpos; j--)
 			llist[j] = llist[j-1];
 		llist[newpos] = thiscall;
-		nlist++;
 		return newpos - BLANKS;
 	}
-	llist[nn] = thiscall;
 	return n;
 }
 
@@ -287,22 +307,19 @@ int loglist::Pri_1 (int n)
 	if (cP1 == ' ') return n;
 	llist[nn].chPriority = cP1;
 	CreateDispLine (nn);
-	if (nlist == BLANKS + 1) return n;
-	if (n == 0 || iAutoPriority == 0) return n;
+	if (nn == BLANKS) return n;
+	if (iAutoPriority == 0) return n;
 	_logged thiscall = llist[nn];
-	del (n);
 	char ch;
 	for (int i = BLANKS; i < nlist; i++) {
 		ch = llist[i].chPriority;
 		if (ch == cP1) continue;
 		newpos = i;
-		for (int j = nlist; j > newpos; j--)
+		for (int j = nlist-1; j > newpos; j--)
 			llist[j] = llist[j-1];
 		llist[newpos] = thiscall;
-		nlist++;
 		return newpos - BLANKS;
 	}
-	llist[nn] = thiscall;
 	return n;
 }
 
@@ -313,21 +330,19 @@ int loglist::Pri_2 (int n)
 	if (cP2 == ' ') return n;
 	llist[nn].chPriority = cP2;
 	CreateDispLine (nn);
-	if (nlist == BLANKS + 1 || iAutoPriority == 0) return n;
+	if (nn == BLANKS) return n;
+	if (iAutoPriority == 0) return n;
 	_logged thiscall = llist[nn];
-	del (n);
 	char ch;
 	for (int i = BLANKS; i < nlist; i++) {
 		ch = llist[i].chPriority;
 		if (ch == cP1 || ch == cP2) continue;
 		newpos = i;
-		for (int j = nlist; j > newpos; j--)
+		for (int j = nlist-1; j > newpos; j--)
 			llist[j] = llist[j-1];
 		llist[newpos] = thiscall;
-		nlist++;
 		return newpos - BLANKS;
 	}
-	llist[nn] = thiscall;
 	return n;
 }
 
@@ -338,21 +353,19 @@ int loglist::Pri_3 (int n)
 	if (cP3 == ' ') return n;
 	llist[nn].chPriority = cP3;
 	CreateDispLine (nn);
-	if (nlist == BLANKS + 1 || iAutoPriority == 0) return n;
+	if (nn == BLANKS) return n;
+	if (iAutoPriority == 0) return n;
 	_logged thiscall = llist[nn];
-	del (n);
 	char ch;
 	for (int i = BLANKS; i < nlist; i++) {
 		ch = llist[i].chPriority;
 		if (ch == cP1 || ch == cP2 || ch == cP3) continue;
 		newpos = i;
-		for (int j = nlist; j > newpos; j--)
+		for (int j = nlist-1; j > newpos; j--)
 			llist[j] = llist[j-1];
 		llist[newpos] = thiscall;
-		nlist++;
 		return newpos - BLANKS;
 	}
-	llist[nn] = thiscall;
 	return n;
 }
 
@@ -395,3 +408,83 @@ int loglist::lastup ()
 	return iLastup - BLANKS;
 }
 
+int loglist::locate(std::string prefix, std::string area, std::string suffix)
+{
+	bool b1 = false, b2 = false, b3 = false;
+	for (int i = BLANKS; i < nlist; i++) {
+		b1 = prefix == llist[i].szPrefix;
+		b2 = area == llist[i].szArea;
+		b3 = suffix == llist[i].szSuffix;
+		if ( b1 && b2 && b3 ) {
+			return i - BLANKS;
+		}
+	} 
+	return -1;
+}
+
+static char _ch1, _ch2, _ch3;
+
+int comp_dt( const void *p1, const void *p2)
+{
+	_logged *r1 = (_logged *)p1;
+	_logged *r2 = (_logged *)p2;
+	int comp;
+	std::string s1 = r1->szdt;
+	std::string s2 = r2->szdt;
+	comp = s1.compare(s2);
+
+	if (comp == 0) {
+		int cp1 = 0, cp2 = 0;
+
+		if (r1->chPriority == _ch1) cp1 = 3;
+		else if (r1->chPriority == _ch2) cp1 = 2;
+		else if (r1->chPriority == _ch3) cp1 = 1;
+
+		if (r2->chPriority == _ch1) cp2 = 3;
+		else if (r2->chPriority == _ch2) cp2 = 2;
+		else if (r2->chPriority == _ch3) cp2 = 1;
+
+		comp = ( cp1 < cp2 );
+	}
+
+	return comp;
+}
+
+int comp_priority( const void *p1, const void *p2)
+{
+	_logged *r1 = (_logged *)p1;
+	_logged *r2 = (_logged *)p2;
+
+	int comp;
+	int cp1 = 0, cp2 = 0;
+
+	if (r1->chPriority == _ch1) cp1 = 3;
+	else if (r1->chPriority == _ch2) cp1 = 2;
+	else if (r1->chPriority == _ch3) cp1 = 1;
+
+	if (r2->chPriority == _ch1) cp2 = 3;
+	else if (r2->chPriority == _ch2) cp2 = 2;
+	else if (r2->chPriority == _ch3) cp2 = 1;
+
+	comp = ( cp1 < cp2 );
+
+	if (comp == 0) {
+		std::string s1 = r1->szdt;
+		std::string s2 = r2->szdt;
+		comp = s1.compare(s2);
+	}
+
+	return comp;
+}
+
+void loglist::sort(int by)
+{
+	if (nlist - BLANKS == 0) return;
+	_ch1 = cP1; _ch2 = cP2; _ch3 = cP3;
+
+	if (by == BYDATETIME) {
+		qsort (&llist[BLANKS], nlist - BLANKS, sizeof(*llist), comp_dt);
+	} else {
+		qsort (&llist[BLANKS], nlist - BLANKS, sizeof(*llist), comp_priority);
+	}
+}

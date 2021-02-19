@@ -43,7 +43,7 @@ private:
 	//    int WhoIsUP;
 	void clearSAP ();
 	void fillPickList ();
-	void PickedToCallins (int);
+	int  PickedToCallins (int);
 	void PickedColors ();
 	void clearPickList ();
 public:
@@ -51,7 +51,7 @@ public:
 	int handle (int);
 	void dispCallIns (bool flag);
 	void UpdateWhoIsUp (long L);
-	void PickedToCallinsDB(size_t);
+	int  PickedToCallinsDB(size_t);
 };
 
 #endif
