@@ -141,7 +141,7 @@ void updateCallins (bool fldigi_flag)
 	box_callins->label(lbl);
 	box_callins->redraw_label();
 
-	Fl::focus(dummy_widget);
+	inp_focus->take_focus();
 
 	long rc = callinlist.recN(WhoIsUp);
 
@@ -322,7 +322,7 @@ void updateLogins (bool closing = false)
 				rec.nbrlogins.assign(sztemp);
 			rec.logdate.assign(today);
 			netdb.put(rc, rec);
-			} 
+			}
 		}
 	}
 
@@ -348,7 +348,9 @@ void my_UI::clearPickList ()
 		Pick[i].callsign[0] = 0;
 		txtPick[i]->label ("");
 		txtPick[i]->labelcolor (FL_BLACK);
-		txtPick[i]->redraw_label();
+		txtPick[i]->color (FL_BACKGROUND2_COLOR);
+		txtPick[i]->redraw_label ();
+		txtPick[i]->redraw ();
 	}
 	nbrPicked = 0;
 }
@@ -379,9 +381,15 @@ void my_UI::fillPickList ()
 			strcat (Pick[i].callsign, indexed_list[rc].area);
 			strcat (Pick[i].callsign, indexed_list[rc].suffix);
 			txtPick[i]->label (Pick[i].callsign);
-			if (i == 0)
-				txtPick[i]->labelcolor (FL_RED);
-			txtPick[i]->redraw_label();
+			if (i == 0) {
+				txtPick[i]->labelcolor (progStatus.fgColors[5]);
+				txtPick[i]->color (progStatus.bgColors[5]);
+			} else {
+				txtPick[i]->labelcolor (FL_BLACK);
+				txtPick[i]->color (FL_BACKGROUND2_COLOR);
+			}
+			txtPick[i]->redraw_label ();
+			txtPick[i]->redraw ();
 			i++;
 		}
 		rc++;
@@ -393,11 +401,15 @@ void my_UI::PickedColors ()
 {
 	int i;
 	for (i = 0; i < NPICKITEMS; i++) {
-		if (i == whoPicked)
-			txtPick[i]->labelcolor(FL_RED);
-		else
-			txtPick[i]->labelcolor(FL_BLACK);
+		if (i == whoPicked) {
+			txtPick[i]->labelcolor (progStatus.fgColors[5]);
+			txtPick[i]->color (progStatus.bgColors[5]);
+		} else {
+			txtPick[i]->labelcolor (FL_BLACK);
+			txtPick[i]->color (FL_BACKGROUND2_COLOR);
+		}
 		txtPick[i]->redraw_label ();
+		txtPick[i]->redraw ();
 	}
 }
 
@@ -415,7 +427,6 @@ int my_UI::PickedToCallinsDB (size_t record_number)
 {
 
 	if (callinlist.inList(record_number)) {
-//		fl_beep (FL_BEEP_ERROR);
 		clearPickList ();
 		clearSAP ();
 		return -1;
@@ -423,7 +434,6 @@ int my_UI::PickedToCallinsDB (size_t record_number)
 
 	csvRecord rec;
 	netdb.get(record_number, rec);
-//std::cout << "record_number " << record_number << " : " << rec.print() << std::endl;
 	std::string pr, ar, su, nm, st;
 	pr = uppercase (trim(rec.prefix));
 	ar = uppercase (trim(rec.area));
@@ -438,19 +448,19 @@ int my_UI::PickedToCallinsDB (size_t record_number)
 
 	if (st.empty()) {
 		callinlist.add (
-			record_number, 
+			record_number,
 			pr.c_str(), ar.c_str(), su.c_str(), nm.c_str() );
 	} else {
 		if (!strP1.empty() &&
 			strP1.find(st) != std::string::npos) {
 			callinlist.add (
-				record_number, 
+				record_number,
 				pr.c_str(), ar.c_str(), su.c_str(), nm.c_str(),
 				progStatus.chP1[0]);
 		} else if (!strP2.empty() &&
 			strP2.find(st) != std::string::npos) {
 			callinlist.add (
-				record_number, 
+				record_number,
 				pr.c_str(), ar.c_str(), su.c_str(), nm.c_str(),
 				progStatus.chP2[0]);
 		} else if (!strP3.empty() &&
@@ -461,7 +471,7 @@ int my_UI::PickedToCallinsDB (size_t record_number)
 				progStatus.chP3[0]);
 		} else {
 			callinlist.add (
-				record_number, 
+				record_number,
 				pr.c_str(), ar.c_str(), su.c_str(), nm.c_str() );
 		}
 	}
@@ -493,318 +503,327 @@ void my_UI::clearSAP ()
 	my_status = LOGLIST;
 }
 
+static int oldkey = 0;
+static int keywait = 0;
+
+void debounce (void *d)
+{
+	keywait = 0;
+}
+
 static bool ignore_event = false;
 int my_UI::handle (int e)
 {
-	if (Fl::focus() != dummy_widget) return 0;
+	int k = Fl::event_key();
+	if (!k) return 0;
 
-	int k;
+	if (e != FL_KEYDOWN && e != FL_SHORTCUT) {
+		return 1;
+	}
 
-	if (e == FL_KEYUP) {
-		k = Fl::event_key();
-		if (k) {
-			if (my_status == LOGLIST) {
-				if (k == FL_Up) {
-					WhoIsUp--;
-					if (WhoIsUp < 0)
-						WhoIsUp++;
-					dispCallIns (false);
-					return 1;
-				}
-				if (k == FL_Down) {
+	if (keywait && oldkey == k) { // debounce
+		return 1;
+	}
+
+	keywait = 1;
+
+	if (k == FL_Up || k == FL_Down)
+		Fl::add_timeout (0.1, debounce);
+	else
+		Fl::add_timeout (0.02, debounce);
+	oldkey = k;
+
+	if (my_status == LOGLIST) {
+		if (k == FL_Up || k == FL_Down) {
+			if (k == FL_Up) {
+				WhoIsUp--;
+				if (WhoIsUp < 0)
 					WhoIsUp++;
-					if (WhoIsUp == callinlist.numlist ())
-						WhoIsUp--;
-					dispCallIns (false);
-					return 1;
-				}
+				dispCallIns (false);
+				return 1;
+			}
+			if (k == FL_Down) {
+				WhoIsUp++;
+				if (WhoIsUp == callinlist.numlist ())
+					WhoIsUp--;
+				dispCallIns (false);
+				return 1;
 			}
 		}
 	}
 
-	if (e == FL_KEYUP) {
-		k = Fl::event_key();
-		if (k) {
+	if ((Fl::event_state() & FL_ALT) == FL_ALT &&
+		 k == FL_F + 4 )
+			cleanExit();
 
-			if ((Fl::event_state() & FL_ALT) == FL_ALT &&
-				 k == FL_F + 4 ) 
-					cleanExit();
-					
 #ifdef __APPLE__
-			if ( ((Fl::event_state() & FL_META) == FL_META)  &&
-				(k == 'Q' || k == 'q') )
-					cleanExit();
+	if ( ((Fl::event_state() & FL_META) == FL_META)  &&
+		(k == 'Q' || k == 'q') )
+			cleanExit();
 #endif
 
 
-			if (k == FL_Escape && my_status != LOGLIST) {
-				clearSAP ();
-				clearPickList ();
-				return 1;
-			}
+	if (k == FL_Escape && my_status != LOGLIST) {
+		clearSAP ();
+		clearPickList ();
+		return 1;
+	}
 
-			if (my_status == LOGLIST) {
-				if (k == FL_Home) {
-					lastUp = WhoIsUp;
-					WhoIsUp = 0;
-					dispCallIns (false);
-					return 1;
-				}
-				if (k == FL_End) {
-					lastUp = WhoIsUp;
-					WhoIsUp = callinlist.numlist () - 1;
-					dispCallIns (false);
-					return 1;
-				}
-				if (k == FL_Left) {
-					WhoIsUp = callinlist.nextup ();
-					dispCallIns (false);
-					return 1;
-				}
-				if (k == 65451) {
-					callinlist.lastup(WhoIsUp);
-					return 1;
-				}
-				if (k == FL_Page_Up) {
-					WhoIsUp = callinlist.lastup();
-					dispCallIns (false);
-					return 1;
-				}
-				if (k == FL_F + 1) {
-					callinlist.status(WhoIsUp, LOGIN);
-					dispCallIns (false);
-					return 1;
-				}
-				if (k == FL_F + 2) {
-					callinlist.status(WhoIsUp, FIRST);
-					dispCallIns (false);
-					return 1;
-				}
-				if (k == FL_F + 3) {
-					callinlist.status(WhoIsUp, SECOND);
-					dispCallIns (false);
-					return 1;
-				}
-				if (k == FL_F + 4) {
-					callinlist.status(WhoIsUp, LOGOUT);
-					dispCallIns (false);
-					return 1;
-				}
-				if (k == FL_F + 5) { // Priority 0 station
-					WhoIsUp = callinlist.Pri_0 (WhoIsUp);
-					dispCallIns (false);
-					return 1;
-				}
-				if (k == FL_F + 6) { // Priority 1 station
-					WhoIsUp = callinlist.Pri_1 (WhoIsUp);
-					dispCallIns (false);
-					return 1;
-				}
-				if (k == FL_F + 7) { // Priority 2 station
-					WhoIsUp = callinlist.Pri_2 (WhoIsUp);
-					dispCallIns (false);
-					return 1;
-				}
-				if (k == FL_F + 8) { // Priority 2 station
-					WhoIsUp = callinlist.Pri_3 (WhoIsUp);
-					dispCallIns (false);
-					return 1;
-				}
-				if (k == FL_F + 9) { // Move this call up in list
-					WhoIsUp = callinlist.MoveEarlier (WhoIsUp);
-					dispCallIns (false);
-					return 1;
-				}
-				if (k == FL_F + 10) { // Move this call dn in list
-					WhoIsUp = callinlist.MoveLater (WhoIsUp);
-					dispCallIns (false);
-					return 1;
-				}
-
-				if (k == FL_F + 12) {
-					if((Fl::event_state() & FL_SHIFT) == FL_SHIFT)
-						cb_ShiftF12();
-					else
-						cb_F12 (WhoIsUp);
-					return 1;
-				}
-
-				if (k == FL_Delete) {
-					if (!((WhoIsUp == 0) && (callinlist.status(WhoIsUp) == EMPTY))) {
-//						fl_beep (FL_BEEP_QUESTION);
-						if (fl_choice("Confirm Delete", "cancel", "OK", NULL) == 1) {
-							callinlist.del(WhoIsUp);
-							WhoIsUp--;
-							if (WhoIsUp < 0) WhoIsUp = 0;
-							updateLogins();
-							dispCallIns (false);
-						}
-					}
-					dummy_widget->set_visible_focus();
-					Fl::focus(dummy_widget);
-					ignore_event = true;
-					return 1;
-				}
-
-				if (k == FL_Enter || k == FL_KP_Enter) {
-					if (!ignore_event) {
-						dispCallIns(updateFldigi);
-					}
-					ignore_event = false;
-					return 1;
-				}
-			}
-
-			if (my_status == PICKLIST) {
-				if (k == FL_Enter || k == FL_KP_Enter) {
-					int recnbr = PickedToCallins (whoPicked);
-					if (progStatus.callin_is_up && recnbr >=0) {
-						csvRecord rec;
-						netdb.get(recnbr, rec);
-						WhoIsUp = callinlist.locate(rec.prefix, rec.area, rec.suffix);
-					}
+	if (my_status == LOGLIST) {
+		if (k == FL_Home) {
+			lastUp = WhoIsUp;
+			WhoIsUp = 0;
+			dispCallIns (false);
+			return 1;
+		}
+		if (k == FL_End) {
+			lastUp = WhoIsUp;
+			WhoIsUp = callinlist.numlist () - 1;
+			dispCallIns (false);
+			return 1;
+		}
+		if (k == FL_Left) {
+			WhoIsUp = callinlist.nextup ();
+			dispCallIns (false);
+			return 1;
+		}
+		if (k == 65451) {
+			callinlist.lastup(WhoIsUp);
+			return 1;
+		}
+		if (k == FL_Page_Up) {
+			WhoIsUp = callinlist.lastup();
+			dispCallIns (false);
+			return 1;
+		}
+		if (k == FL_F + 1) {
+			callinlist.status(WhoIsUp, LOGIN);
+			dispCallIns (false);
+			return 1;
+		}
+		if (k == FL_F + 2) {
+			callinlist.status(WhoIsUp, FIRST);
+			dispCallIns (false);
+			return 1;
+		}
+		if (k == FL_F + 3) {
+			callinlist.status(WhoIsUp, SECOND);
+			dispCallIns (false);
+			return 1;
+		}
+		if (k == FL_F + 4) {
+			callinlist.status(WhoIsUp, LOGOUT);
+			dispCallIns (false);
+			return 1;
+		}
+		if (k == FL_F + 5) { // Priority 0 station
+			WhoIsUp = callinlist.Pri_0 (WhoIsUp);
+			dispCallIns (false);
+			return 1;
+		}
+		if (k == FL_F + 6) { // Priority 1 station
+			WhoIsUp = callinlist.Pri_1 (WhoIsUp);
+			dispCallIns (false);
+			return 1;
+		}
+		if (k == FL_F + 7) { // Priority 2 station
+			WhoIsUp = callinlist.Pri_2 (WhoIsUp);
+			dispCallIns (false);
+			return 1;
+		}
+		if (k == FL_F + 8) { // Priority 2 station
+			WhoIsUp = callinlist.Pri_3 (WhoIsUp);
+			dispCallIns (false);
+			return 1;
+		}
+		if (k == FL_F + 9) { // Move this call up in list
+			WhoIsUp = callinlist.MoveEarlier (WhoIsUp);
+			dispCallIns (false);
+			return 1;
+		}
+		if (k == FL_F + 10) { // Move this call dn in list
+			WhoIsUp = callinlist.MoveLater (WhoIsUp);
+			dispCallIns (false);
+			return 1;
+		}
+		if (k == FL_F + 12) {
+			if((Fl::event_state() & FL_SHIFT) == FL_SHIFT)
+				cb_ShiftF12();
+			else
+				cb_F12 (WhoIsUp);
+			return 1;
+		}
+		if (k == FL_Delete) {
+			if (!((WhoIsUp == 0) && (callinlist.status(WhoIsUp) == EMPTY))) {
+				if (fl_choice("Confirm Delete", "cancel", "OK", NULL) == 1) {
+					callinlist.del(WhoIsUp);
+					WhoIsUp--;
+					if (WhoIsUp < 0) WhoIsUp = 0;
 					updateLogins();
-					dispCallIns(false);
-					my_status = LOGLIST;
-				}
-				if (k == FL_Down) {
-					whoPicked++;
-					if (whoPicked > nbrPicked -1) whoPicked = 0;
-					PickedColors();
-				}
-				if (k == FL_Up) {
-					whoPicked--;
-					if (whoPicked < 0) whoPicked = nbrPicked -1;
-					PickedColors();
-				}
-			}
-
-			if (my_status == SUFFIX && (k == FL_Down || k == FL_Up)) {
-				if (nbrPicked) {
-					boxLoginSuffix->color (FL_DARK_RED);
-					boxLoginSuffix->labelcolor (FL_WHITE);
-					boxLoginSuffix->redraw ();
-					if (nbrPicked > 1)
-						if (k == FL_Down)
-							whoPicked = 1;
-						else
-							whoPicked = nbrPicked - 1;
-						else
-							whoPicked = 0;
-					PickedColors();
-					my_status = PICKLIST;
-				}
-			}
-
-			if (my_status == SUFFIX && (k == FL_Enter || k == FL_KP_Enter)) {
-				if (nbrPicked) {
-					whoPicked = 0;
-					int recnbr = PickedToCallins (whoPicked);
-					if (progStatus.callin_is_up && recnbr >=0) {
-						csvRecord rec;
-						netdb.get(recnbr, rec);
-						WhoIsUp = callinlist.locate(rec.prefix, rec.area, rec.suffix);
-					}
-					updateLogins();
-					my_status = LOGLIST;
 					dispCallIns (false);
 				}
 			}
-
-			if ( (k >= 'A' && k <= 'z') || (k >= '0' && k <= '9') )	{
-				if (isalpha (k))
-					keyval[0] = toupper(k);
-				else
-					keyval[0] = k;
-
-				switch (my_status) {
-					case LOGLIST :
-						szSuffix.clear();
-						szSuffix = keyval;
-						boxLoginSuffix->label (szSuffix.c_str());
-						fillPickList ();
-						my_status = SUFFIX;
-						boxLoginSuffix->labelcolor (FL_WHITE);
-						boxLoginSuffix->color (FL_DARK_BLUE);
-						break;
-					case SUFFIX :
-						szSuffix.append(keyval);
-						if (szSuffix.length() > 3) szSuffix.erase(0,1);
-						boxLoginSuffix->label (szSuffix.c_str());
-						fillPickList ();
-						break;
-					case PREFIX :
-						szPrefix.append(keyval);
-						if (szPrefix.length() > 2) szPrefix.erase(0,1);
-						boxLoginPrefix->label (szPrefix.c_str());
-						break;
-					case AREA :
-						szArea = keyval;
-						boxLoginArea->label (szArea.c_str());
-						break;
-					default : ;
-				}
-				return 1;
+			inp_focus->take_focus();
+			ignore_event = true;
+			return 1;
+		}
+		if (k == FL_Enter || k == FL_KP_Enter) {
+			if (!ignore_event) {
+				dispCallIns(updateFldigi);
 			}
-			if (k == FL_Tab) {
-				switch (my_status) {
-					case SUFFIX :
-						boxLoginSuffix->labelcolor (FL_BLACK);
-						boxLoginSuffix->color (FL_WHITE);
-						boxLoginPrefix->labelcolor (FL_WHITE);
-						boxLoginPrefix->color (FL_DARK_BLUE);
-						boxLoginPrefix->label (szPrefix.c_str());
-						my_status = PREFIX;
-						break;
-					case PREFIX :
-						boxLoginPrefix->labelcolor (FL_BLACK);
-						boxLoginPrefix->color (FL_WHITE);
-						boxLoginArea->labelcolor (FL_WHITE);
-						boxLoginArea->color (FL_DARK_BLUE);
-						boxLoginArea->label (szArea.c_str());
-						my_status = AREA;
-						break;
-					case AREA :
-					default : 
-						break;
-				}
-				return 1;
-			}
-			if ((k == FL_Enter || k == FL_KP_Enter) && my_status == AREA) {
-				int found = IsInDB(szPrefix.c_str(), szArea.c_str(), szSuffix.c_str());
-				if (found >= 0) {
-					PickedToCallinsDB(found);
-					dispCallIns (false);
-					return 1;
-				}
-
-				callinlist.add (-1, szPrefix.c_str(), szArea.c_str(), szSuffix.c_str(), "" );
-				if (progStatus.disp_new_login) WhoIsUp = callinlist.numlist () - 1;
-				dispCallIns (false);
-				clearPickList ();
-				clearSAP ();
-				if (progStatus.disp_new_login && progStatus.open_editor) cb_F12 (WhoIsUp);
-				updateLogins();
-				return 1;
-			}
+			ignore_event = false;
+			return 1;
 		}
 	}
+
+	if (my_status == PICKLIST) {
+		if (k == FL_Enter || k == FL_KP_Enter) {
+			int recnbr = PickedToCallins (whoPicked);
+			if (progStatus.callin_is_up && recnbr >=0) {
+				csvRecord rec;
+				netdb.get(recnbr, rec);
+				WhoIsUp = callinlist.locate(rec.prefix, rec.area, rec.suffix);
+			}
+			updateLogins();
+			dispCallIns(false);
+			my_status = LOGLIST;
+		}
+		if (k == FL_Down) {
+			whoPicked++;
+			if (whoPicked > nbrPicked -1) whoPicked = 0;
+			PickedColors();
+		}
+		if (k == FL_Up) {
+			whoPicked--;
+			if (whoPicked < 0) whoPicked = nbrPicked -1;
+			PickedColors();
+		}
+	}
+
+	if (my_status == SUFFIX && (k == FL_Down || k == FL_Up)) {
+		if (nbrPicked) {
+			boxLoginSuffix->color (FL_DARK_RED);
+			boxLoginSuffix->labelcolor (FL_WHITE);
+			boxLoginSuffix->redraw ();
+			if (nbrPicked > 1)
+				if (k == FL_Down)
+					whoPicked = 1;
+				else
+					whoPicked = nbrPicked - 1;
+				else
+					whoPicked = 0;
+			PickedColors();
+			my_status = PICKLIST;
+		}
+	}
+
+	if (my_status == SUFFIX && (k == FL_Enter || k == FL_KP_Enter)) {
+		if (nbrPicked) {
+			whoPicked = 0;
+			int recnbr = PickedToCallins (whoPicked);
+			if (progStatus.callin_is_up && recnbr >=0) {
+				csvRecord rec;
+				netdb.get(recnbr, rec);
+				WhoIsUp = callinlist.locate(rec.prefix, rec.area, rec.suffix);
+			}
+			updateLogins();
+			my_status = LOGLIST;
+			dispCallIns (false);
+		}
+	}
+
+	if ( (k >= 'A' && k <= 'z') || (k >= '0' && k <= '9') )	{
+		if (isalpha (k))
+			keyval[0] = toupper(k);
+		else
+			keyval[0] = k;
+
+		switch (my_status) {
+			case LOGLIST :
+				szSuffix.clear();
+				szSuffix = keyval;
+				boxLoginSuffix->label (szSuffix.c_str());
+				fillPickList ();
+				my_status = SUFFIX;
+				boxLoginSuffix->labelcolor (FL_WHITE);
+				boxLoginSuffix->color (FL_DARK_BLUE);
+				break;
+			case SUFFIX :
+				szSuffix.append(keyval);
+				if (szSuffix.length() > 3) szSuffix.erase(0,1);
+				boxLoginSuffix->label (szSuffix.c_str());
+				fillPickList ();
+				break;
+			case PREFIX :
+				szPrefix.append(keyval);
+				if (szPrefix.length() > 2) szPrefix.erase(0,1);
+				boxLoginPrefix->label (szPrefix.c_str());
+				break;
+			case AREA :
+				szArea = keyval;
+				boxLoginArea->label (szArea.c_str());
+				break;
+			default : ;
+		}
+		return 1;
+	}
+
+	if (k == FL_Tab) {
+		switch (my_status) {
+			case SUFFIX :
+				boxLoginSuffix->labelcolor (FL_BLACK);
+				boxLoginSuffix->color (FL_WHITE);
+				boxLoginPrefix->labelcolor (FL_WHITE);
+				boxLoginPrefix->color (FL_DARK_BLUE);
+				boxLoginPrefix->label (szPrefix.c_str());
+				my_status = PREFIX;
+				break;
+			case PREFIX :
+				boxLoginPrefix->labelcolor (FL_BLACK);
+				boxLoginPrefix->color (FL_WHITE);
+				boxLoginArea->labelcolor (FL_WHITE);
+				boxLoginArea->color (FL_DARK_BLUE);
+				boxLoginArea->label (szArea.c_str());
+				my_status = AREA;
+				break;
+			case AREA :
+			default :
+				break;
+		}
+		return 1;
+	}
+
+	if ((k == FL_Enter || k == FL_KP_Enter) && my_status == AREA) {
+		int found = IsInDB(szPrefix.c_str(), szArea.c_str(), szSuffix.c_str());
+		if (found >= 0) {
+			PickedToCallinsDB(found);
+			dispCallIns (false);
+			return 1;
+		}
+
+		callinlist.add (-1, szPrefix.c_str(), szArea.c_str(), szSuffix.c_str(), "" );
+		if (progStatus.disp_new_login) WhoIsUp = callinlist.numlist () - 1;
+		dispCallIns (false);
+		clearPickList ();
+		clearSAP ();
+		if (progStatus.disp_new_login && progStatus.open_editor) cb_F12 (WhoIsUp);
+		updateLogins();
+		return 1;
+	}
+
 	return 0;
 }
 
 void add_to_callins(int rnbr)
 {
-//std::cout << "rnbr: " << rnbr << std::endl;
 	int recnbr = myUI->PickedToCallinsDB(rnbr);
 	csvRecord rec;
 	netdb.get(recnbr, rec);
-//	std::cout << "recnbr " << recnbr << " : " << rec.print() << std::endl;
 
 	if (progStatus.callin_is_up && recnbr >=0) {
 		WhoIsUp = callinlist.locate(rec.prefix, rec.area, rec.suffix);
 	}
 
 	updateLogins();
-//	myUI->UpdateWhoIsUp(WhoIsUp);
 	myUI->dispCallIns (false);
 }

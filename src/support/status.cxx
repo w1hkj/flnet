@@ -41,11 +41,13 @@ status progStatus = {
 	FL_WHITE,
 	FL_YELLOW,
 	FL_WHITE,
+	FL_YELLOW,
 	FL_WHITE,						// int			bgColors[5];
 	FL_WHITE,
 	FL_BLUE,
 	FL_DARK_GREEN,
 	FL_DARK_RED,
+	FL_DARK_GREEN,
 
 	0,								// int			disp_new_login;
 	0,								// int			open_editor;
@@ -107,12 +109,14 @@ void status::saveLastState()
 	flnetpref.set("fgColors[2]", fgColors[2]);
 	flnetpref.set("fgColors[3]", fgColors[3]);
 	flnetpref.set("fgColors[4]", fgColors[4]);
+	flnetpref.set("fgColors[5]", fgColors[5]);
 
 	flnetpref.set("bgColors[0]", bgColors[0]);
 	flnetpref.set("bgColors[1]", bgColors[1]);
 	flnetpref.set("bgColors[2]", bgColors[2]);
 	flnetpref.set("bgColors[3]", bgColors[3]);
 	flnetpref.set("bgColors[4]", bgColors[4]);
+	flnetpref.set("bgColors[5]", bgColors[5]);
 
 	flnetpref.set("disp_new_login", disp_new_login);
 	flnetpref.set("open_editor", open_editor);
@@ -165,12 +169,14 @@ void status::loadLastState()
 	flnetpref.get("fgColors[2]", fgColors[2], fgColors[2]);
 	flnetpref.get("fgColors[3]", fgColors[3], fgColors[3]);
 	flnetpref.get("fgColors[4]", fgColors[4], fgColors[4]);
+	flnetpref.get("fgColors[5]", fgColors[5], fgColors[5]);
 
 	flnetpref.get("bgColors[0]", bgColors[0], bgColors[0]);
 	flnetpref.get("bgColors[1]", bgColors[1], bgColors[1]);
 	flnetpref.get("bgColors[2]", bgColors[2], bgColors[2]);
 	flnetpref.get("bgColors[3]", bgColors[3], bgColors[3]);
 	flnetpref.get("bgColors[4]", bgColors[4], bgColors[4]);
+	flnetpref.get("bgColors[5]", bgColors[5], bgColors[5]);
 
 	flnetpref.get("disp_new_login", disp_new_login, disp_new_login);
 	flnetpref.get("open_editor", open_editor, open_editor);

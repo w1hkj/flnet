@@ -102,9 +102,9 @@ Fl_Tabs *tabsConfig=(Fl_Tabs *)0;
 Fl_Check_Button *btn_new_login_is_up=(Fl_Check_Button *)0;
 Fl_Check_Button *btnOpenEditor=(Fl_Check_Button *)0;
 Fl_Check_Button *btn_current_call_in_is_up=(Fl_Check_Button *)0;
-Fl_Output *txtSample[5]={(Fl_Output *)0};
-Fl_Button *btnFg[5]={(Fl_Button *)0};
-Fl_Button *btnBg[5]={(Fl_Button *)0};
+Fl_Output *txtSample[6]={(Fl_Output *)0};
+Fl_Button *btnFg[6]={(Fl_Button *)0};
+Fl_Button *btnBg[6]={(Fl_Button *)0};
 
 //----------------------------------------------------------------------
 // main dialog
@@ -113,6 +113,7 @@ Fl_Button *btnBg[5]={(Fl_Button *)0};
 my_UI *myUI=(my_UI *)0;
 Fl_Group *net_grp1=(Fl_Group *)0;
 Fl_Box *box_callins=(Fl_Box *)0;
+Fl_Input *inp_focus=(Fl_Input *)0;
 Fl_Box *ptr_left=(Fl_Box *)0;
 Fl_Box *ptr_right=(Fl_Box *)0;
 Fl_Group *net_grp2=(Fl_Group *)0;
@@ -130,8 +131,6 @@ Fl_Box *bx_suffix=(Fl_Box *)0;
 Fl_Box *bx_prefix=(Fl_Box *)0;
 Fl_Box *bx_area=(Fl_Box *)0;
 Fl_Box *txtInfo=(Fl_Box *)0;
-Fl_Input *dummy_widget=(Fl_Input *)0;
-
 
 static void cb_mnuLogIns(Fl_Menu_*, void*) {
 	open_log_ins();
@@ -182,6 +181,10 @@ Fl_Double_Window* newNetControl() {
 		box_callins->box(FL_FLAT_BOX);
 		box_callins->align(FL_ALIGN_INSIDE | FL_ALIGN_LEFT);
 
+// hidden input widget to capture keyboard events
+		inp_focus = new Fl_Input( 20, 24, 180, 22, "");
+		inp_focus->hide();
+
 		net_grp1 = new Fl_Group(0, 45, 225, 255, "");
 		net_grp1->tooltip("Use UP/DN arrow keys to scroll list");
 		net_grp1->labelfont(FL_SCREEN);
@@ -221,8 +224,6 @@ Fl_Double_Window* newNetControl() {
 		box_db_select->box(FL_FLAT_BOX);
 		box_db_select->align(FL_ALIGN_INSIDE | FL_ALIGN_LEFT);
 
-		dummy_widget = new Fl_Input( 355, 24, 0, 0, "");
-
 		dbSelectGroup = new Fl_Group(230, 45, 155, 250);
 		dbSelectGroup->box(FL_ENGRAVED_FRAME);
 		dbSelectGroup->align(Fl_Align(FL_ALIGN_TOP_LEFT));
@@ -255,11 +256,13 @@ Fl_Double_Window* newNetControl() {
 
 				for (int i = 0; i < NPICKITEMS / 2; i++) {
 					txtPick[i] = new Fl_Box(237, 97 + 12*i, 72, 12);
+					txtPick[i]->box(FL_FLAT_BOX);
 					txtPick[i]->color(FL_BACKGROUND2_COLOR);
 					txtPick[i]->labelfont(FL_SCREEN);
 					txtPick[i]->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
 
 					txtPick[i + NPICKITEMS/2] = new Fl_Box(308, 97 + 12*i, 72, 12);
+					txtPick[i + NPICKITEMS/2]->box(FL_FLAT_BOX);
 					txtPick[i + NPICKITEMS/2]->color(FL_BACKGROUND2_COLOR);
 					txtPick[i + NPICKITEMS/2]->labelfont(FL_SCREEN);
 					txtPick[i + NPICKITEMS/2]->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
@@ -287,7 +290,8 @@ Fl_Double_Window* newNetControl() {
 
 	w->end();
 
-	Fl::focus(dummy_widget);
+	inp_focus->take_focus();
+
 	return w;
 }
 
@@ -381,6 +385,26 @@ static void cb_btnBg3(Fl_Button*, void*) {
 	}
 	txtSample[4]->color(progStatus.bgColors[4]);
 	txtSample[4]->redraw();
+}
+
+static void cb_btnFg4(Fl_Button*, void*) {
+	unsigned char r,g,b;
+	Fl::get_color(progStatus.fgColors[5], r, g, b);
+	if (fl_color_chooser("Select Color", r, g, b)) {
+		progStatus.fgColors[5] = fl_rgb_color(r, g, b);
+	}
+	txtSample[5]->textcolor(progStatus.fgColors[5]);
+	txtSample[5]->redraw();
+}
+
+static void cb_btnBg4(Fl_Button*, void*) {
+	unsigned char r,g,b;
+	Fl::get_color(progStatus.bgColors[5], r, g, b);
+	if (fl_color_chooser("Select Color", r, g, b)) {
+		progStatus.bgColors[5] = fl_rgb_color(r, g, b);
+	}
+	txtSample[5]->color(progStatus.bgColors[5]);
+	txtSample[5]->redraw();
 }
 
 static void cb_mdb_color(Fl_Button *, void*) {
@@ -709,57 +733,69 @@ Fl_Double_Window* configDialog() {
 
 		tabGroupColors = new Fl_Group(0, 35, 440, 185, "Colors");
 		tabGroupColors->hide();
-			Fl_Box *gcbox = new Fl_Box(0, 45, 440, 20, "Color coding for call-in list");
+			Fl_Box *gcbox = new Fl_Box(0, 40, 440, 20, "Color coding for call-in & pick lists");
 			gcbox->box(FL_FLAT_BOX);
 			gcbox->align(FL_ALIGN_CENTER);
 
-			txtSample[1] = new Fl_Output(145, 73, 45, 25, "Logged In");
+			txtSample[1] = new Fl_Output(145, 65, 45, 24, "Logged In");
 			txtSample[1]->textfont(FL_SCREEN);
 			txtSample[1]->value("Text");
 			txtSample[1]->color(progStatus.bgColors[1]);
 			txtSample[1]->textcolor(progStatus.fgColors[1]);
 
-			btnFg[1] = new Fl_Button(205, 73, 45, 25, "Fg");
+			btnFg[1] = new Fl_Button(205, 65, 45, 24, "Fg");
 			btnFg[1]->callback((Fl_Callback*)cb_btnFg);
 
-			btnBg[2] = new Fl_Button(270, 73, 45, 25, "Bg");
+			btnBg[2] = new Fl_Button(270, 65, 45, 24, "Bg");
 			btnBg[2]->callback((Fl_Callback*)cb_btnBg);
 
-			txtSample[2] = new Fl_Output(145, 100, 45, 25, "First Response");
+			txtSample[2] = new Fl_Output(145, 92, 45, 24, "First Response");
 			txtSample[2]->textfont(FL_SCREEN);
 			txtSample[2]->value("Text");
 			txtSample[2]->color(progStatus.bgColors[2]);
 			txtSample[2]->textcolor(progStatus.fgColors[2]);
 
-			btnFg[2] = new Fl_Button(205, 100, 45, 25, "Fg");
+			btnFg[2] = new Fl_Button(205, 92, 45, 24, "Fg");
 			btnFg[2]->callback((Fl_Callback*)cb_btnFg1);
 
-			btnBg[2] = new Fl_Button(270, 100, 45, 25, "Bg");
+			btnBg[2] = new Fl_Button(270, 92, 45, 24, "Bg");
 			btnBg[2]->callback((Fl_Callback*)cb_btnBg1);
 
-			txtSample[3] = new Fl_Output(145, 128, 45, 25, "Second Response");
+			txtSample[3] = new Fl_Output(145, 119, 45, 24, "Second Response");
 			txtSample[3]->textfont(FL_SCREEN);
 			txtSample[3]->value("Text");
 			txtSample[3]->color(progStatus.bgColors[3]);
 			txtSample[3]->textcolor(progStatus.fgColors[3]);
 
-			btnFg[3] = new Fl_Button(205, 128, 45, 25, "Fg");
+			btnFg[3] = new Fl_Button(205, 119, 45, 24, "Fg");
 			btnFg[3]->callback((Fl_Callback*)cb_btnFg2);
 
-			btnBg[3] = new Fl_Button(270, 128, 45, 25, "Bg");
+			btnBg[3] = new Fl_Button(270, 119, 45, 24, "Bg");
 			btnBg[3]->callback((Fl_Callback*)cb_btnBg2);
 
-			txtSample[4] = new Fl_Output(145, 155, 45, 25, "Logged Out");
+			txtSample[4] = new Fl_Output(145, 146, 45, 24, "Logged Out");
 			txtSample[4]->textfont(FL_SCREEN);
 			txtSample[4]->value("Text");
 			txtSample[4]->color(progStatus.bgColors[4]);
 			txtSample[4]->textcolor(progStatus.fgColors[4]);
 
-			btnFg[4] = new Fl_Button(205, 155, 45, 25, "Fg");
+			btnFg[4] = new Fl_Button(205, 146, 45, 24, "Fg");
 			btnFg[4]->callback((Fl_Callback*)cb_btnFg3);
 
-			btnBg[4] = new Fl_Button(270, 155, 45, 25, "Bg");
+			btnBg[4] = new Fl_Button(270, 145, 45, 24, "Bg");
 			btnBg[4]->callback((Fl_Callback*)cb_btnBg3);
+
+			txtSample[5] = new Fl_Output(145, 180, 45, 24, "Pick List Item");
+			txtSample[5]->textfont(FL_SCREEN);
+			txtSample[5]->value("Text");
+			txtSample[5]->color(progStatus.bgColors[5]);
+			txtSample[5]->textcolor(progStatus.fgColors[5]);
+
+			btnFg[5] = new Fl_Button(205, 180, 45, 24, "Fg");
+			btnFg[5]->callback((Fl_Callback*)cb_btnFg4);
+
+			btnBg[5] = new Fl_Button(270, 180, 45, 24, "Bg");
+			btnBg[5]->callback((Fl_Callback*)cb_btnBg4);
 
 		tabGroupColors->end();
 

@@ -121,7 +121,6 @@ void show_sort_order()
 		progStatus.preferred_sort_order == 2 ? "S/A/P" :
 		"Net Nbr");
 	out_sorted_by->redraw();
-//	inpNickname->take_focus();
 }
 
 static void cb_lookup_masterdb_record(Fl_Menu_ *, void *) {
@@ -232,8 +231,7 @@ void close_editor(void)
 {
 	if (editor)
 		editor->hide();
-	dummy_widget->set_visible_focus();
-	Fl::focus(dummy_widget);
+	inp_focus->take_focus();
 }
 
 void cb_locator(Fl_Input2 *, void *)

@@ -70,7 +70,6 @@ UI_SIZES UI_small[] = {
 	{  17, 280, 196,  16, FL_COURIER, 12}, // txtLine[14]  23
 
 	{ 135,  27, 250,  18, FL_COURIER_BOLD, 12}, // box_db_select
-	{ 135,  27,   0,   0, FL_COURIER, 12}, // dummy_widget
 	{ 230,  45, 155, 255, FL_COURIER, 12}, // dbSelectGroup  24
 	{ 240,  65,  40,  25, FL_COURIER, 12}, // boxLoginSuffix  25
 	{ 285,  65,  30,  25, FL_COURIER, 12}, // boxLoginPrefix  26
@@ -114,7 +113,6 @@ UI_SIZES UI_big[] = {
 	{  17, 420, 251,  24, FL_COURIER, 15}, // txtLine[14]
 
 	{ 160,  26, 310,  32, FL_COURIER_BOLD, 15}, // box_db_select
-	{ 160,  26,   0,   0, FL_COURIER, 12}, // dummy_widget
 	{ 284,  60, 185, 380, FL_COURIER, 18}, // dbSelectGroup
 	{ 291,  87,  60,  30, FL_COURIER, 18}, // boxLoginSuffix
 	{ 355,  87,  60,  30, FL_COURIER, 18}, // boxLoginPrefix
@@ -149,6 +147,7 @@ void ui_size(int sz, int X, int Y)
 	box_callins->resize(ui->x, ui->y, ui->w, ui->h);
 	box_callins->labelfont(ui->fnt);
 	box_callins->labelsize(ui->size);
+	inp_focus->resize(ui->x, ui->y, ui->w, ui->h);
 	ui++;
 	net_grp1->resize(ui->x, ui->y, ui->w, ui->h);
 	net_grp1->labelfont(ui->fnt);
@@ -229,10 +228,6 @@ void ui_size(int sz, int X, int Y)
 	box_db_select->resize(ui->x, ui->y, ui->w, ui->h);
 	box_db_select->labelfont(ui->fnt);
 	box_db_select->labelsize(ui->size);
-	ui++;
-	dummy_widget->resize(ui->x, ui->y, ui->w, ui->h);
-	dummy_widget->textfont(ui->fnt);
-	dummy_widget->textsize(ui->size);
 	ui++;
 	dbSelectGroup->resize(ui->x, ui->y, ui->w, ui->h);
 	dbSelectGroup->labelfont(ui->fnt);

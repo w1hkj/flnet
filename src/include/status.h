@@ -30,8 +30,8 @@ struct status {
 	int		mainY;
 	int		ui_size;
 
-	int		fgColors[5];
-	int		bgColors[5];
+	int		fgColors[6];
+	int		bgColors[6];
 
 	int		disp_new_login;
 	int		open_editor;

@@ -55,7 +55,7 @@ extern my_UI *myUI;
 
 extern Fl_Group *net_grp1;
 extern Fl_Box *box_callins;
-extern Fl_Input *dummy_widget;
+extern Fl_Input *inp_focus;
 extern Fl_Box *ptr_left;
 extern Fl_Box *ptr_right;
 extern Fl_Group *net_grp2;
