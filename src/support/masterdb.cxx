@@ -152,6 +152,7 @@ bool open_masterdb()
 		box_mdb_isopen->redraw();
 	}
 	progStatus.mdb_isopen = true;
+
 	return true;
 }
 

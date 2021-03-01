@@ -26,6 +26,35 @@
 #include "util.h"
 #include "threads.h"
 
+std::string csvRecord::print()
+{
+	static std::string retstr;
+	retstr.assign("call ......... ").append(callsign);
+	retstr.append("\nname ......... ").append(name);
+	retstr.append("\nnet nbr ...... ").append(netnbr);
+	retstr.append("\nlog date ..... ").append(logdate);
+	retstr.append("\nprev data .... ").append(prevdate);
+	retstr.append("\nnbr logins ... ").append(nbrlogins);
+	retstr.append("\nstatus ....... ").append(status);
+	retstr.append("\njoined ....... ").append(joined);
+	retstr.append("\nfirst name ... ").append(fname);
+	retstr.append("\nlast name .... ").append(lname);
+	retstr.append("\naddress ...... ").append(addr);
+	retstr.append("\ncity ......... ").append(city);
+	retstr.append("\nstate ........ ").append(state);
+	retstr.append("\nzip code ..... ").append(zip);
+	retstr.append("\nlocator ...... ").append(locator);
+	retstr.append("\ncountry ...... ").append(country);
+	retstr.append("\nphone ........ ").append(phone);
+	retstr.append("\nemail ........ ").append(email);
+	retstr.append("\nbirth date ... ").append(birthdate);
+	retstr.append("\nspouse name .. ").append(spouse);
+	retstr.append("\nsp birthdate . ").append(sp_birth);
+	retstr.append("\ncomments (1) . ").append(comment1);
+	retstr.append("\ncomments (2) . ").append(comment2);
+	return retstr;
+}
+
 //szFields on 10 char spacing
 static string szFields = "\
 PREFIX    AREA      SUFFIX    CALLSIGN  \
@@ -62,24 +91,55 @@ bool csvdb::mapheader(string header)
 static int callsign_comp(const void *r1, const void *r2) {
 	callsigns *p1 = (callsigns *)r1;
 	callsigns *p2 = (callsigns *)r2;
-/*
-	int comp = strcmp(p1->suffix, p2->suffix);
-	if (comp == 0) {
-		comp = strcmp(p1->prefix, p2->prefix);
-		if (comp == 0)
-			comp = strcmp(p1->area, p2->area);
-	}
-	return comp;
-*/
-	// sort by area / prefix / suffix
-	int comp = strcmp(p1->area, p2->area);
-	if (comp == 0) {
-		comp = strcmp(p1->prefix, p2->prefix);
-		if (comp == 0)
-			comp = strcmp(p1->suffix, p2->suffix);
-	}
-	return comp;
+	return strcmp(p1->callsign, p2->callsign);
+}
 
+static int netnbr_comp(const void *r1, const void *r2) {
+	callsigns *p1 = (callsigns *)r1;
+	callsigns *p2 = (callsigns *)r2;
+	return strcmp(p1->netnbr, p2->netnbr);
+}
+
+int  csvdb::binary_search_netnbr(callsigns *list, int l, int r, std::string &nbr)
+{
+	if (r >= l) {
+		int mid = l + (r - l) / 2;
+		long nl = atol(list[mid].netnbr);
+		long nr = atol(nbr.c_str());
+		if (nl == nr) return mid;
+		if (nl > nr) return binary_search_netnbr(list, l, mid - 1, nbr);
+		return binary_search_netnbr(list, mid + 1, r, nbr);
+	}
+	return -1;
+}
+
+int csvdb::find_netnbr(std::string netnbr)
+{
+	qsort ( clist, dbrecs.size(), sizeof(callsigns), netnbr_comp);
+	int index = binary_search_netnbr( clist, 0, dbrecs.size() - 1, netnbr);
+	if (index == -1) return -1;
+	return clist[index].nbr;
+}
+
+int  csvdb::binary_search_callsign(callsigns *list, int l, int r, std::string &call)
+{
+	int cmp = -1;
+	if (r >= l) {
+		int mid = l + (r - l) / 2;
+		cmp = strcmp(list[mid].callsign, call.c_str());
+		if (cmp == 0) return mid;
+		if (cmp > 0) return binary_search_callsign(list, l, mid - 1, call);
+		return binary_search_callsign(list, mid + 1, r, call);
+	}
+	return -1;
+}
+
+int csvdb::find_callsign(std::string callsign)
+{
+	qsort ( clist, dbrecs.size(), sizeof(callsigns), callsign_comp);
+	int index = binary_search_callsign( clist, 0, dbrecs.size() - 1, callsign);
+	if (index == -1) return -1;
+	return clist[index].nbr;
 }
 
 //----------------------------------------------------------------------
@@ -224,13 +284,15 @@ int csvdb::load()
 	while (!dbfile.eof()) {
 		memset(buff, 0, LINESIZE + 1);
 		dbfile.getline(buff, LINESIZE);
-//		if (dbfile && strlen(buff)) {
 		if (strlen(buff)) {
 			sbuff = buff;
 			if (split(buff, rec)) dbrecs.push_back(rec);
 		}
 	}
 	dbfile.close();
+
+	update_clist();
+
 	return 0;
 }
 
@@ -304,6 +366,19 @@ void csvdb::join(csvRecord &rec, string &str)
 	str.append(delimit(rec.country));
 }
 
+void csvdb::update_clist()
+{
+	if (clist) delete [] clist;
+
+	clist = new callsigns[dbrecs.size()];
+
+	for (size_t n = 0; n < dbrecs.size(); n++) {
+		strncpy(clist[n].callsign, dbrecs[n].callsign.c_str(), 14);
+		strncpy(clist[n].netnbr, dbrecs[n].netnbr.c_str(), 9);
+		clist[n].nbr = n;
+	}
+}
+
 int csvdb::save()
 {
 	fstream dbfile(dbfilename.c_str(), ios::out | ios::binary);
@@ -313,18 +388,7 @@ int csvdb::save()
 	dbfile << csvFields << "\n";
 
 	if (dbrecs.size() > 0) {
-
-		callsigns clist[dbrecs.size()];
-
-		for (size_t n = 0; n < dbrecs.size(); n++) {
-			strncpy(clist[n].prefix , dbrecs[n].prefix.c_str(), 3);
-			strncpy(clist[n].area, dbrecs[n].area.c_str(), 1);
-			strncpy(clist[n].suffix, dbrecs[n].suffix.c_str(), 3);
-			clist[n].nbr = n;
-		}
-
-		qsort ( &(clist[0]), dbrecs.size(), sizeof(callsigns), callsign_comp);
-
+		qsort ( clist, dbrecs.size(), sizeof(callsigns), callsign_comp);
 		// records
 		string line;
 		size_t n;
@@ -400,9 +464,9 @@ int csvdb::put(size_t recnbr, csvRecord &rec)
 int csvdb::add(csvRecord &rec)
 {
 	dbrecs.push_back(rec);
+	update_clist();
 	return 0;
 }
-
 
 int csvdb::erase(size_t n)
 {
@@ -411,43 +475,16 @@ int csvdb::erase(size_t n)
 	while (p <= dbrecs.end() && i != n) {p++; i++;}
 	if (i != n) return 1;
 	dbrecs.erase(p);
+	update_clist();
 	return 0;
 }
 
 std::string csvdb::print(csvRecord &rec)
 {
-	std::string retstr;
-	retstr.assign("prefix:   ").assign(rec.prefix).assign("\n");
-	retstr.append("area:     ").assign(rec.area).assign("\n");
-	retstr.append("suffix:   ").assign(rec.suffix).assign("\n");
-	retstr.append("callsign: ").assign(rec.callsign).assign("\n");
-	retstr.append("name:     ").assign(rec.name).assign("\n");
-	retstr.append("netnbr:   ").assign(rec.netnbr).assign("\n");
-	retstr.append("logdate:  ").assign(rec.logdate).assign("\n");
-	retstr.append("nbrlogins:").assign(rec.nbrlogins).assign("\n");
-	retstr.append("status:   ").assign(rec.status).assign("\n");
-	retstr.append("joined:   ").assign(rec.joined).assign("\n");
-	retstr.append("fname:    ").assign(rec.fname).assign("\n");
-	retstr.append("lname:    ").assign(rec.lname).assign("\n");
-	retstr.append("addr:     ").assign(rec.addr).assign("\n");
-	retstr.append("city:     ").assign(rec.city).assign("\n");
-	retstr.append("state:    ").assign(rec.state).assign("\n");
-	retstr.append("zip:      ").assign(rec.zip).assign("\n");
-	retstr.append("phone:    ").assign(rec.phone).assign("\n");
-	retstr.append("birthdate:").assign(rec.birthdate).assign("\n");
-	retstr.append("spouse:   ").assign(rec.spouse).assign("\n");
-	retstr.append("sp_birth: ").assign(rec.sp_birth).assign("\n");
-	retstr.append("comment 1:").assign(rec.comment1).assign("\n");
-	retstr.append("comment 2:").assign(rec.comment2).assign("\n");
-	retstr.append("email:    ").assign(rec.email).assign("\n");
-	retstr.append("prevdate: ").assign(rec.prevdate).assign("\n");
-	retstr.append("locator:  ").assign(rec.locator).assign("\n");
-	retstr.append("country:  ").assign(rec.country).assign("\n");
-	return retstr;
+	return rec.print();
 }
 
 std::string csvdb::print(int n)
 {
-	csvRecord rec = dbrecs[n];
-	return print(rec);
+	return dbrecs[n].print();
 }

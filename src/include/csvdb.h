@@ -39,14 +39,12 @@ using namespace std;
 
 
 struct callsigns {
-	char prefix[4];
-	char area[2];
-	char suffix[4];
+	char callsign[15];
+	char netnbr[10];
 	int nbr;
 	callsigns() {
-		memset(prefix, 0, 4);
-		memset(area, 0, 2);
-		memset(suffix, 0, 4);
+		memset(callsign, 0, 15);
+		memset(netnbr, 0, 10);
 		nbr = -1; }
 };
 
@@ -86,36 +84,7 @@ struct csvRecord {
 		comment1.clear(); comment2.clear(); email.clear(); prevdate.clear();
 		locator.clear(); country.clear();
 	}
-	std::string print() {
-		static std::string retstr;
-		retstr.clear();
-		retstr.append("call: ").append(callsign);
-		retstr.append(", ").append(name);
-		retstr.append(", ").append(netnbr);
-		return retstr;
-/*
-		retstr.append(", ").append(logdate);
-		retstr.append(", ").append(nbrlogins);
-		retstr.append(", ").append(status);
-		retstr.append(", ").append(joined);
-		retstr.append(", ").append(fname);
-		retstr.append(", ").append(lname);
-		retstr.append(", ").append(addr);
-		retstr.append(", ").append(city);
-		retstr.append(", ").append(state);
-		retstr.append(", ").append(zip);
-		retstr.append(", ").append(phone);
-		retstr.append(", ").append(birthdate);
-		retstr.append(", ").append(spouse);
-		retstr.append(", ").append(sp_birth);
-		retstr.append(", ").append(comment1);
-		retstr.append(", ").append(comment2);
-		retstr.append(", ").append(email);
-		retstr.append(", ").append(prevdate);
-		retstr.append(", ").append(locator);
-		retstr.append(", ").append(country);
-*/
-	}
+	std::string print();
 
 };
 
@@ -127,6 +96,12 @@ enum FIELDS {
 	COMMENT1,COMMENT2,EMAIL,PREVDATE,LOCATOR,COUNTRY, LAST_FIELD
  };
 
+ 
+public:
+	callsigns *clist;
+	int binary_search_callsign(callsigns *, int, int, std::string &);
+	int binary_search_netnbr(callsigns *, int, int, std::string &);
+
 private:
 	static const char *csvFields;
 	string dbfilename;
@@ -134,12 +109,17 @@ private:
 	csvRecord record;
 	int cur_recnbr;
 	int fpos[LAST_FIELD];
+
+	void update_clist();
+
 public:
 	csvdb() {
 		dbfilename.assign("test.csv");
 		cur_recnbr = 0;
+		clist = 0;
 	}
-	~csvdb() {}
+	~csvdb() { delete [] clist;}
+
 	void filename(string fname) { dbfilename.assign(fname); }
 	string filename() { return dbfilename; }
 	int save();
@@ -149,6 +129,8 @@ public:
 	int put(size_t n, csvRecord &rec);
 	int add(csvRecord &rec);
 	int recnbr() { return cur_recnbr; }
+	int find_netnbr(std::string);
+	int find_callsign(std::string);
 	int erase(size_t n);
 	string delimit(string s);
 	string trim(string s);
