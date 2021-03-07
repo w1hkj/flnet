@@ -50,6 +50,7 @@ Fl_Group *tabGroupPriority = (Fl_Group *)0;
 Fl_Group *tabGroupLookup = (Fl_Group *)0;
 Fl_Group *tabGroupUI = (Fl_Group *)0;
 Fl_Group *tabGroupMasterDB = (Fl_Group *)0;
+Fl_Group *tabGroupSharedFields = (Fl_Group *)0;
 
 Fl_Input2 *cfgP1 = (Fl_Input2 *)0;
 Fl_Input2 *inpStatesList1 = (Fl_Input2 *)0;
@@ -81,8 +82,34 @@ Fl_Box *box_mdb_isopen = (Fl_Box *)0;
 Fl_Button *btn_masterdb = (Fl_Button *)0;
 Fl_Button *btn_open_masterdb = (Fl_Button *)0;
 Fl_Button *btn_close_masterdb = (Fl_Button *)0;
-Fl_Check_Button *chk_mdb_netnbr = (Fl_Check_Button *)0;
 Fl_Button *mdb_color = (Fl_Button *)0;
+
+Fl_Check_Button *chk_mdb_netnbr = (Fl_Check_Button *)0;
+Fl_Check_Button *chk_mdb_prefix = (Fl_Check_Button *)0;
+Fl_Check_Button *chk_mdb_area = (Fl_Check_Button *)0;
+Fl_Check_Button *chk_mdb_suffix = (Fl_Check_Button *)0;
+Fl_Check_Button *chk_mdb_callsign = (Fl_Check_Button *)0;
+Fl_Check_Button *chk_mdb_name = (Fl_Check_Button *)0;
+Fl_Check_Button *chk_mdb_fname = (Fl_Check_Button *)0;
+Fl_Check_Button *chk_mdb_lname = (Fl_Check_Button *)0;
+Fl_Check_Button *chk_mdb_addr = (Fl_Check_Button *)0;
+Fl_Check_Button *chk_mdb_city = (Fl_Check_Button *)0;
+Fl_Check_Button *chk_mdb_state = (Fl_Check_Button *)0;
+Fl_Check_Button *chk_mdb_zip = (Fl_Check_Button *)0;
+Fl_Check_Button *chk_mdb_phone = (Fl_Check_Button *)0;
+Fl_Check_Button *chk_mdb_birthdate = (Fl_Check_Button *)0;
+Fl_Check_Button *chk_mdb_spouse = (Fl_Check_Button *)0;
+Fl_Check_Button *chk_mdb_sp_birth = (Fl_Check_Button *)0;
+Fl_Check_Button *chk_mdb_comment1 = (Fl_Check_Button *)0;
+Fl_Check_Button *chk_mdb_comment2 = (Fl_Check_Button *)0;
+Fl_Check_Button *chk_mdb_email = (Fl_Check_Button *)0;
+Fl_Check_Button *chk_mdb_locator = (Fl_Check_Button *)0;
+Fl_Check_Button *chk_mdb_country = (Fl_Check_Button *)0;
+Fl_Check_Button *chk_mdb_logdate = (Fl_Check_Button *)0;
+Fl_Check_Button *chk_mdb_prevdate = (Fl_Check_Button *)0;
+Fl_Check_Button *chk_mdb_nbrlogins = (Fl_Check_Button *)0;
+Fl_Check_Button *chk_mdb_status = (Fl_Check_Button *)0;
+Fl_Check_Button *chk_mdb_joined = (Fl_Check_Button *)0;
 
 Fl_Check_Button *chk_call_left_justify = (Fl_Check_Button *)0;
 Fl_Check_Button *chk_name_left_justify = (Fl_Check_Button *)0;
@@ -132,30 +159,30 @@ Fl_Box *bx_prefix=(Fl_Box *)0;
 Fl_Box *bx_area=(Fl_Box *)0;
 Fl_Box *txtInfo=(Fl_Box *)0;
 
-static void cb_mnuLogIns(Fl_Menu_*, void*) {
+void cb_mnuLogIns(Fl_Menu_*, void*) {
 	open_log_ins();
 }
 
-static void cb_mnuSize(Fl_Menu_*, void*) {
+void cb_mnuSize(Fl_Menu_*, void*) {
 	change_size();
 }
 
 Fl_Menu_Item menu_mnu_bar[] = {
 	{"Files", 0,  0, 0, 64, FL_NORMAL_LABEL, 0, 14, 0},
-	{"Open", 0,  (Fl_Callback*)cb_mnuOpen, 0, 128, FL_NORMAL_LABEL, 0, 14, 0},
-	{"New", 0,   (Fl_Callback*)cb_mnuNew, 0, 128, FL_NORMAL_LABEL, 0, 14, 0},
-	{"Exit", 0,  (Fl_Callback*)cb_mnuExit, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+		{"Open", 0,  (Fl_Callback*)cb_mnuOpen, 0, 128, FL_NORMAL_LABEL, 0, 14, 0},
+		{"New", 0,   (Fl_Callback*)cb_mnuNew, 0, 128, FL_NORMAL_LABEL, 0, 14, 0},
+		{"Exit", 0,  (Fl_Callback*)cb_mnuExit, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 	{0,0,0,0,0,0,0,0,0},
-	{"Editor", 0,  (Fl_Callback*)cb_mnuEditor, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
-	{"Config", 0,  (Fl_Callback*)cb_mnuConfig, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
-	{"Log-Ins", 0,  (Fl_Callback*)cb_mnuLogIns, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
-	{"Size", 0,  (Fl_Callback*)cb_mnuSize, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+	{"&Editor", 0,  (Fl_Callback*)cb_mnuEditor, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+	{"&Config", 0,  (Fl_Callback*)cb_mnuConfig, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+	{"Log-&Ins", 0,  (Fl_Callback*)cb_mnuLogIns, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+	{"Si&ze", 0,  (Fl_Callback*)cb_mnuSize, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 	{"Help", 0,  0, 0, 64, FL_NORMAL_LABEL, 0, 14, 0},
-	{"Content", 0,  (Fl_Callback*)cb_mnuHelpContent, 0, 128, FL_NORMAL_LABEL, 0, 14, 0},
-	{"Event log", 0, (Fl_Callback*)cb_mnuEventLog, 0, 128, FL_NORMAL_LABEL, 0, 14, 0},
-	{"About", 0,  (Fl_Callback*)cb_mnuAbout, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+		{"Content", 0,  (Fl_Callback*)cb_mnuHelpContent, 0, 128, FL_NORMAL_LABEL, 0, 14, 0},
+		{"Event log", 0, (Fl_Callback*)cb_mnuEventLog, 0, 128, FL_NORMAL_LABEL, 0, 14, 0},
+		{"About", 0,  (Fl_Callback*)cb_mnuAbout, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 	{0,0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0,0}
+{0,0,0,0,0,0,0,0,0}
 };
 
 Fl_Double_Window* newNetControl() {
@@ -514,7 +541,10 @@ static void cb_hamqrzurl(Fl_Input2 *, void *)
 
 static void cb_masterdb(Fl_Input2 *, void *)
 {
-	progStatus.masterdb = inp_masterdb->value();
+	if (progStatus.masterdb != inp_masterdb->value()) {
+		close_masterdb();
+		progStatus.masterdb = inp_masterdb->value();
+	}
 }
 
 static void cb_select_masterdb( Fl_Button *, void *)
@@ -525,7 +555,10 @@ static void cb_select_masterdb( Fl_Button *, void *)
 		open_dir.c_str(), 0);
 	if (!p) return;
 	inp_masterdb->value(p);
-	progStatus.masterdb = p;
+	if (progStatus.masterdb != inp_masterdb->value()) {
+		close_masterdb();
+		progStatus.masterdb = inp_masterdb->value();
+	}
 }
 
 static void cb_open_masterdb( Fl_Button *, void *)
@@ -669,12 +702,197 @@ void cb_chk_mdb_netnbr (Fl_Check_Button *w, void *)
 	progStatus.mdb_netnbr = chk_mdb_netnbr->value();
 }
 
+void cb_chk_mdb_prefix (Fl_Check_Button *w, void *)
+{
+	progStatus.mdb_prefix = chk_mdb_prefix->value();
+}
+
+void cb_chk_mdb_area (Fl_Check_Button *w, void *)
+{
+	progStatus.mdb_area = chk_mdb_area->value();
+}
+
+void cb_chk_mdb_suffix (Fl_Check_Button *w, void *)
+{
+	progStatus.mdb_suffix = chk_mdb_suffix->value();
+}
+
+void cb_chk_mdb_callsign (Fl_Check_Button *w, void *)
+{
+	progStatus.mdb_callsign = chk_mdb_callsign->value();
+}
+
+void cb_chk_mdb_name (Fl_Check_Button *w, void *)
+{
+	progStatus.mdb_name = chk_mdb_name->value();
+}
+
+void cb_chk_mdb_fname (Fl_Check_Button *w, void *)
+{
+	progStatus.mdb_fname = chk_mdb_fname->value();
+}
+
+void cb_chk_mdb_lname (Fl_Check_Button *w, void *)
+{
+	progStatus.mdb_lname = chk_mdb_lname->value();
+}
+
+void cb_chk_mdb_addr (Fl_Check_Button *w, void *)
+{
+	progStatus.mdb_addr = chk_mdb_addr->value();
+}
+
+void cb_chk_mdb_city (Fl_Check_Button *w, void *)
+{
+	progStatus.mdb_city = chk_mdb_city->value();
+}
+
+void cb_chk_mdb_state (Fl_Check_Button *w, void *)
+{
+	progStatus.mdb_state = chk_mdb_state->value();
+}
+
+void cb_chk_mdb_zip (Fl_Check_Button *w, void *)
+{
+	progStatus.mdb_zip = chk_mdb_zip->value();
+}
+
+void cb_chk_mdb_phone (Fl_Check_Button *w, void *)
+{
+	progStatus.mdb_phone = chk_mdb_phone->value();
+}
+
+void cb_chk_mdb_birthdate (Fl_Check_Button *w, void *)
+{
+	progStatus.mdb_birthdate = chk_mdb_birthdate->value();
+}
+
+void cb_chk_mdb_spouse (Fl_Check_Button *w, void *)
+{
+	progStatus.mdb_spouse = chk_mdb_spouse->value();
+}
+
+void cb_chk_mdb_sp_birth (Fl_Check_Button *w, void *)
+{
+	progStatus.mdb_sp_birth = chk_mdb_sp_birth->value();
+}
+
+void cb_chk_mdb_comment1 (Fl_Check_Button *w, void *)
+{
+	progStatus.mdb_comment1 = chk_mdb_comment1->value();
+}
+
+void cb_chk_mdb_comment2 (Fl_Check_Button *w, void *)
+{
+	progStatus.mdb_comment2 = chk_mdb_comment2->value();
+}
+
+void cb_chk_mdb_email (Fl_Check_Button *w, void *)
+{
+	progStatus.mdb_email = chk_mdb_email->value();
+}
+
+void cb_chk_mdb_locator (Fl_Check_Button *w, void *)
+{
+	progStatus.mdb_locator = chk_mdb_locator->value();
+}
+
+void cb_chk_mdb_country (Fl_Check_Button *w, void *)
+{
+	progStatus.mdb_country = chk_mdb_country->value();
+}
+
+void cb_chk_mdb_logdate (Fl_Check_Button *w, void *)
+{
+	progStatus.mdb_logdate = chk_mdb_logdate->value();
+}
+
+void cb_chk_mdb_prevdate (Fl_Check_Button *w, void *)
+{
+	progStatus.mdb_prevdate = chk_mdb_prevdate->value();
+}
+
+void cb_chk_mdb_nbrlogins (Fl_Check_Button *w, void *)
+{
+	progStatus.mdb_nbrlogins = chk_mdb_nbrlogins->value();
+}
+
+void cb_chk_mdb_status (Fl_Check_Button *w, void *)
+{
+	progStatus.mdb_status = chk_mdb_status->value();
+}
+
+void cb_chk_mdb_joined (Fl_Check_Button *w, void *)
+{
+	progStatus.mdb_joined = chk_mdb_joined->value();
+}
+
+void cb_btn_setall(Fl_Button*, void *)
+{
+	chk_mdb_netnbr->value(progStatus.mdb_netnbr = 1); chk_mdb_netnbr->redraw();
+	chk_mdb_prefix->value(progStatus.mdb_prefix = 1); chk_mdb_prefix->redraw();
+	chk_mdb_area->value(progStatus.mdb_area = 1); chk_mdb_area->redraw();
+	chk_mdb_suffix->value(progStatus.mdb_suffix = 1); chk_mdb_suffix->redraw();
+	chk_mdb_callsign->value(progStatus.mdb_callsign = 1); chk_mdb_callsign->redraw();
+	chk_mdb_name->value(progStatus.mdb_name = 1); chk_mdb_name->redraw();
+	chk_mdb_fname->value(progStatus.mdb_fname = 1); chk_mdb_fname->redraw();
+	chk_mdb_lname->value(progStatus.mdb_lname = 1); chk_mdb_lname->redraw();
+	chk_mdb_addr->value(progStatus.mdb_addr = 1); chk_mdb_addr->redraw();
+	chk_mdb_city->value(progStatus.mdb_city = 1); chk_mdb_city->redraw();
+	chk_mdb_state->value(progStatus.mdb_state = 1); chk_mdb_state->redraw();
+	chk_mdb_zip->value(progStatus.mdb_zip = 1); chk_mdb_zip->redraw();
+	chk_mdb_phone->value(progStatus.mdb_phone = 1); chk_mdb_phone->redraw();
+	chk_mdb_birthdate->value(progStatus.mdb_birthdate = 1); chk_mdb_birthdate->redraw();
+	chk_mdb_spouse->value(progStatus.mdb_spouse = 1); chk_mdb_spouse->redraw();
+	chk_mdb_sp_birth->value(progStatus.mdb_sp_birth = 1); chk_mdb_sp_birth->redraw();
+	chk_mdb_comment1->value(progStatus.mdb_comment1 = 1); chk_mdb_comment1->redraw();
+	chk_mdb_comment2->value(progStatus.mdb_comment2 = 1); chk_mdb_comment2->redraw();
+	chk_mdb_email->value(progStatus.mdb_email = 1); chk_mdb_email->redraw();
+	chk_mdb_locator->value(progStatus.mdb_locator = 1); chk_mdb_locator->redraw();
+	chk_mdb_country->value(progStatus.mdb_country = 1); chk_mdb_country->redraw();
+	chk_mdb_logdate->value(progStatus.mdb_logdate = 1); chk_mdb_logdate->redraw();
+	chk_mdb_prevdate->value(progStatus.mdb_prevdate = 1); chk_mdb_prevdate->redraw();
+	chk_mdb_nbrlogins->value(progStatus.mdb_nbrlogins = 1); chk_mdb_nbrlogins->redraw();
+	chk_mdb_status->value(progStatus.mdb_status = 1); chk_mdb_status->redraw();
+	chk_mdb_joined->value(progStatus.mdb_joined = 1); chk_mdb_joined->redraw();
+}
+
+void cb_btn_clrall(Fl_Button*, void *)
+{
+	chk_mdb_netnbr->value(progStatus.mdb_netnbr = 0); chk_mdb_netnbr->redraw();
+	chk_mdb_prefix->value(progStatus.mdb_prefix = 0); chk_mdb_prefix->redraw();
+	chk_mdb_area->value(progStatus.mdb_area = 0); chk_mdb_area->redraw();
+	chk_mdb_suffix->value(progStatus.mdb_suffix = 0); chk_mdb_suffix->redraw();
+	chk_mdb_callsign->value(progStatus.mdb_callsign = 0); chk_mdb_callsign->redraw();
+	chk_mdb_name->value(progStatus.mdb_name = 0); chk_mdb_name->redraw();
+	chk_mdb_fname->value(progStatus.mdb_fname = 0); chk_mdb_fname->redraw();
+	chk_mdb_lname->value(progStatus.mdb_lname = 0); chk_mdb_lname->redraw();
+	chk_mdb_addr->value(progStatus.mdb_addr = 0); chk_mdb_addr->redraw();
+	chk_mdb_city->value(progStatus.mdb_city = 0); chk_mdb_city->redraw();
+	chk_mdb_state->value(progStatus.mdb_state = 0); chk_mdb_state->redraw();
+	chk_mdb_zip->value(progStatus.mdb_zip = 0); chk_mdb_zip->redraw();
+	chk_mdb_phone->value(progStatus.mdb_phone = 0); chk_mdb_phone->redraw();
+	chk_mdb_birthdate->value(progStatus.mdb_birthdate = 0); chk_mdb_birthdate->redraw();
+	chk_mdb_spouse->value(progStatus.mdb_spouse = 0); chk_mdb_spouse->redraw();
+	chk_mdb_sp_birth->value(progStatus.mdb_sp_birth = 0); chk_mdb_sp_birth->redraw();
+	chk_mdb_comment1->value(progStatus.mdb_comment1 = 0); chk_mdb_comment1->redraw();
+	chk_mdb_comment2->value(progStatus.mdb_comment2 = 0); chk_mdb_comment2->redraw();
+	chk_mdb_email->value(progStatus.mdb_email = 0); chk_mdb_email->redraw();
+	chk_mdb_locator->value(progStatus.mdb_locator = 0); chk_mdb_locator->redraw();
+	chk_mdb_country->value(progStatus.mdb_country = 0); chk_mdb_country->redraw();
+	chk_mdb_logdate->value(progStatus.mdb_logdate = 0); chk_mdb_logdate->redraw();
+	chk_mdb_prevdate->value(progStatus.mdb_prevdate = 0); chk_mdb_prevdate->redraw();
+	chk_mdb_nbrlogins->value(progStatus.mdb_nbrlogins = 0); chk_mdb_nbrlogins->redraw();
+	chk_mdb_status->value(progStatus.mdb_status = 0); chk_mdb_status->redraw();
+	chk_mdb_joined->value(progStatus.mdb_joined = 0); chk_mdb_joined->redraw();
+}
+
 Fl_Double_Window* configDialog() {
 	Fl_Double_Window* w = new Fl_Double_Window(440, 250, "Net Configuration");
 
 	tabsConfig = new Fl_Tabs(0, 10, 440, 210);
 	tabsConfig->color((Fl_Color)44);
-		tabGroupUI = new Fl_Group(0, 35, 440, 185, "UI behavior");
+		tabGroupUI = new Fl_Group(0, 35, 440, 185, "UI");
 			btn_new_login_is_up = new Fl_Check_Button(20, 50, 70, 15, "New login is up");
 			btn_new_login_is_up->tooltip("Move first time login to the >...<\nspot in the call in list");
 			btn_new_login_is_up->down_box(FL_DOWN_BOX);
@@ -911,7 +1129,7 @@ Fl_Double_Window* configDialog() {
 
 		tabGroupLookup->end();
 
-		tabGroupMasterDB = new Fl_Group(0, 35, 440, 185, "Master DB");
+		tabGroupMasterDB = new Fl_Group(0, 35, 440, 185, "MasterDB");
 		tabGroupMasterDB->hide();
 
 			inp_masterdb = new Fl_Input2(10, 60, 360, 24, "Master DB");
@@ -928,12 +1146,6 @@ Fl_Double_Window* configDialog() {
 			box_mdb_isopen->align(FL_ALIGN_RIGHT);
 			box_mdb_isopen->color(progStatus.mdb_isopen ? progStatus.mdb_color : FL_BACKGROUND2_COLOR);
 
-			chk_mdb_netnbr = new Fl_Check_Button(20, 120, 18, 18, "Include net nbr");
-			chk_mdb_netnbr->value(progStatus.mdb_netnbr);
-			chk_mdb_netnbr->align(FL_ALIGN_RIGHT);
-			chk_mdb_netnbr->callback((Fl_Callback*)cb_chk_mdb_netnbr);
-			chk_mdb_netnbr->tooltip("Transfer net # from master database");
-
 			btn_open_masterdb = new Fl_Button(375, 90, 60, 24, "Open");
 			btn_open_masterdb->callback((Fl_Callback*)cb_open_masterdb);
 			btn_open_masterdb->tooltip("Open the master database");
@@ -949,6 +1161,147 @@ Fl_Double_Window* configDialog() {
 			mdb_color->tooltip("Select open indicator color");
 
 		tabGroupMasterDB->end();
+
+		tabGroupSharedFields = new Fl_Group(0, 35, 440, 185, "Shared Fields");
+
+int gx = 5, gy = 45;
+			chk_mdb_prefix = new Fl_Check_Button(gx, gy, 15, 15, "prefix");
+			chk_mdb_prefix->value(progStatus.mdb_prefix);
+			chk_mdb_prefix->align(FL_ALIGN_RIGHT);
+			chk_mdb_prefix->callback((Fl_Callback*)cb_chk_mdb_prefix);
+gy += 22;
+			chk_mdb_area = new Fl_Check_Button(gx, gy, 15, 15, "area");
+			chk_mdb_area->value(progStatus.mdb_area);
+			chk_mdb_area->align(FL_ALIGN_RIGHT);
+			chk_mdb_area->callback((Fl_Callback*)cb_chk_mdb_area);
+gy += 22;
+			chk_mdb_suffix = new Fl_Check_Button(gx, gy, 15, 15, "suffix");
+			chk_mdb_suffix->value(progStatus.mdb_suffix);
+			chk_mdb_suffix->align(FL_ALIGN_RIGHT);
+			chk_mdb_suffix->callback((Fl_Callback*)cb_chk_mdb_suffix);
+gy += 22;
+			chk_mdb_callsign = new Fl_Check_Button(gx, gy, 15, 15, "callsign");
+			chk_mdb_callsign->value(progStatus.mdb_callsign);
+			chk_mdb_callsign->align(FL_ALIGN_RIGHT);
+			chk_mdb_callsign->callback((Fl_Callback*)cb_chk_mdb_callsign);
+gy += 22;
+			chk_mdb_name = new Fl_Check_Button(gx, gy, 15, 15, "nickname");
+			chk_mdb_name->value(progStatus.mdb_name);
+			chk_mdb_name->align(FL_ALIGN_RIGHT);
+			chk_mdb_name->callback((Fl_Callback*)cb_chk_mdb_name);
+gy += 22;
+			chk_mdb_fname = new Fl_Check_Button(gx, gy, 15, 15, "fname");
+			chk_mdb_fname->value(progStatus.mdb_fname);
+			chk_mdb_fname->align(FL_ALIGN_RIGHT);
+			chk_mdb_fname->callback((Fl_Callback*)cb_chk_mdb_fname);
+gy += 22;
+			chk_mdb_lname = new Fl_Check_Button(gx, gy, 15, 15, "lname");
+			chk_mdb_lname->value(progStatus.mdb_lname);
+			chk_mdb_lname->align(FL_ALIGN_RIGHT);
+			chk_mdb_lname->callback((Fl_Callback*)cb_chk_mdb_lname);
+gx += 105; gy = 45;
+			chk_mdb_addr = new Fl_Check_Button(gx, gy, 15, 15, "addr");
+			chk_mdb_addr->value(progStatus.mdb_addr);
+			chk_mdb_addr->align(FL_ALIGN_RIGHT);
+			chk_mdb_addr->callback((Fl_Callback*)cb_chk_mdb_addr);
+gy += 22;
+			chk_mdb_city = new Fl_Check_Button(gx, gy, 15, 15, "city");
+			chk_mdb_city->value(progStatus.mdb_city);
+			chk_mdb_city->align(FL_ALIGN_RIGHT);
+			chk_mdb_city->callback((Fl_Callback*)cb_chk_mdb_city);
+gy += 22;
+			chk_mdb_state = new Fl_Check_Button(gx, gy, 15, 15, "state");
+			chk_mdb_state->value(progStatus.mdb_state);
+			chk_mdb_state->align(FL_ALIGN_RIGHT);
+			chk_mdb_state->callback((Fl_Callback*)cb_chk_mdb_state);
+gy += 22;
+			chk_mdb_zip = new Fl_Check_Button(gx, gy, 15, 15, "zip");
+			chk_mdb_zip->value(progStatus.mdb_zip);
+			chk_mdb_zip->align(FL_ALIGN_RIGHT);
+			chk_mdb_zip->callback((Fl_Callback*)cb_chk_mdb_zip);
+gy += 22;
+			chk_mdb_phone = new Fl_Check_Button(gx, gy, 15, 15, "phone");
+			chk_mdb_phone->value(progStatus.mdb_phone);
+			chk_mdb_phone->align(FL_ALIGN_RIGHT);
+			chk_mdb_phone->callback((Fl_Callback*)cb_chk_mdb_phone);
+gy += 22;
+			chk_mdb_birthdate = new Fl_Check_Button(gx, gy, 15, 15, "birthdate");
+			chk_mdb_birthdate->value(progStatus.mdb_birthdate);
+			chk_mdb_birthdate->align(FL_ALIGN_RIGHT);
+			chk_mdb_birthdate->callback((Fl_Callback*)cb_chk_mdb_birthdate);
+gy += 22;
+			chk_mdb_spouse = new Fl_Check_Button(gx, gy, 15, 15, "spouse");
+			chk_mdb_spouse->value(progStatus.mdb_spouse);
+			chk_mdb_spouse->align(FL_ALIGN_RIGHT);
+			chk_mdb_spouse->callback((Fl_Callback*)cb_chk_mdb_spouse);
+gx += 105; gy = 45;
+			chk_mdb_sp_birth = new Fl_Check_Button(gx, gy, 15, 15, "sp_birth");
+			chk_mdb_sp_birth->value(progStatus.mdb_sp_birth);
+			chk_mdb_sp_birth->align(FL_ALIGN_RIGHT);
+			chk_mdb_sp_birth->callback((Fl_Callback*)cb_chk_mdb_sp_birth);
+gy += 22;
+			chk_mdb_comment1 = new Fl_Check_Button(gx, gy, 15, 15, "comment1");
+			chk_mdb_comment1->value(progStatus.mdb_comment1);
+			chk_mdb_comment1->align(FL_ALIGN_RIGHT);
+			chk_mdb_comment1->callback((Fl_Callback*)cb_chk_mdb_comment1);
+gy += 22;
+			chk_mdb_comment2 = new Fl_Check_Button(gx, gy, 15, 15, "comment2");
+			chk_mdb_comment2->value(progStatus.mdb_comment2);
+			chk_mdb_comment2->align(FL_ALIGN_RIGHT);
+			chk_mdb_comment2->callback((Fl_Callback*)cb_chk_mdb_comment2);
+gy += 22;
+			chk_mdb_email = new Fl_Check_Button(gx, gy, 15, 15, "email");
+			chk_mdb_email->value(progStatus.mdb_email);
+			chk_mdb_email->align(FL_ALIGN_RIGHT);
+			chk_mdb_email->callback((Fl_Callback*)cb_chk_mdb_email);
+gy += 22;
+			chk_mdb_locator = new Fl_Check_Button(gx, gy, 15, 15, "locator");
+			chk_mdb_locator->value(progStatus.mdb_locator);
+			chk_mdb_locator->align(FL_ALIGN_RIGHT);
+			chk_mdb_locator->callback((Fl_Callback*)cb_chk_mdb_locator);
+gy += 22;
+			chk_mdb_country = new Fl_Check_Button(gx, gy, 15, 15, "country");
+			chk_mdb_country->value(progStatus.mdb_country);
+			chk_mdb_country->align(FL_ALIGN_RIGHT);
+			chk_mdb_country->callback((Fl_Callback*)cb_chk_mdb_country);
+gy += 22;
+			chk_mdb_logdate = new Fl_Check_Button(gx, gy, 15, 15, "logdate");
+			chk_mdb_logdate->value(progStatus.mdb_logdate);
+			chk_mdb_logdate->align(FL_ALIGN_RIGHT);
+			chk_mdb_logdate->callback((Fl_Callback*)cb_chk_mdb_logdate);
+gx += 105; gy = 45;
+			chk_mdb_prevdate = new Fl_Check_Button(gx, gy, 15, 15, "prevdate");
+			chk_mdb_prevdate->value(progStatus.mdb_prevdate);
+			chk_mdb_prevdate->align(FL_ALIGN_RIGHT);
+			chk_mdb_prevdate->callback((Fl_Callback*)cb_chk_mdb_prevdate);
+gy += 22;
+			chk_mdb_nbrlogins = new Fl_Check_Button(gx, gy, 15, 15, "nbrlogins");
+			chk_mdb_nbrlogins->value(progStatus.mdb_nbrlogins);
+			chk_mdb_nbrlogins->align(FL_ALIGN_RIGHT);
+			chk_mdb_nbrlogins->callback((Fl_Callback*)cb_chk_mdb_nbrlogins);
+gy += 22;
+			chk_mdb_status = new Fl_Check_Button(gx, gy, 15, 15, "status");
+			chk_mdb_status->value(progStatus.mdb_status);
+			chk_mdb_status->align(FL_ALIGN_RIGHT);
+			chk_mdb_status->callback((Fl_Callback*)cb_chk_mdb_status);
+gy += 22;
+			chk_mdb_joined = new Fl_Check_Button(gx, gy, 15, 15, "joined");
+			chk_mdb_joined->value(progStatus.mdb_joined);
+			chk_mdb_joined->align(FL_ALIGN_RIGHT);
+			chk_mdb_joined->callback((Fl_Callback*)cb_chk_mdb_joined);
+gy += 22;
+			chk_mdb_netnbr = new Fl_Check_Button(gx, gy, 15, 15, "netnbr");
+			chk_mdb_netnbr->value(progStatus.mdb_netnbr);
+			chk_mdb_netnbr->align(FL_ALIGN_RIGHT);
+			chk_mdb_netnbr->callback((Fl_Callback*)cb_chk_mdb_netnbr);
+
+			Fl_Button *btn_setall = new Fl_Button(340, 164, 60, 24, "Set All");
+			btn_setall->callback((Fl_Callback*)cb_btn_setall);
+
+			Fl_Button *btn_clrall = new Fl_Button(340, 190, 60, 24, "Clr All");
+			btn_clrall->callback((Fl_Callback*)cb_btn_clrall);
+
+		tabGroupSharedFields->end();
 
 	tabsConfig->end();
 

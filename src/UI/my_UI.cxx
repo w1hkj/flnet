@@ -43,6 +43,7 @@
 #include "icons.h"
 #include "flinput2.h"
 #include "my_UI.h"
+#include "net_ui.h"
 #include "loglist.h"
 #include "netshared.h"
 #include "netsupport.h"
@@ -207,60 +208,63 @@ void updateCallins (bool fldigi_flag)
 //----------------------------------------------------------------------
 		static std::string ssInfo;
 		std::string line;
+//line 1
+		line.assign("Name:  ").append(szFullName);
+		if (line.length() < 30) line.append(30 - line.length(), ' ');
+		line.append("Nbr:  ").append(szNetNbr);
+		ssInfo.assign(line);
+//line 2
+		line.assign("Birth: ").append(szBirthday);
+		if (line.length() < 30) line.append(30 - line.length(), ' ');
+		line.append("Last: ").append(szLogDate);
+		ssInfo.append("\n").append(line);
+//line 3
+		line.assign("QTH:   ").append(szQTH);
+		if (line.length() > 30) line.erase(30);
+		if (line.length() < 30) line.append(30 - line.length(), ' ');
+		line.append("Loc:  ").append(rec.locator);
+		ssInfo.append("\n").append(line);
+//line 4
+		line.assign("Cntry: ").append(szCountry);
+		if (line.length() > 30) line.erase(30);
+		if (line.length() < 30) line.append(30 - line.length(), ' ');
+		line.append("Az:   ").append(szAzimuth);
+		ssInfo.append("\n").append(line);
+//line 5
+		line.assign("Phone: ").append(szPhone);
+		if (line.length() > 30) line.erase(30);
+		if (line.length() < 30) line.append(30 - line.length(), ' ');
+		line.append("Dist: ").append(szDistance);
+		ssInfo.append("\n").append(line);
+//line 6
+		line.assign("Spouse: ").append(szSpouse);
+		ssInfo.append("\n").append(line);
+//line 7
+		line.assign("Email: ").append(szEmail);
+		ssInfo.append("\n").append(line);
 
-		ssInfo.assign("Name:   ").append(szFullName).append("\n");
-
-		line.assign("Nbr:    ").append(szNetNbr);
-		if (line.length() < 25) line.append(25 - line.length(), ' ');
-		line.append("Last:   ").append(szLogDate).append("\n");
-		ssInfo.append(line);
-
-		line.assign("Birth:  ").append(szBirthday);
-		if (line.length() < 25) line.append(25 - line.length(), ' ');
-		line.append("Spouse: ").append(szSpouse).append("\n");
-		ssInfo.append(line);
-
-		line.assign("QTH:    ").append(szQTH);
-		if (line.length() > 25) line.erase(25);
-		if (line.length() < 25) line.append(25 - line.length(), ' ');
-		line.append("Phone:  ").append(szPhone).append("\n");
-		ssInfo.append(line);
-
-		line.assign("Country:").append(szCountry).append("\n");
-		ssInfo.append(line);
-
-		line.assign("Loc:    ").append(rec.locator);
-		if (line.length() > 20) line.erase(20);
-		if (line.length() < 20) line.append(20 - line.length(), ' ');
-		line.append("Az: ").append(szAzimuth);
-		line.append("  Dist: ").append(szDistance).append("\n");
-		ssInfo.append(line);
-
-		line.assign("Email:  ").append(szEmail).append("\n");
-		ssInfo.append(line);
-
-		line.assign("Info:   ").append(rec.comment1);
+		line.assign("Info:  ").append(rec.comment1);
 		std::string temp = rec.comment2;
 		if (!temp.empty()) {
 			line.append("; ").append(temp);
 		}
-		if (line.length() > 47) {
+		if (line.length() > 46) {
 			bool ok = false;
-			for (size_t n = 47; n > 30; n--) {
+			for (size_t n = 46; n > 30; n--) {
 				if (line[n] == ' ') {
 					line[n] = '\n';
 					ok = true;
 					break;
 				}
 			}
-			if (!ok) line.insert(47, "\n");
+			if (!ok) line.insert(46, "\n");
 			size_t p = line.find('\n');
 			std::string line2 = line.substr(p+1);
 			line.erase(p+1);
-			if (line2.length() > 47) line2.erase(47);
+			if (line2.length() > 46) line2.erase(46);
 			line.append(line2);
 		}
-		ssInfo.append(line);
+		ssInfo.append("\n").append(line);
 
 		txtInfo->label (ssInfo.c_str());
 	} else if (callinlist.numlist() == 0)
@@ -515,7 +519,36 @@ static bool ignore_event = false;
 int my_UI::handle (int e)
 {
 	int k = Fl::event_key();
+	int state = Fl::event_state();
 	if (!k) return 0;
+
+	if ((state & FL_ALT) == FL_ALT) {
+		switch (k) {
+			case 'E' : case 'e' :
+				if ( (e & FL_KEYUP) == FL_KEYUP) cbEditor ();
+				return 0;
+			case 'C' : case 'c' :
+				if ( (e & FL_KEYUP) == FL_KEYUP) cbConfig ();
+				return 0;
+			case 'I' : case 'i' :
+				if ( (e & FL_KEYUP) == FL_KEYUP) open_log_ins ();
+				return 1;
+			case 'Z' : case 'z' :
+				if ( (e & FL_KEYUP) == FL_KEYUP) change_size();
+				return 1;
+			case FL_F + 4 :
+				cleanExit();
+				return 1;
+			default:
+				return 0;
+		}
+	}
+
+#ifdef __APPLE__
+	if ( ((state & FL_META) == FL_META)  &&
+		(k == 'Q' || k == 'q') )
+			cleanExit();
+#endif
 
 	if (e != FL_KEYDOWN && e != FL_SHORTCUT) {
 		return 1;
@@ -551,17 +584,6 @@ int my_UI::handle (int e)
 			}
 		}
 	}
-
-	if ((Fl::event_state() & FL_ALT) == FL_ALT &&
-		 k == FL_F + 4 )
-			cleanExit();
-
-#ifdef __APPLE__
-	if ( ((Fl::event_state() & FL_META) == FL_META)  &&
-		(k == 'Q' || k == 'q') )
-			cleanExit();
-#endif
-
 
 	if (k == FL_Escape && my_status != LOGLIST) {
 		clearSAP ();

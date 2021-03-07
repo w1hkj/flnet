@@ -51,7 +51,9 @@ extern void save_to_masterdb ();
 
 extern int  binary_search_masterdb(int l, int r, std::string &p, std::string &a, std::string &s);
 extern bool from_masterdb(const char *p, const char *a, const char *s, csvRecord *mrec);
-extern void to_masterdb(csvRecord &mrec);
+extern void add_to_masterdb(csvRecord &mrec);
+extern void replace_masterdb(size_t recn, csvRecord &mrec);
+extern void sort_master_recs ();
 
 extern bool open_masterdb();
 extern void close_masterdb();

@@ -27,6 +27,7 @@
 
 #include <string>
 #include <sstream>
+#include <climits>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -54,6 +55,10 @@
 csvdb netdb;
 
 extern loglist callinlist;
+
+enum {PAS, APS, SAP, NETNBR};
+ 
+int  sorted_by = 0;
 
 int  binary_search_SAP(int l, int r, std::string &p, std::string &a, std::string &s);
 int  binary_search_netnbr(int l, int r, int x);
@@ -335,37 +340,41 @@ int PAScompare (const void *p1, const void *p2)
 	return strcmp(s1->suffix, s2->suffix);
 }
 
-void SortBySAP()
+void SortByPAS()
 {
+	sorted_by = PAS;
 	if (!indexed_list || !netdb.numrecs()) return;
-	qsort ( &(indexed_list[0]), netdb.numrecs(), sizeof(index_struct), SAPcompare);
-}
-
-void SortByNetNbr()
-{
-	if (!indexed_list || !netdb.numrecs()) return;
-	qsort ( &(indexed_list[0]), netdb.numrecs(), sizeof(index_struct), NetNbrCompare);
+	qsort ( &(indexed_list[0]), netdb.numrecs(), sizeof(index_struct), PAScompare);
 }
 
 void SortByAPS()
 {
+	sorted_by = APS;
 	if (!indexed_list || !netdb.numrecs()) return;
 	qsort ( &(indexed_list[0]), netdb.numrecs(), sizeof(index_struct), APScompare);
 }
 
-void SortByPAS()
+void SortBySAP()
 {
 	if (!indexed_list || !netdb.numrecs()) return;
-	qsort ( &(indexed_list[0]), netdb.numrecs(), sizeof(index_struct), PAScompare);
+	qsort ( &(indexed_list[0]), netdb.numrecs(), sizeof(index_struct), SAPcompare);
+	sorted_by = SAP;
+}
+
+void SortByNetNbr()
+{
+	sorted_by = NETNBR;
+	if (!indexed_list || !netdb.numrecs()) return;
+	qsort ( &(indexed_list[0]), netdb.numrecs(), sizeof(index_struct), NetNbrCompare);
 }
 
 void SortByPreferred()
 {
 	switch (progStatus.preferred_sort_order) {
-		case 0 : SortByPAS (); break;
-		case 1 : SortByAPS (); break;
-		case 2 : SortBySAP (); break;
-		case 3 : SortByNetNbr (); break;
+		case PAS : SortByPAS (); break;
+		case APS : SortByAPS (); break;
+		case SAP : SortBySAP (); break;
+		case NETNBR : SortByNetNbr (); break;
 	}
 }
 
@@ -414,14 +423,13 @@ void openDB(string fname)
 
 void dispRec ()
 {
-	static stringstream fname;
-	fname.seekp(ios::beg);
-	fname << "File:" << sSimpleName;
-	lblFileName->value (fname.str().c_str());
-	static stringstream recs;
-	recs.seekp(ios::beg);
-	recs << "Recs: " << netdb.numrecs();
-	lblNumRecs->value (recs.str().c_str());
+	static char fname[200];
+	snprintf(fname, sizeof(fname), "File: %s", sSimpleName.c_str());
+	lblFileName->value (fname);
+
+	static char recs[50];
+	snprintf(recs, sizeof(recs), "Recs: %d", (int)netdb.numrecs());
+	lblNumRecs->value (recs);
 
 	csvRecord rec;
 
@@ -572,7 +580,7 @@ void add_fldigi_record(void)
 	int recn = IsInDB (prefix.c_str(), area.c_str(), suffix.c_str());
 
 	if (recn >= 0) {	// existing record in data base
-		myUI->PickedToCallinsDB(recn);
+		add_to_callins(recn);
 		delete data;
 		return;
 	}
@@ -611,10 +619,9 @@ void add_fldigi_record(void)
 	netdb.add (rec);
 
 	getindexed_list ();
-
-	int found = IsInDB(prefix.c_str(), area.c_str(), suffix.c_str());
-	if (found >= 0) {
-		myUI->PickedToCallinsDB(found);
+	recn = IsInDB(prefix.c_str(), area.c_str(), suffix.c_str());
+	if (recn >= 0) {
+		add_to_callins(recn);
 	}
 
 	delete data;
@@ -901,14 +908,14 @@ int  binary_search_PAS(int l, int r, std::string &p, std::string &a, std::string
 		a2 = trim(indexed_list[mid].area);
 		s2 = trim(indexed_list[mid].suffix);
 		// compare prefix
-		if (p2 > p) return binary_search_SAP(l, mid - 1, p, a, s);
-		if (p2 < p) return binary_search_SAP(mid + 1, r, p, a, s);
+		if (p2 > p) return binary_search_PAS(l, mid - 1, p, a, s);
+		if (p2 < p) return binary_search_PAS(mid + 1, r, p, a, s);
 		// compare area
-		if (a2 > a) return binary_search_SAP(l, mid - 1, p, a, s);
-		if (a2 < a) return binary_search_SAP(mid + 1, r, p, a, s);
+		if (a2 > a) return binary_search_PAS(l, mid - 1, p, a, s);
+		if (a2 < a) return binary_search_PAS(mid + 1, r, p, a, s);
 		// compare suffix
-		if (s2 > s) return binary_search_SAP(l, mid - 1, p, a, s);
-		if (s2 < s) return binary_search_SAP(mid + 1, r, p, a, s);
+		if (s2 > s) return binary_search_PAS(l, mid - 1, p, a, s);
+		if (s2 < s) return binary_search_PAS(mid + 1, r, p, a, s);
 		list_index = mid;
 		return indexed_list[mid].recN;
 	}
@@ -926,14 +933,14 @@ int  binary_search_APS(int l, int r, std::string &p, std::string &a, std::string
 		a2 = trim(indexed_list[mid].area);
 		s2 = trim(indexed_list[mid].suffix);
 		// compare area
-		if (a2 > a) return binary_search_SAP(l, mid - 1, p, a, s);
-		if (a2 < a) return binary_search_SAP(mid + 1, r, p, a, s);
+		if (a2 > a) return binary_search_APS(l, mid - 1, p, a, s);
+		if (a2 < a) return binary_search_APS(mid + 1, r, p, a, s);
 		// compare prefix
-		if (p2 > p) return binary_search_SAP(l, mid - 1, p, a, s);
-		if (p2 < p) return binary_search_SAP(mid + 1, r, p, a, s);
+		if (p2 > p) return binary_search_APS(l, mid - 1, p, a, s);
+		if (p2 < p) return binary_search_APS(mid + 1, r, p, a, s);
 		// compare suffix
-		if (s2 > s) return binary_search_SAP(l, mid - 1, p, a, s);
-		if (s2 < s) return binary_search_SAP(mid + 1, r, p, a, s);
+		if (s2 > s) return binary_search_APS(l, mid - 1, p, a, s);
+		if (s2 < s) return binary_search_APS(mid + 1, r, p, a, s);
 		list_index = mid;
 		return indexed_list[mid].recN;
 	}
@@ -942,19 +949,47 @@ int  binary_search_APS(int l, int r, std::string &p, std::string &a, std::string
 
 void cb_btnSearchOK(Fl_Return_Button *b, void *d)
 {
-	long found;
+	long found = -1;
 	if (!indexed_list) return;
 
 	CallsignSearch->hide ();
 
-	SortBySAP();
-	out_sorted_by->value("S/A/P");
-	out_sorted_by->redraw();
+	std::string call = trim(uppercase(sSrchCall->value()));
 
-	std::string p = trim(uppercase(sSrchPrefix->value()));
-	std::string a = trim(uppercase(sSrchArea->value()));
-	std::string s = trim(uppercase(sSrchSuffix->value()));
-	found = binary_search_SAP(	0, netdb.numrecs() - 1, p, a, s);
+	if (call.empty()) return;
+
+	size_t cptr = std::string::npos;
+	for (int n = call.length() - 1; n >= 0; n--) {
+		if (isdigit(call[n])) {
+			cptr = n;
+			break;
+		}
+	}
+
+	if (cptr == std::string::npos) return;
+
+	std::string p = call.substr(0, cptr);
+	std::string a = call.substr(cptr, 1);
+	std::string s = call.substr(cptr + 1);
+
+	if (p.empty() || a.empty() || s.empty() ) return;
+
+	switch (sorted_by) {
+		case PAS : 
+			found = binary_search_PAS( 0, netdb.numrecs() - 1, p, a, s);
+			break;
+		case APS :
+			found = binary_search_APS( 0, netdb.numrecs() - 1, p, a, s);
+			break;
+		case SAP :
+			found = binary_search_SAP( 0, netdb.numrecs() - 1, p, a, s);
+			break;
+		case NETNBR :  // change to PAS sort for the search
+			SortByPAS();
+			found = binary_search_PAS( 0, netdb.numrecs() - 1, p, a, s);
+			SortByNetNbr();
+			break;
+	}
 
 	if (found > -1) {
 		gotoRec(found);
@@ -965,9 +1000,8 @@ void cb_mnuSearchCallsign (Fl_Menu_ *m, void *d)
 {
 	if (!CallsignSearch)
 		CallsignSearch = newSearchCallsignDialog();
-	sSrchPrefix->value("");
-	sSrchArea->value("");
-	sSrchSuffix->value("");
+	sSrchCall->value("");
+	sSrchCall->take_focus();
 	CallsignSearch->show();
 }
 
@@ -986,7 +1020,10 @@ int  binary_search_netnbr(int l, int r, int x)
 	int snbr;
 	if (r >= l) {
 		int mid = l + (r - l) / 2;
-		snbr = atol(indexed_list[mid].netnbr);
+		if (strlen(indexed_list[mid].netnbr) == 0)
+			snbr = INT_MAX;
+		else
+			snbr = atol(indexed_list[mid].netnbr);
 		if (snbr == x) {
 			list_index = mid;
 			return mid;
@@ -1007,8 +1044,8 @@ void cb_btnSearchNetNbrOK (Fl_Return_Button *b, void *d)
 	SortByNetNbr ();
 	out_sorted_by->value("Net Nbr");
 	out_sorted_by->redraw();
-	found = binary_search_netnbr(0, netdb.numrecs() - 1, srchnbr);
 
+	found = binary_search_netnbr(0, netdb.numrecs() - 1, srchnbr);
 	if (found == -1) return;
 
 	gotoRec(indexed_list[found].recN);
@@ -1052,19 +1089,25 @@ void cb_btnUpdateCancel(Fl_Button *b, void *d)
 			refresh_logins ();
 			updateCallins ();
 			break;
-		default : // must be an UPDATE
+		case UPDATE :
 			if (netdb.numrecs() > 0) {
 				std::string p, a, s;
 				p = inpPrefix->value();
 				a = inpArea->value();
 				s = inpSuffix->value();
 				saveCurRecord ();
-				currec = binary_search_SAP(0, netdb.numrecs(), p, a, s);
-				gotoRec (currec);
-				update_select_label();
+				long rN = callinlist.locate (p, a, s);
+				if (rN >= 0)
+					callinlist.modify (rN, currec,
+						   inpPrefix->value(),
+						   inpArea->value (),
+						   inpSuffix->value (),
+						   inpNickname->value ());
+				updateCallins ();
 			}
-			getindexed_list ();
-			refresh_logins ();
+			break;
+		default :
+			break;
 	}
 }
 

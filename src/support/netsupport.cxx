@@ -213,7 +213,7 @@ void open_log_ins()
 	log_in_view->clear();
 	copy_list.clear();
 
-	static int widths[] = { 75, 165, 0 };  // widths for each column
+	static int widths[] = { 75, 160, 0 };  // widths for each column
 	log_in_view->column_widths(widths); // assign array to widget
 
 	for (int i = 0; i < callinlist.numlist(); i++) {

@@ -292,27 +292,29 @@ char * loglist::suffix (long n)
 int loglist::Pri_0 (int n)
 {
 	int nn = n + BLANKS;
-	int newpos;
-	if (llist[nn].chPriority == ' ') return n;
-	llist[nn].chPriority = ' ';
 
-//std::cout << "CreateDispLine (nn) 003" << std::endl;
+	llist[nn].chPriority = ' ';
 	CreateDispLine (nn);
 
-	if (nn == BLANKS) return n;
 	if (iAutoPriority == 0) return n;
+
 	_logged thiscall = llist[nn];
-	char ch;
-	for (int i = BLANKS; i < nlist; i++) {
-		ch = llist[i].chPriority;
-		if (ch == cP1 || ch == cP2 || ch == cP3) continue;
-		newpos = i;
-		for (int j = nlist-1; j > newpos; j--)
-			llist[j] = llist[j-1];
-		llist[newpos] = thiscall;
-		return newpos - BLANKS;
+	del(n);
+
+	int newpos = BLANKS;
+	for (newpos = BLANKS; newpos < nlist; newpos++) {
+		if (llist[newpos].chPriority != ' ')
+			continue;
+		if (std::string(llist[newpos].szdt) > std::string(thiscall.szdt))
+			break;
 	}
-	return n;
+	for (int n = nlist; n > newpos; n--)
+		llist[n] = llist[n-1];
+
+	llist[newpos] = thiscall;
+	nlist++;
+
+	return newpos - BLANKS;
 }
 
 int loglist::Pri_1 (int n)
@@ -320,23 +322,29 @@ int loglist::Pri_1 (int n)
 	int nn = n + BLANKS;
 	int newpos;
 	if (cP1 == ' ') return n;
+
 	llist[nn].chPriority = cP1;
-//std::cout << "CreateDispLine (nn) 004" << std::endl;
 	CreateDispLine (nn);
-	if (nn == BLANKS) return n;
+
 	if (iAutoPriority == 0) return n;
+
 	_logged thiscall = llist[nn];
-	char ch;
+	del(n);
+
+	std::string dt = thiscall.szdt;
 	for (int i = BLANKS; i < nlist; i++) {
-		ch = llist[i].chPriority;
-		if (ch == cP1) continue;
+		if ((llist[i].chPriority == cP1) && 
+			(std::string(llist[i].szdt) < dt))
+			continue;
 		newpos = i;
-		for (int j = nlist-1; j > newpos; j--)
+		for (int j = nlist; j > newpos; j--)
 			llist[j] = llist[j-1];
 		llist[newpos] = thiscall;
+		nlist++;
 		return newpos - BLANKS;
 	}
-	return n;
+	llist[nlist++] = thiscall;
+	return nlist -1 - BLANKS;
 }
 
 int loglist::Pri_2 (int n)
@@ -344,23 +352,33 @@ int loglist::Pri_2 (int n)
 	int nn = n + BLANKS;
 	int newpos;
 	if (cP2 == ' ') return n;
+
 	llist[nn].chPriority = cP2;
-//std::cout << "CreateDispLine (nn) 005" << std::endl;
 	CreateDispLine (nn);
-	if (nn == BLANKS) return n;
+
 	if (iAutoPriority == 0) return n;
+
 	_logged thiscall = llist[nn];
+	del(n);
+
+	std::string dt = thiscall.szdt;
 	char ch;
 	for (int i = BLANKS; i < nlist; i++) {
 		ch = llist[i].chPriority;
-		if (ch == cP1 || ch == cP2) continue;
+		if (ch == cP1)
+			continue;
+		if ((ch == cP2) && 
+			(std::string(llist[i].szdt) < dt))
+			continue;
 		newpos = i;
-		for (int j = nlist-1; j > newpos; j--)
+		for (int j = nlist; j > newpos; j--)
 			llist[j] = llist[j-1];
 		llist[newpos] = thiscall;
+		nlist++;
 		return newpos - BLANKS;
 	}
-	return n;
+	llist[nlist++] = thiscall;
+	return nlist - 1 - BLANKS;
 }
 
 int loglist::Pri_3 (int n)
@@ -368,23 +386,33 @@ int loglist::Pri_3 (int n)
 	int nn = n + BLANKS;
 	int newpos;
 	if (cP3 == ' ') return n;
+
 	llist[nn].chPriority = cP3;
-//std::cout << "CreateDispLine (nn) 006" << std::endl;
 	CreateDispLine (nn);
-	if (nn == BLANKS) return n;
+
 	if (iAutoPriority == 0) return n;
+
 	_logged thiscall = llist[nn];
+	del(n);
+
+	std::string dt = thiscall.szdt;
 	char ch;
 	for (int i = BLANKS; i < nlist; i++) {
 		ch = llist[i].chPriority;
-		if (ch == cP1 || ch == cP2 || ch == cP3) continue;
+		if (ch == cP1 || ch == cP2)
+			continue;
+		if ((ch == cP3) &&
+			(std::string(llist[i].szdt) < dt))
+			continue;
 		newpos = i;
-		for (int j = nlist-1; j > newpos; j--)
+		for (int j = nlist; j > newpos; j--)
 			llist[j] = llist[j-1];
 		llist[newpos] = thiscall;
+		nlist++;
 		return newpos - BLANKS;
 	}
-	return n;
+	llist[nlist++] = thiscall;
+	return nlist -1 - BLANKS;
 }
 
 int loglist::nextup (void)

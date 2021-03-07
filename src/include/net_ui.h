@@ -48,6 +48,8 @@ extern void cb_mnuNew(Fl_Menu_*, void*);
 extern void cb_mnuExit(Fl_Menu_*, void*);
 extern void cb_mnuEditor(Fl_Menu_*, void*);
 extern void cb_mnuConfig(Fl_Menu_*, void*);
+extern void cb_mnuLogIns(Fl_Menu_*, void*);
+extern void cb_mnuSize(Fl_Menu_*, void*);
 extern void cb_mnuHelpContent(Fl_Menu_*, void*);
 extern void cb_mnuEventLog(Fl_Menu_*, void*);
 extern void cb_mnuAbout(Fl_Menu_*, void*);

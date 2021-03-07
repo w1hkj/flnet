@@ -62,6 +62,15 @@ bool csvdb::mapheader(string header)
 static int callsign_comp(const void *r1, const void *r2) {
 	callsigns *p1 = (callsigns *)r1;
 	callsigns *p2 = (callsigns *)r2;
+/*
+	int comp = strcmp(p1->suffix, p2->suffix);
+	if (comp == 0) {
+		comp = strcmp(p1->prefix, p2->prefix);
+		if (comp == 0)
+			comp = strcmp(p1->area, p2->area);
+	}
+	return comp;
+*/
 	// sort by area / prefix / suffix
 	int comp = strcmp(p1->area, p2->area);
 	if (comp == 0) {
@@ -70,6 +79,7 @@ static int callsign_comp(const void *r1, const void *r2) {
 			comp = strcmp(p1->suffix, p2->suffix);
 	}
 	return comp;
+
 }
 
 //----------------------------------------------------------------------
@@ -398,75 +408,46 @@ int csvdb::erase(size_t n)
 {
 	vector<csvRecord>::iterator p = dbrecs.begin();
 	size_t i = 0;
-	while (p != dbrecs.end() && i != dbrecs.size()) {
-		if (i == n) {
-			dbrecs.erase(p);
-			return 0;
-		}
-		p++; i++;
-	}
-	return 1;
+	while (p <= dbrecs.end() && i != n) {p++; i++;}
+	if (i != n) return 1;
+	dbrecs.erase(p);
+	return 0;
 }
 
-void csvdb::print(csvRecord &rec)
+std::string csvdb::print(csvRecord &rec)
 {
-	std::cout <<
-	"prefix: " << rec.prefix <<
-	"area:   " << rec.area <<
-	"suffix: " << rec.suffix <<
-//	rec.callsign <<
-	"name:   " << rec.name <<
-	"netnbr: " << rec.netnbr <<
-//	rec.logdate <<
-//	rec.nbrlogins <<
-//	rec.status <<
-//	rec.joined <<
-//	rec.fname <<
-//	rec.lname <<
-//	rec.addr <<
-//	rec.city <<
-//	rec.state <<
-//	rec.zip <<
-//	rec.phone <<
-//	rec.birthdate <<
-//	rec.spouse <<
-//	rec.sp_birth <<
-//	rec.comment1 <<
-//	rec.comment2 <<
-//	rec.email <<
-//	rec.prevdate <<
-//	rec.locator <<
-//	rec.country << 
-	std::endl;
+	std::string retstr;
+	retstr.assign("prefix:   ").assign(rec.prefix).assign("\n");
+	retstr.append("area:     ").assign(rec.area).assign("\n");
+	retstr.append("suffix:   ").assign(rec.suffix).assign("\n");
+	retstr.append("callsign: ").assign(rec.callsign).assign("\n");
+	retstr.append("name:     ").assign(rec.name).assign("\n");
+	retstr.append("netnbr:   ").assign(rec.netnbr).assign("\n");
+	retstr.append("logdate:  ").assign(rec.logdate).assign("\n");
+	retstr.append("nbrlogins:").assign(rec.nbrlogins).assign("\n");
+	retstr.append("status:   ").assign(rec.status).assign("\n");
+	retstr.append("joined:   ").assign(rec.joined).assign("\n");
+	retstr.append("fname:    ").assign(rec.fname).assign("\n");
+	retstr.append("lname:    ").assign(rec.lname).assign("\n");
+	retstr.append("addr:     ").assign(rec.addr).assign("\n");
+	retstr.append("city:     ").assign(rec.city).assign("\n");
+	retstr.append("state:    ").assign(rec.state).assign("\n");
+	retstr.append("zip:      ").assign(rec.zip).assign("\n");
+	retstr.append("phone:    ").assign(rec.phone).assign("\n");
+	retstr.append("birthdate:").assign(rec.birthdate).assign("\n");
+	retstr.append("spouse:   ").assign(rec.spouse).assign("\n");
+	retstr.append("sp_birth: ").assign(rec.sp_birth).assign("\n");
+	retstr.append("comment 1:").assign(rec.comment1).assign("\n");
+	retstr.append("comment 2:").assign(rec.comment2).assign("\n");
+	retstr.append("email:    ").assign(rec.email).assign("\n");
+	retstr.append("prevdate: ").assign(rec.prevdate).assign("\n");
+	retstr.append("locator:  ").assign(rec.locator).assign("\n");
+	retstr.append("country:  ").assign(rec.country).assign("\n");
+	return retstr;
 }
 
 std::string csvdb::print(int n)
 {
-	static std::string retstr;
 	csvRecord rec = dbrecs[n];
-	retstr.clear();
-	retstr.append("call: ").append(rec.callsign);
-	retstr.append(", ").append(rec.name);
-	retstr.append(", ").append(rec.netnbr);
-	return retstr;
-	retstr.append(", ").append(rec.logdate);
-	retstr.append(", ").append(rec.nbrlogins);
-	retstr.append(", ").append(rec.status);
-	retstr.append(", ").append(rec.joined);
-	retstr.append(", ").append(rec.fname);
-	retstr.append(", ").append(rec.lname);
-	retstr.append(", ").append(rec.addr);
-	retstr.append(", ").append(rec.city);
-	retstr.append(", ").append(rec.state);
-	retstr.append(", ").append(rec.zip);
-	retstr.append(", ").append(rec.phone);
-	retstr.append(", ").append(rec.birthdate);
-	retstr.append(", ").append(rec.spouse);
-	retstr.append(", ").append(rec.sp_birth);
-	retstr.append(", ").append(rec.comment1);
-	retstr.append(", ").append(rec.comment2);
-	retstr.append(", ").append(rec.email);
-	retstr.append(", ").append(rec.prevdate);
-	retstr.append(", ").append(rec.locator);
-	retstr.append(", ").append(rec.country);
+	return print(rec);
 }

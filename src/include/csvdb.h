@@ -157,7 +157,7 @@ public:
 	void join(csvRecord &rec, string &s);
 	void clearrec(csvRecord &rec);
 	bool mapheader(string s);
-	void print(csvRecord &rec);
+	std::string print(csvRecord &rec);
 	std::string print(int n);
 };
 

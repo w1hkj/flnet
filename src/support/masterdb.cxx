@@ -59,48 +59,64 @@ csvRecord master_rec;
 
 SEARCH_REC *master_recs = (SEARCH_REC *)0;
 
+//----------------------------------------------------------------------
 // l = left element in search interval
 // r = right element in search interval
 // p = search prefix
 // a = search area
 // s = search suffix
+//----------------------------------------------------------------------
+
 int  binary_search_masterdb(int l, int r, std::string &p, std::string &a, std::string &s) 
 { 
-	std::string p2, a2, s2;
-	if (r >= l) { 
-		int mid = l + (r - l) / 2; 
-		p2 = master_recs[mid].prefix;
-		a2 = master_recs[mid].area;
-		s2 = master_recs[mid].suffix;
-		if (s2 > s) return binary_search_masterdb(l, mid - 1, p, a, s);
-		if (s2 < s) return binary_search_masterdb(mid + 1, r, p, a, s);
-		if (a2 > a) return binary_search_masterdb(l, mid - 1, p, a, s);
-		if (a2 < a) return binary_search_masterdb(mid + 1, r, p, a, s);
-		if (p2 > p) return binary_search_masterdb(l, mid - 1, p, a, s);
-		if (p2 < p) return binary_search_masterdb(mid + 1, r, p, a, s);
-		return mid;
-	} 
-	return -1; 
+	if (r < l) return -1;
+
+	int mid = l + (r - l) / 2;
+
+	std::string call1, call2;
+	call1.assign(p).append(a).append(s);
+	call2.assign(master_recs[mid].prefix).append(master_recs[mid].area).append(master_recs[mid].suffix);
+
+	int cmp = call2.compare(call1);
+	if (cmp > 0) return binary_search_masterdb(l, mid - 1, p, a, s);
+	if (cmp < 0) return binary_search_masterdb(mid + 1, r, p, a, s);
+	return mid;
 } 
+
+// sort by area / prefix / suffix
 
 int mrec_compare (const void *p1, const void *p2)
 {
 	SEARCH_REC *s1 = (SEARCH_REC *)p1;
 	SEARCH_REC *s2 = (SEARCH_REC *)p2;
-	int cmp;
-	if ((cmp = strcmp(s1->suffix, s2->suffix)) != 0) return cmp;
-	if ((cmp = strcmp(s1->area, s2->area)) != 0) return cmp;
-	return strcmp(s1->prefix, s2->prefix);
+
+	std::string call1, call2;
+	call1.assign(s1->prefix).append(s1->area).append(s1->suffix);
+	call2.assign(s2->prefix).append(s2->area).append(s2->suffix);
+
+	return call2.compare(call1);
+
 }
 
 void sort_master_recs()
 {
+	return;
 	if (!master_recs || !masterdb->numrecs()) return;
 	qsort ( &(master_recs[0]), masterdb->numrecs(), sizeof(SEARCH_REC), mrec_compare);
 }
 
 void load_master_recs()
 {
+	if (masterdb->load()) {
+		delete masterdb;
+		masterdb = (csvdb *)0;
+		if (box_mdb_isopen) {
+			box_mdb_isopen->color(FL_BACKGROUND2_COLOR);
+			box_mdb_isopen->redraw();
+		}
+		return;
+	}
+
 	csvRecord rec;
 	if (master_recs)
 		delete [] master_recs;
@@ -130,15 +146,6 @@ bool open_masterdb()
 	}
 	masterdb = new csvdb();
 	masterdb->filename(progStatus.masterdb);
-	if (masterdb->load()) {
-		delete masterdb;
-		masterdb = (csvdb *)0;
-		if (box_mdb_isopen) {
-			box_mdb_isopen->color(FL_BACKGROUND2_COLOR);
-			box_mdb_isopen->redraw();
-		}
-		return false;
-	}
 	load_master_recs();
 	if (box_mdb_isopen) {
 		box_mdb_isopen->color(progStatus.mdb_color);
@@ -158,7 +165,8 @@ bool from_masterdb(const char *p, const char *a, const char *s, csvRecord *mrec)
 	std::string sa = a;
 	std::string ss = s; 
 
-	int recn = binary_search_masterdb(0, masterdb->numrecs() - 1, sp, sa, ss);
+	int recn = binary_search_masterdb(
+		0, masterdb->numrecs() - 1, sp, sa, ss);
 
 	if (recn < 0) {
 		fl_alert2("Not in Master DB");
@@ -168,6 +176,12 @@ bool from_masterdb(const char *p, const char *a, const char *s, csvRecord *mrec)
 	csvRecord rec;
 
 	masterdb->get(master_recs[recn].recN, rec);
+
+	mrec->prefix = rec.prefix;
+	mrec->area = rec.area;
+	mrec->suffix = rec.suffix;
+	mrec->callsign = rec.callsign;
+	mrec->prevdate = rec.prevdate;
 	mrec->name = rec.name;
 	mrec->fname = rec.fname;
 	mrec->lname = rec.lname;
@@ -184,19 +198,37 @@ bool from_masterdb(const char *p, const char *a, const char *s, csvRecord *mrec)
 	mrec->email = rec.email;
 	mrec->locator = rec.locator;
 	mrec->country = rec.country;
-	if (progStatus.mdb_netnbr)
-		mrec->netnbr = rec.netnbr;
+	mrec->logdate = rec.logdate;
+	mrec->prevdate = rec.prevdate;
+	mrec->nbrlogins = rec.nbrlogins;
+	mrec->status = rec.status;
+	mrec->joined = rec.joined;
+	mrec->netnbr = rec.netnbr;
 
 	return true;
 }
 
-void to_masterdb(csvRecord &mrec)
+void add_to_masterdb(csvRecord &mrec)
 {
 	if (!masterdb) {
 		fl_alert2("Master db is not open");
 		return;
 	}
 	masterdb->add(mrec);
+	masterdb->save();
+	load_master_recs();
+}
+
+void replace_masterdb(size_t recn, csvRecord &mrec)
+{
+	if (!masterdb) {
+		fl_alert2("Master db is not open");
+		return;
+	}
+	masterdb->erase(recn);
+	masterdb->add(mrec);
+	masterdb->save();
+	load_master_recs();
 }
 
 void close_masterdb()

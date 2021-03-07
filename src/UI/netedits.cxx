@@ -130,25 +130,34 @@ static void cb_lookup_masterdb_record(Fl_Menu_ *, void *) {
 				inpArea->value(),
 				inpSuffix->value(), &mrec);
 	if (ok) {
-		inpNickname->value(mrec.name.c_str());
-		inpFname->value(mrec.fname.c_str());
-		inpLname->value(mrec.lname.c_str());
-		inpAddress->value(mrec.addr.c_str());
-		inpCity->value(mrec.city.c_str());
-		inpState->value(uppercase(mrec.state).c_str());
-		inpZip->value(mrec.zip.c_str());
-		inpPhone->value(mrec.phone.c_str());
-		inpBirthday->value(mrec.birthdate.c_str());
-		inpSpouse->value(mrec.spouse.c_str());
-		inpSpBirthday->value(mrec.sp_birth.c_str());
-		inpComment1->value(mrec.comment1.c_str());
-		inpComment2->value(mrec.comment2.c_str());
-		inpEmail->value(mrec.email.c_str());
-		inpLocator->value(mrec.locator.c_str());
-		inpLocator->do_callback();
-		inpCountry->value(mrec.country.c_str());
-		if (progStatus.mdb_netnbr)
-			inpNetNbr->value(mrec.netnbr.c_str());
+
+		if (progStatus.mdb_prefix)	inpPrefix->value(mrec.prefix.c_str());
+		if (progStatus.mdb_area)	inpArea->value(mrec.area.c_str());
+		if (progStatus.mdb_suffix)	inpSuffix->value(mrec.suffix.c_str());
+		if (progStatus.mdb_callsign)	inpCallsign->value(mrec.callsign.c_str());
+		if (progStatus.mdb_name)	inpNickname->value(mrec.name.c_str());
+		if (progStatus.mdb_fname)	inpFname->value(mrec.fname.c_str());
+		if (progStatus.mdb_lname)	inpLname->value(mrec.lname.c_str());
+		if (progStatus.mdb_addr)	inpAddress->value(mrec.addr.c_str());
+		if (progStatus.mdb_city)	inpCity->value(mrec.city.c_str());
+		if (progStatus.mdb_state)	inpState->value(uppercase(mrec.state).c_str());
+		if (progStatus.mdb_zip)		inpZip->value(mrec.zip.c_str());
+		if (progStatus.mdb_phone)	inpPhone->value(mrec.phone.c_str());
+		if (progStatus.mdb_birthdate)	inpBirthday->value(mrec.birthdate.c_str());
+		if (progStatus.mdb_spouse)	inpSpouse->value(mrec.spouse.c_str());
+		if (progStatus.mdb_sp_birth)	inpSpBirthday->value(mrec.sp_birth.c_str());
+		if (progStatus.mdb_comment1)	inpComment1->value(mrec.comment1.c_str());
+		if (progStatus.mdb_comment2)	inpComment2->value(mrec.comment2.c_str());
+		if (progStatus.mdb_email)	inpEmail->value(mrec.email.c_str());
+		if (progStatus.mdb_locator)	inpLocator->value(mrec.locator.c_str());
+		if (progStatus.mdb_country)	inpCountry->value(mrec.country.c_str());
+		if (progStatus.mdb_logdate)	txtLogDate->value(mrec.logdate.c_str());
+		if (progStatus.mdb_prevdate)	inpPrevDate->value(mrec.prevdate.c_str());
+		if (progStatus.mdb_nbrlogins)	inpNbrLogins->value(mrec.nbrlogins.c_str());
+		if (progStatus.mdb_status)	inpStatus->value(mrec.status.c_str());
+		if (progStatus.mdb_joined)	inpJoined->value(mrec.joined.c_str());
+		if (progStatus.mdb_netnbr)	inpNetNbr->value(mrec.netnbr.c_str());
+		compute();
 	}
 }
 
@@ -160,40 +169,49 @@ void cb_add_record_to_masterdb(Fl_Menu_ *, void *) {
 			return;
 	}
 
-	mrec.prefix = inpPrefix->value();
-	mrec.area = inpArea->value();
-	mrec.suffix = inpSuffix->value();
-	mrec.name = inpNickname->value();
-	mrec.fname = inpFname->value();
-	mrec.lname = inpLname->value();
-	mrec.addr = inpAddress->value();
-	mrec.city = inpCity->value();
-	mrec.state = uppercase(inpState->value());
-	mrec.zip = inpZip->value();
-	mrec.phone = inpPhone->value();
-	mrec.birthdate = inpBirthday->value();
-	mrec.spouse = inpSpouse->value();
-	mrec.sp_birth = inpSpBirthday->value();
-	mrec.comment1 = inpComment1->value();
-	mrec.comment2 = inpComment2->value();
-	mrec.email = inpEmail->value();
-	mrec.locator = inpLocator->value();
-	mrec.country = inpCountry->value();
-	if (progStatus.mdb_netnbr)
-		mrec.netnbr = inpNetNbr->value();
+	if (progStatus.mdb_prefix)		mrec.prefix = inpPrefix->value();
+	if (progStatus.mdb_area)		mrec.area = inpArea->value();
+	if (progStatus.mdb_suffix)		mrec.suffix = inpSuffix->value();
+	if (progStatus.mdb_callsign)	mrec.callsign = inpCallsign->value();
+	if (progStatus.mdb_name)		mrec.name = inpNickname->value();
+	if (progStatus.mdb_fname)		mrec.fname = inpFname->value();
+	if (progStatus.mdb_lname)		mrec.lname = inpLname->value();
+	if (progStatus.mdb_addr)		mrec.addr = inpAddress->value();
+	if (progStatus.mdb_city)		mrec.city = inpCity->value();
+	if (progStatus.mdb_state)		mrec.state = uppercase(inpState->value());
+	if (progStatus.mdb_zip)			mrec.zip = inpZip->value();
+	if (progStatus.mdb_phone)		mrec.phone = inpPhone->value();
+	if (progStatus.mdb_birthdate)	mrec.birthdate = inpBirthday->value();
+	if (progStatus.mdb_spouse)		mrec.spouse = inpSpouse->value();
+	if (progStatus.mdb_sp_birth)	mrec.sp_birth = inpSpBirthday->value();
+	if (progStatus.mdb_comment1)	mrec.comment1 = inpComment1->value();
+	if (progStatus.mdb_comment2)	mrec.comment2 = inpComment2->value();
+	if (progStatus.mdb_email)		mrec.email = inpEmail->value();
+	if (progStatus.mdb_locator)		mrec.locator = inpLocator->value();
+	if (progStatus.mdb_country)		mrec.country = inpCountry->value();
+	if (progStatus.mdb_logdate)		mrec.logdate = txtLogDate->value();
+	if (progStatus.mdb_prevdate)	mrec.prevdate = inpPrevDate->value();
+	if (progStatus.mdb_nbrlogins)	mrec.nbrlogins = inpNbrLogins->value();
+	if (progStatus.mdb_status)		mrec.status = inpStatus->value();
+	if (progStatus.mdb_joined)		mrec.joined = inpJoined->value();
+	if (progStatus.mdb_netnbr)		mrec.netnbr = inpNetNbr->value();
 
 	int recn = binary_search_masterdb(
 					0, masterdb->numrecs() - 1, 
 					mrec.prefix, mrec.area, mrec.suffix);
 	if (recn == -1) {
-		to_masterdb(mrec);
+		add_to_masterdb(mrec);
+		sort_master_recs();
+		recn = binary_search_masterdb(
+					0, masterdb->numrecs() - 1, 
+					mrec.prefix, mrec.area, mrec.suffix);
 	} else {
 		std::string call;
 		call.assign(mrec.prefix).append(mrec.area).append(mrec.suffix);
-		switch (fl_choice2("%s is in master DB", NULL, "Add", "Cancel", call.c_str())) {
-			case 0: break;
-			case 1: to_masterdb(mrec); break; // default
-			case 2: break;
+		switch (fl_choice2("%s is in master DB", "Add", "Cancel", "Replace", call.c_str())) {
+			case 0: add_to_masterdb(mrec); break;
+			case 1: break;
+			case 2: replace_masterdb(recn, mrec); break;
 		}
 	}
 }
@@ -201,28 +219,28 @@ void cb_add_record_to_masterdb(Fl_Menu_ *, void *) {
 
 Fl_Menu_Item menu_mbarMain[] = {
 	{"Sea&rch", 0,  0, 0, 64, 0, 0, 14, 56},
-	{"&Callsign", 0,  (Fl_Callback*)cb_mnuSearchCallsign, 0, 0, 0, 0, 14, 56},
-	{"&NetNbr", 0,  (Fl_Callback*)cb_mnuSearchNetNbr, 0, 0, 0, 0, 14, 56},
+		{"&Callsign", 0,  (Fl_Callback*)cb_mnuSearchCallsign, 0, 0, 0, 0, 14, 56},
+		{"&NetNbr", 0,  (Fl_Callback*)cb_mnuSearchNetNbr, 0, 0, 0, 0, 14, 56},
 	{0},
 	{"&Browse", 0,  0, 0, 64, 0, 0, 14, 56},
-	{"&Callsign", 0,  (Fl_Callback*)cb_mnuBrowseCallsign, 0, 0, 0, 0, 14, 56},
-	{"&NetNbr", 0,  (Fl_Callback*)cb_mnuBrowseNetNbr, 0, 0, 0, 0, 14, 56},
+		{"&Callsign", 0,  (Fl_Callback*)cb_mnuBrowseCallsign, 0, 0, 0, 0, 14, 56},
+		{"&NetNbr", 0,  (Fl_Callback*)cb_mnuBrowseNetNbr, 0, 0, 0, 0, 14, 56},
 	{0},
 	{"&Lookup", 0, 0, 0, 64, 0, 0, 14, 56},
-	{"&On-line", 0, (Fl_Callback*)cb_LookupCall, 0, 0, 0, 0, 14, 56},
-	{"&Fldigi", 0,  (Fl_Callback*)cb_mnuFldigiEditor, 0, 0, 0, 0, 14, 56},
+		{"&On-line", 0, (Fl_Callback*)cb_LookupCall, 0, 0, 0, 0, 14, 56},
+		{"&Fldigi", 0,  (Fl_Callback*)cb_mnuFldigiEditor, 0, 0, 0, 0, 14, 56},
 	{0},
 	{"&Sort", 0,  0, 0, 64, 0, 0, 14, 56},
-	{"&Prefix/Area/Suffix", 0,  (Fl_Callback*)cb_mnuSortByPAS, 0, 0, 0, 0, 14, 56},
-	{"&Area/Prefix/Suffix", 0,  (Fl_Callback*)cb_mnuSortByAPS, 0, 0, 0, 0, 14, 56},
-	{"&Suffix/Area/Prefix", 0,  (Fl_Callback*)cb_mnuSortBySAP, 0, 0, 0, 0, 14, 56},
-	{"&Net Number", 0,  (Fl_Callback*)cb_mnuSortByNetNbr, 0, 0, 0, 0, 14, 56},
+		{"&Prefix/Area/Suffix", 0,  (Fl_Callback*)cb_mnuSortByPAS, 0, 0, 0, 0, 14, 56},
+		{"&Area/Prefix/Suffix", 0,  (Fl_Callback*)cb_mnuSortByAPS, 0, 0, 0, 0, 14, 56},
+		{"&Suffix/Area/Prefix", 0,  (Fl_Callback*)cb_mnuSortBySAP, 0, 0, 0, 0, 14, 56},
+		{"&Net Number", 0,  (Fl_Callback*)cb_mnuSortByNetNbr, 0, 0, 0, 0, 14, 56},
 	{0},
 	{"&Master DB", 0, 0, 0, 64, 0, 0, 14, 56},
-	{"&Lookup Call", 0,  (Fl_Callback*)cb_lookup_masterdb_record, 0, 0, 0, 0, 14, 56},
-	{"&Add current record", 0, (Fl_Callback*)cb_add_record_to_masterdb, 0, 0, 0, 0, 14, 56},
+		{"&Lookup Call", 0,  (Fl_Callback*)cb_lookup_masterdb_record, 0, 0, 0, 0, 14, 56},
+		{"&Add current record", 0, (Fl_Callback*)cb_add_record_to_masterdb, 0, 0, 0, 0, 14, 56},
 	{0},
-	{0}
+{0}
 };
 
 Fl_Double_Window *editor = (Fl_Double_Window *)0;
@@ -276,6 +294,12 @@ void cb_suffix(Fl_Input2 *w, void *)
 	call.assign(inpPrefix->value()).append(inpArea->value()).append(inpSuffix->value());
 	inpCallsign->value(call.c_str());
 	inpCallsign->redraw();
+}
+
+void cbState(Fl_Input2 *w, void *)
+{
+	std::string ustr = uppercase(w->value());
+	w->value(ustr.c_str());
 }
 
 void newEditWindow()
@@ -351,10 +375,17 @@ void newEditWindow()
 
 //----------------------------------------------------------------------
 	inpFname = new Fl_Input2(80, 205, 105, 24, "Name:");
+
 	inpLname = new Fl_Input2(190, 205, 170, 25);
+
 	inpAddress = new Fl_Input2(80, 235, 280, 24, "Address:");
+
 	inpCity = new Fl_Input2(80, 265, 190, 24, "");
+
 	inpState = new Fl_Input2(275, 265, 35, 25);
+	inpState->callback((Fl_Callback *)cbState);
+	inpState->when(FL_WHEN_CHANGED);
+
 	inpZip = new Fl_Input2(320, 265, 60, 25);
 
 	inpBirthday = new Fl_DateInput(385, 217, 120, 24, "Birthday:");
@@ -415,11 +446,11 @@ void newEditWindow()
 	btnClose = new Fl_Button(xpos, ypos, width, height, "Close");
 	btnClose->callback((Fl_Callback*)cb_CloseEditor);
 
-	lblFileName = new Fl_Output(25, 30, 410, 24);
+	lblFileName = new Fl_Output(10, 30, 400, 24);
 	lblFileName->box(FL_BORDER_BOX);
 	lblFileName->color(52);
 
-	lblNumRecs = new Fl_Output(440, 30, 85, 24);
+	lblNumRecs = new Fl_Output(415, 30, 110, 24);
 	lblNumRecs->box(FL_BORDER_BOX);
 	lblNumRecs->color(53);
 

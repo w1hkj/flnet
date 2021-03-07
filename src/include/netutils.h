@@ -28,9 +28,7 @@ extern Fl_Button *btn_OkNetNbrSearch;
 Fl_Double_Window* winNetNbrBrowse();
 extern Fl_Double_Window *winSearchCallsignDialog;
 
-extern Fl_Input2 *sSrchPrefix;
-extern Fl_Input2 *sSrchArea;
-extern Fl_Input2 *sSrchSuffix;
+extern Fl_Input2 *sSrchCall;
 extern void cb_btnSearchCancel(Fl_Button*, void*);
 extern Fl_Button *btnSearchCancel;
 
@@ -45,8 +43,10 @@ extern Fl_Button *btnSearchNetNbrCancel;
 extern void cb_btnSearchNetNbrOK(Fl_Return_Button*, void*);
 extern Fl_Return_Button *btnSearchNetNbrOK;
 Fl_Double_Window* newSearchNetNbrDialog();
+
 extern Fl_Double_Window *dlgAbout;
 extern Fl_Group *lblVersion;
+
 Fl_Double_Window* newAboutDialog();
 #endif
 
