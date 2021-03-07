@@ -139,8 +139,6 @@ void cleanExit(void)
 	close_login_list();
 	close_misc_dialogs();
 	close_main_window();
-
-	exit(0);
 }
 
 void cb_mnuExit (Fl_Menu_ *m, void *d)

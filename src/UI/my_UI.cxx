@@ -544,16 +544,6 @@ int my_UI::handle (int e)
 		}
 	}
 
-#ifdef __APPLE__
-	if ( ((state & FL_META) == FL_META)  &&
-		(k == 'Q' || k == 'q') )
-			cleanExit();
-#endif
-
-	if (e != FL_KEYDOWN && e != FL_SHORTCUT) {
-		return 1;
-	}
-
 	if (keywait && oldkey == k) { // debounce
 		return 1;
 	}
@@ -565,6 +555,20 @@ int my_UI::handle (int e)
 	else
 		Fl::add_timeout (0.02, debounce);
 	oldkey = k;
+
+#ifdef __APPLE__
+	if ( ((state & FL_META) == FL_META)  &&
+		(k == 'Q' || k == 'q') ) {
+				if (e & FL_KEYUP == FL_KEYUP) {
+					cleanExit();
+				}
+			return 1;
+	}
+#endif
+
+	if (e != FL_KEYDOWN && e != FL_SHORTCUT) {
+		return 1;
+	}
 
 	if (my_status == LOGLIST) {
 		if (k == FL_Up || k == FL_Down) {
