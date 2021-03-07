@@ -30,6 +30,7 @@
 
 #include <FL/fl_ask.H>
 #include <FL/Fl_File_Chooser.H>
+#include <FL/fl_draw.H>
 
 #include "my_UI.h"
 #include "net_ui.h"
@@ -211,7 +212,12 @@ void open_log_ins()
 	log_in_view->clear();
 	copy_list.clear();
 
-	static int widths[] = { 75, 160, 0 };  // widths for each column
+// total width 296
+	int w3 = fl_width("88:88n");
+	int w1 = fl_width("WW8WWWn");
+	int w2 = 296 - w1 - w3 - log_in_view->scrollbar_width() - 2;
+	static int widths[] = { w1, w2, 0 };
+
 	log_in_view->column_widths(widths); // assign array to widget
 
 	for (int i = 0; i < callinlist.numlist(); i++) {

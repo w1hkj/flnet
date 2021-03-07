@@ -154,10 +154,14 @@ int loglist::add (long N,
 	llist[nlist].recN = N;
 	llist[nlist].status = LOGIN;
 
-	strcpy(llist[nlist].szPrefix, p);
-	strcpy(llist[nlist].szArea, a);
-	strcpy(llist[nlist].szSuffix, s);
+	memset (llist[nlist].szPrefix, 0, 3);
+	memset (llist[nlist].szArea, 0, 2);
+	memset (llist[nlist].szSuffix, 0, 4);
+	memset (llist[nlist].szName, 0, 15);
 
+	strncpy (llist[nlist].szPrefix, p, 2);
+	strncpy (llist[nlist].szArea, a, 1);
+	strncpy (llist[nlist].szSuffix, s, 3);
 	strncpy (llist[nlist].szName, name, 14);
 
 	time_t the_time;

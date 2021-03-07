@@ -27,6 +27,7 @@
 #include <FL/fl_ask.H>
 #include <FL/Fl_File_Chooser.H>
 #include <FL/Fl_Color_Chooser.H>
+#include <FL/Fl_Scroll.H>
 
 #include "icons.h"
 #include "flinput2.h"
@@ -1332,6 +1333,7 @@ Fl_Double_Window* Log_ins_dialog() {
 
 	log_in_view = new Fl_Browser(2, 2, 296, 205);
 	log_in_view->align(Fl_Align(FL_ALIGN_TOP));
+	log_in_view->has_scrollbar(Fl_Browser_::VERTICAL_ALWAYS);
 
 	btn_copy_to_clipboard = new Fl_Button(40, 210, 70, 20, "Copy");
 	btn_copy_to_clipboard->callback((Fl_Callback*)cb_btn_copy_to_clipboard);
