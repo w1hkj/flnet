@@ -345,6 +345,7 @@ void SortByPAS()
 	sorted_by = PAS;
 	if (!indexed_list || !netdb.numrecs()) return;
 	qsort ( &(indexed_list[0]), netdb.numrecs(), sizeof(index_struct), PAScompare);
+	show_sort_order();
 }
 
 void SortByAPS()
@@ -352,6 +353,7 @@ void SortByAPS()
 	sorted_by = APS;
 	if (!indexed_list || !netdb.numrecs()) return;
 	qsort ( &(indexed_list[0]), netdb.numrecs(), sizeof(index_struct), APScompare);
+	show_sort_order();
 }
 
 void SortBySAP()
@@ -359,6 +361,7 @@ void SortBySAP()
 	if (!indexed_list || !netdb.numrecs()) return;
 	qsort ( &(indexed_list[0]), netdb.numrecs(), sizeof(index_struct), SAPcompare);
 	sorted_by = SAP;
+	show_sort_order();
 }
 
 void SortByNetNbr()
@@ -366,6 +369,7 @@ void SortByNetNbr()
 	sorted_by = NETNBR;
 	if (!indexed_list || !netdb.numrecs()) return;
 	qsort ( &(indexed_list[0]), netdb.numrecs(), sizeof(index_struct), NetNbrCompare);
+	show_sort_order();
 }
 
 void SortByPreferred()
@@ -987,7 +991,6 @@ void cb_btnSearchOK(Fl_Return_Button *b, void *d)
 		case NETNBR :  // change to PAS sort for the search
 			SortByPAS();
 			found = binary_search_PAS( 0, netdb.numrecs() - 1, p, a, s);
-			SortByNetNbr();
 			break;
 	}
 

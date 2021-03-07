@@ -87,29 +87,21 @@ Fl_Output *outDistance = (Fl_Output *)0;
 
 static void cb_mnuSortByAPS(Fl_Menu_*, void*) {
 	SortByAPS ();
-	out_sorted_by->value("A/P/S");
-	out_sorted_by->redraw();
 	cbGoFirstRec (NULL, NULL);
 }
 
 static void cb_mnuSortBySAP(Fl_Menu_*, void*) {
 	SortBySAP ();
-	out_sorted_by->value("S/A/P");
-	out_sorted_by->redraw();
 	cbGoFirstRec (NULL, NULL);
 }
 
 static void cb_mnuSortByPAS(Fl_Menu_*, void *) {
 	SortByPAS ();
-	out_sorted_by->value("P/A/S");
-	out_sorted_by->redraw();
 	cbGoFirstRec (NULL, NULL);
 }
 
 static void cb_mnuSortByNetNbr(Fl_Menu_*, void*) {
 	SortByNetNbr ();
-	out_sorted_by->value("Net Nbr");
-	out_sorted_by->redraw();
 	cbGoFirstRec (NULL, NULL);
 }
 
