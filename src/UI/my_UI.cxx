@@ -484,12 +484,12 @@ int my_UI::PickedToCallinsDB (size_t record_number)
 	return record_number;
 }
 
-my_UI::my_UI (int x, int y, int w, int h, const char *l) :
-Fl_Group(x,y,w,h)
+my_UI::my_UI (int x, int y, int w, int h, const char *l) : Fl_Input(x,y,w,h,"")
+//Fl_Group(x,y,w,h)
 {
 	callinlist = loglist ();
 	my_status = LOGLIST;
-	end();
+//	end();
 }
 
 void my_UI::clearSAP ()
@@ -515,26 +515,108 @@ void debounce (void *d)
 	keywait = 0;
 }
 
+/*
+std::string binary(int val)
+{
+	static std::string ans;
+	ans.assign("000000000000000000000000000000000000");
+	int d = 2;
+	for (int i = 0; i < ans.length(); i++) {
+		if (d & val) ans[ans.length() -1 - i] = '1';
+		d *= 2;
+	}
+	return ans;
+}
+
+std::string keycode(int val)
+{
+	static std::string ans;
+	if (val >= '0' && val <= 'z') ans.assign(1,char(val));
+	else {
+		switch (val) {
+			case 65307: ans.assign("ESC"); break;
+			case 65470: ans.assign("F1"); break;
+			case 65471: ans.assign("F2"); break;
+			case 65472: ans.assign("F3"); break;
+			case 65473: ans.assign("F4"); break;
+			case 65474: ans.assign("F5"); break;
+			case 65475: ans.assign("F6"); break;
+			case 65476: ans.assign("F7"); break;
+			case 65477: ans.assign("F8"); break;
+			case 65478: ans.assign("F9"); break;
+			case 65479: ans.assign("F10"); break;
+			case 65480: ans.assign("F11"); break;
+			case 65481: ans.assign("F12"); break;
+			case 65482: ans.assign("F13"); break;
+			case 65483: ans.assign("F14"); break;
+			case 65484: ans.assign("F15"); break;
+			case 65485: ans.assign("F16"); break;
+			case 65486: ans.assign("F17"); break;
+			case 65487: ans.assign("F18"); break;
+			case 65488: ans.assign("F19"); break;
+			case 65361: ans.assign("LEFT"); break;
+			case 65362: ans.assign("UP"); break;
+			case 65363: ans.assign("RIGHT"); break;
+			case 65364: ans.assign("DOWN"); break;
+			case 65360: ans.assign("HOME"); break;
+			case 65367: ans.assign("END"); break;
+			case 65293: ans.assign("Enter"); break;
+			default: ans.assign("other"); break;
+		}
+	}
+	return ans;
+}
+*/
+
 static bool ignore_event = false;
 int my_UI::handle (int e)
 {
 	int k = Fl::event_key();
 	int state = Fl::event_state();
-	if (!k) return 0;
+
+	if (!k || !e) return 0;  // not keyboard events
+
+	if (keywait && oldkey == k) { // debounce
+		return 1;
+	}
+
+/*
+std::cout << 
+"key:       " << k << " " << keycode(k) <<
+"\nevt:     " << binary(e) << 
+"\ndwn:     " << binary(FL_KEYDOWN) <<
+"\nup :     " << binary(FL_KEYUP) <<
+"\ncut:     " << binary(FL_SHORTCUT) << 
+"\nstate:   " << binary(state) <<
+"\nFL_META: " << binary(FL_META) <<
+"\nFL_ALT:  " << binary(FL_ALT) << std::endl;
+*/
+
+#ifdef __APPLE__
+// keydown event for Cmd-Q
+	if ( ((state & FL_META) == FL_META)  &&
+		(k == 'Q' || k == 'q') ) { 
+		oldkey = k;
+		keywait = 1; // disable all future keyboard events
+		cleanExit();
+		return 1;
+	}
+#endif
 
 	if ((state & FL_ALT) == FL_ALT) {
-		switch (k) {
-			case 'E' : case 'e' :
-				if ( (e & FL_KEYUP) == FL_KEYUP) cbEditor ();
+		if (e == FL_SHORTCUT)
+			switch (k) {
+				case 'E' : case 'e' :
+				cbEditor ();
 				return 0;
 			case 'C' : case 'c' :
-				if ( (e & FL_KEYUP) == FL_KEYUP) cbConfig ();
+				cbConfig ();
 				return 0;
 			case 'I' : case 'i' :
-				if ( (e & FL_KEYUP) == FL_KEYUP) open_log_ins ();
+				open_log_ins ();
 				return 1;
 			case 'Z' : case 'z' :
-				if ( (e & FL_KEYUP) == FL_KEYUP) change_size();
+				change_size();
 				return 1;
 			case FL_F + 4 :
 				cleanExit();
@@ -544,49 +626,58 @@ int my_UI::handle (int e)
 		}
 	}
 
-	if (keywait && oldkey == k) { // debounce
-		return 1;
-	}
-
-	keywait = 1;
-
-	if (k == FL_Up || k == FL_Down)
-		Fl::add_timeout (0.1, debounce);
-	else
-		Fl::add_timeout (0.02, debounce);
-	oldkey = k;
-
-#ifdef __APPLE__
-	if ( ((state & FL_META) == FL_META)  &&
-		(k == 'Q' || k == 'q') ) {
-				if (e & FL_KEYUP == FL_KEYUP) {
-					cleanExit();
+	if (k == FL_Up || k == FL_Down) {
+		if (e == FL_SHORTCUT) {					// keydown event
+			if (my_status == LOGLIST) {
+				if (k == FL_Up) {
+					WhoIsUp--;
+					if (WhoIsUp < 0)
+						WhoIsUp++;
+					dispCallIns (false);
+				} else {
+					WhoIsUp++;
+					if (WhoIsUp == callinlist.numlist ())
+						WhoIsUp--;
+					dispCallIns (false);
 				}
-			return 1;
-	}
-#endif
+			}
+			else if (my_status == SUFFIX) {
+				if (nbrPicked) {
+					boxLoginSuffix->color (FL_DARK_RED);
+					boxLoginSuffix->labelcolor (FL_WHITE);
+					boxLoginSuffix->redraw ();
+					if (nbrPicked > 1) {
+						if (k == FL_Down)
+							whoPicked = 1;
+						else
+							whoPicked = nbrPicked - 1;
+					} else
+						whoPicked = 0;
+					PickedColors();
+					my_status = PICKLIST;
+				}
+			} 
+			else if (my_status == PICKLIST) {
+				if (k == FL_Down) {
+					whoPicked++;
+					if (whoPicked > nbrPicked -1) whoPicked = 0;
+					PickedColors();
+				} else {
+					whoPicked--;
+					if (whoPicked < 0) whoPicked = nbrPicked -1;
+					PickedColors();
+				}
+			}
+			Fl::add_timeout (0.1, debounce);
+			oldkey = k;
+			keywait = 1;
+		}
+	} // keydown event processing
+	else
+		keywait = 0;
 
 	if (e != FL_KEYDOWN && e != FL_SHORTCUT) {
 		return 1;
-	}
-
-	if (my_status == LOGLIST) {
-		if (k == FL_Up || k == FL_Down) {
-			if (k == FL_Up) {
-				WhoIsUp--;
-				if (WhoIsUp < 0)
-					WhoIsUp++;
-				dispCallIns (false);
-				return 1;
-			}
-			if (k == FL_Down) {
-				WhoIsUp++;
-				if (WhoIsUp == callinlist.numlist ())
-					WhoIsUp--;
-				dispCallIns (false);
-				return 1;
-			}
-		}
 	}
 
 	if (k == FL_Escape && my_status != LOGLIST) {
@@ -605,20 +696,6 @@ int my_UI::handle (int e)
 		if (k == FL_End) {
 			lastUp = WhoIsUp;
 			WhoIsUp = callinlist.numlist () - 1;
-			dispCallIns (false);
-			return 1;
-		}
-		if (k == FL_Left) {
-			WhoIsUp = callinlist.nextup ();
-			dispCallIns (false);
-			return 1;
-		}
-		if (k == 65451) {
-			callinlist.lastup(WhoIsUp);
-			return 1;
-		}
-		if (k == FL_Page_Up) {
-			WhoIsUp = callinlist.lastup();
 			dispCallIns (false);
 			return 1;
 		}
@@ -713,33 +790,6 @@ int my_UI::handle (int e)
 			updateLogins();
 			dispCallIns(false);
 			my_status = LOGLIST;
-		}
-		if (k == FL_Down) {
-			whoPicked++;
-			if (whoPicked > nbrPicked -1) whoPicked = 0;
-			PickedColors();
-		}
-		if (k == FL_Up) {
-			whoPicked--;
-			if (whoPicked < 0) whoPicked = nbrPicked -1;
-			PickedColors();
-		}
-	}
-
-	if (my_status == SUFFIX && (k == FL_Down || k == FL_Up)) {
-		if (nbrPicked) {
-			boxLoginSuffix->color (FL_DARK_RED);
-			boxLoginSuffix->labelcolor (FL_WHITE);
-			boxLoginSuffix->redraw ();
-			if (nbrPicked > 1)
-				if (k == FL_Down)
-					whoPicked = 1;
-				else
-					whoPicked = nbrPicked - 1;
-				else
-					whoPicked = 0;
-			PickedColors();
-			my_status = PICKLIST;
 		}
 	}
 
@@ -842,7 +892,8 @@ int my_UI::handle (int e)
 
 void add_to_callins(int rnbr)
 {
-	int recnbr = myUI->PickedToCallinsDB(rnbr);
+	int recnbr = inp_focus->PickedToCallinsDB(rnbr);
+//	myUI->PickedToCallinsDB(rnbr);
 	csvRecord rec;
 	netdb.get(recnbr, rec);
 
@@ -851,5 +902,6 @@ void add_to_callins(int rnbr)
 	}
 
 	updateLogins();
-	myUI->dispCallIns (false);
+//	myUI->dispCallIns (false);
+	inp_focus->dispCallIns (false);
 }

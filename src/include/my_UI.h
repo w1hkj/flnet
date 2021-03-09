@@ -37,7 +37,8 @@ extern loglist callinlist;
 
 enum MYGUI_STATUS {LOGLIST, SUFFIX, PREFIX, AREA, PICKLIST};
 
-class my_UI : public Fl_Group
+//class my_UI : public Fl_Group
+class my_UI : public Fl_Input
 {
 private:
 	MYGUI_STATUS my_status;
@@ -54,6 +55,7 @@ public:
 	void UpdateWhoIsUp (long L);
 	int  PickedToCallinsDB(size_t);
 };
+
 
 #endif
 

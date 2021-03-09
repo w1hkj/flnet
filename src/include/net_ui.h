@@ -53,11 +53,15 @@ extern void cb_mnuSize(Fl_Menu_*, void*);
 extern void cb_mnuHelpContent(Fl_Menu_*, void*);
 extern void cb_mnuEventLog(Fl_Menu_*, void*);
 extern void cb_mnuAbout(Fl_Menu_*, void*);
-extern my_UI *myUI;
+
+//extern my_UI *myUI;
+extern Fl_Group *myUI;
+
+//extern Fl_Input *inp_focus;
+extern my_UI *inp_focus;
 
 extern Fl_Group *net_grp1;
 extern Fl_Box *box_callins;
-extern Fl_Input *inp_focus;
 extern Fl_Box *ptr_left;
 extern Fl_Box *ptr_right;
 extern Fl_Group *net_grp2;

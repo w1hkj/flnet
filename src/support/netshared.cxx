@@ -1193,7 +1193,8 @@ void cb_btnNewSave(Fl_Button *b, void *d)
 
 			if (editState == ADD) {
 				if (!editor) newEditWindow();
-				myUI->UpdateWhoIsUp (netdb.numrecs() - 1);
+//				myUI->UpdateWhoIsUp (netdb.numrecs() - 1);
+				inp_focus->UpdateWhoIsUp (netdb.numrecs() - 1);
 				toggleState ();
 				updateCallins ();
 				return;

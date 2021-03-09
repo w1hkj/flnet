@@ -147,7 +147,7 @@ void ui_size(int sz, int X, int Y)
 	box_callins->resize(ui->x, ui->y, ui->w, ui->h);
 	box_callins->labelfont(ui->fnt);
 	box_callins->labelsize(ui->size);
-	inp_focus->resize(ui->x, ui->y, ui->w, ui->h);
+	inp_focus->resize(ui->x, ui->y, 0, 0);//ui->w, ui->h);
 	ui++;
 	net_grp1->resize(ui->x, ui->y, ui->w, ui->h);
 	net_grp1->labelfont(ui->fnt);

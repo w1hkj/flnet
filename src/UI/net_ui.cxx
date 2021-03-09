@@ -138,10 +138,13 @@ Fl_Button *btnBg[6]={(Fl_Button *)0};
 // main dialog
 //----------------------------------------------------------------------
 
-my_UI *myUI=(my_UI *)0;
+//my_UI *myUI=(my_UI *)0;
+
+my_UI *inp_focus=(my_UI *)0;
+
+Fl_Group *myUI=(Fl_Group *)0;
 Fl_Group *net_grp1=(Fl_Group *)0;
 Fl_Box *box_callins=(Fl_Box *)0;
-Fl_Input *inp_focus=(Fl_Input *)0;
 Fl_Box *ptr_left=(Fl_Box *)0;
 Fl_Box *ptr_right=(Fl_Box *)0;
 Fl_Group *net_grp2=(Fl_Group *)0;
@@ -151,6 +154,7 @@ Fl_Box *box_db_select=(Fl_Box *)0;
 Fl_Group *dbSelectGroup=(Fl_Group *)0;
 Fl_Box *boxLoginSuffix=(Fl_Box *)0;
 Fl_Box *boxLoginPrefix=(Fl_Box *)0;
+
 Fl_Box *boxLoginArea=(Fl_Box *)0;
 Fl_Group *net_grp3=(Fl_Group *)0;
 Fl_Box *txtPick[NPICKITEMS]={(Fl_Box *)0};
@@ -193,7 +197,8 @@ Fl_Double_Window* newNetControl() {
 	mnu_bar = new Fl_Menu_Bar(0, 0, 390, 25);
 	mnu_bar->menu(menu_mnu_bar);
 
-	myUI = new my_UI(0, 25, 390, 430);
+//	myUI = new my_UI(0, 25, 390, 430);
+	myUI = new Fl_Group(0, 25, 390, 430);
 		myUI->box(FL_NO_BOX);
 		myUI->color(FL_BACKGROUND_COLOR);
 		myUI->selection_color(FL_BACKGROUND_COLOR);
@@ -210,8 +215,8 @@ Fl_Double_Window* newNetControl() {
 		box_callins->align(FL_ALIGN_INSIDE | FL_ALIGN_LEFT);
 
 // hidden input widget to capture keyboard events
-		inp_focus = new Fl_Input( 20, 24, 180, 22, "");
-		inp_focus->hide();
+		inp_focus = new my_UI( 0, 25, 0, 0, "");
+//		inp_focus->hide();
 
 		net_grp1 = new Fl_Group(0, 45, 225, 255, "");
 		net_grp1->tooltip("Use UP/DN arrow keys to scroll list");
@@ -694,7 +699,8 @@ void cb_chkAutoPriority (Fl_Check_Button *w, void *)
 
 	WhoIsUp = callinlist.locate(prefix, area, suffix);
 
-	myUI->dispCallIns(false);
+//	myUI->dispCallIns(false);
+	inp_focus->dispCallIns(false);
 
 }
 
