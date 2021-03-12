@@ -143,7 +143,7 @@ void showState ()
 			btnPrev->show ();
 			btnNext->show ();
 			btnLast->show ();
-			btn2Queue->show ();
+			btn2Queue->hide ();
 			btnClose->hide();
 			break;
 
@@ -1097,6 +1097,7 @@ void cb_btnUpdateCancel(Fl_Button *b, void *d)
 				a = inpArea->value();
 				s = inpSuffix->value();
 				saveCurRecord ();
+				getindexed_list ();
 				long rN = callinlist.locate (p, a, s);
 				if (rN >= 0)
 					callinlist.modify (rN, currec,
@@ -1179,7 +1180,13 @@ void cb_btnNewSave(Fl_Button *b, void *d)
 			SortBySAP();
 
 			if(newPrefix.size() && newArea.size() && newSuffix.size()) {
-				long found =  IsInDB (newPrefix.c_str(), newArea.c_str(), newSuffix.c_str());
+
+				long found = binary_search_SAP(0, netdb.numrecs(), 
+								newPrefix,
+								newArea,
+								newSuffix);
+
+//				long found =  IsInDB (newPrefix.c_str(), newArea.c_str(), newSuffix.c_str());
 
 				if (found > -1) {
 					currec = found;

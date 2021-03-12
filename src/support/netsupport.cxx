@@ -61,6 +61,8 @@ void cb_mnuOpen(Fl_Menu_*mnu, void *d)
 		open_dir.c_str(), 0);
 	if (!p) return;
 
+	if (editor) editor->hide();
+
 	updateLogins (true);
 	closeDB();
 

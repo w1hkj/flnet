@@ -519,9 +519,9 @@ void debounce (void *d)
 std::string binary(int val)
 {
 	static std::string ans;
-	ans.assign("000000000000000000000000000000000000");
+	ans.assign("000000000000000000000000");
 	int d = 2;
-	for (int i = 0; i < ans.length(); i++) {
+	for (size_t i = 0; i < ans.length(); i++) {
 		if (d & val) ans[ans.length() -1 - i] = '1';
 		d *= 2;
 	}
@@ -574,7 +574,7 @@ int my_UI::handle (int e)
 	int k = Fl::event_key();
 	int state = Fl::event_state();
 
-	if (!k || !e) return 0;  // not keyboard events
+//	if (!k || !e) return 0;  // not keyboard events
 
 	if (keywait && oldkey == k) { // debounce
 		return 1;
@@ -589,7 +589,8 @@ std::cout <<
 "\ncut:     " << binary(FL_SHORTCUT) << 
 "\nstate:   " << binary(state) <<
 "\nFL_META: " << binary(FL_META) <<
-"\nFL_ALT:  " << binary(FL_ALT) << std::endl;
+"\nFL_ALT:  " << binary(FL_ALT) << 
+"\nFL_CTRL: " << binary(FL_CTRL) << std::endl;
 */
 
 #ifdef __APPLE__
@@ -604,26 +605,30 @@ std::cout <<
 #endif
 
 	if ((state & FL_ALT) == FL_ALT) {
-		if (e == FL_SHORTCUT)
+		if ( (e & FL_KEYDOWN) == FL_KEYDOWN)
 			switch (k) {
 				case 'E' : case 'e' :
 				cbEditor ();
-				return 0;
+				break;
 			case 'C' : case 'c' :
 				cbConfig ();
-				return 0;
+				break;
 			case 'I' : case 'i' :
 				open_log_ins ();
-				return 1;
+				break;
 			case 'Z' : case 'z' :
 				change_size();
-				return 1;
+				break;
 			case FL_F + 4 :
 				cleanExit();
-				return 1;
+				break;
 			default:
-				return 0;
+				break;
 		}
+		Fl::add_timeout (0.1, debounce);
+		oldkey = k;
+		keywait = 1;
+		return 1;
 	}
 
 	if (k == FL_Up || k == FL_Down) {
