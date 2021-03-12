@@ -56,8 +56,6 @@ csvdb netdb;
 
 extern loglist callinlist;
 
-enum {PAS, APS, SAP, NETNBR};
- 
 int  sorted_by = 0;
 
 int  binary_search_SAP(int l, int r, std::string &p, std::string &a, std::string &s);

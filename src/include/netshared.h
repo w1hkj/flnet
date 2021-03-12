@@ -35,8 +35,8 @@
 
 extern std::string home_dir;
 extern std::string selected_file;
-
 extern csvdb netdb;
+extern int  sorted_by;
 
 struct index_struct {
 	int  recN;
@@ -46,12 +46,12 @@ struct index_struct {
 	char netnbr[5];
 };
 
-enum sizes {SMALL, BIG};
-enum State {NEW, UPDATE, ADD, MODIFY};
+enum sizes  {SMALL, BIG};
+enum State  {NEW, UPDATE, ADD, MODIFY};
 enum schema {ORIG, EXTENDED};
+enum sorts  {PAS, APS, SAP, NETNBR};
 
 extern Fl_Window *main_window;
-//extern Fl_Window *editor;
 
 extern index_struct *indexed_list;
 extern State editstate;

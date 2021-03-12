@@ -108,9 +108,9 @@ static void cb_mnuSortByNetNbr(Fl_Menu_*, void*) {
 void show_sort_order()
 {
 	out_sorted_by->value(
-		progStatus.preferred_sort_order == 0 ? "P/A/S" :
-		progStatus.preferred_sort_order == 1 ? "A/P/S" :
-		progStatus.preferred_sort_order == 2 ? "S/A/P" :
+		sorted_by == PAS ? "P/A/S" :
+		sorted_by == APS ? "A/P/S" :
+		sorted_by == SAP ? "S/A/P" :
 		"Net Nbr");
 	out_sorted_by->redraw();
 }
