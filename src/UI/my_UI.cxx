@@ -595,12 +595,14 @@ std::cout <<
 
 #ifdef __APPLE__
 // keydown event for Cmd-Q
-	if ( ((state & FL_META) == FL_META)  &&
-		(k == 'Q' || k == 'q') ) { 
-		oldkey = k;
-		keywait = 1; // disable all future keyboard events
-		cleanExit();
-		return 1;
+	if ( (state & FL_META) == FL_META ) {
+		if (k == 'Q' || k == 'q') { 
+			oldkey = k;
+			keywait = 1; // disable all future keyboard events
+			cleanExit();
+			return 1;
+		} else
+			return 0;
 	}
 #endif
 
