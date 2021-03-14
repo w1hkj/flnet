@@ -47,7 +47,7 @@ UI_SIZES UI_small[] = {
 	{   0,   0, 390, 460, FL_COURIER, 12}, // window  0
 	{   0,   0, 390,  25, FL_COURIER, 12}, // menu_ bar 1
 	{   0,  25, 390, 430, FL_COURIER, 12}, // myUI 2
-	{  15,  26, 120,  19, FL_COURIER_BOLD, 12}, // box_callins
+	{  15,  26, 140,  18, FL_COURIER_BOLD, 12}, // box_callins
 	{   0,  45, 230, 255, FL_COURIER, 12}, // net_grp1  4
 	{   2, 125,  15,  25, FL_COURIER, 12}, // ptr_left  4
 	{ 215, 125,  15,  25, FL_COURIER, 12}, // ptr_right  6
@@ -69,7 +69,7 @@ UI_SIZES UI_small[] = {
 	{  17, 265, 196,  16, FL_COURIER, 12}, // txtLine[13]  22
 	{  17, 280, 196,  16, FL_COURIER, 12}, // txtLine[14]  23
 
-	{ 135,  27, 250,  18, FL_COURIER_BOLD, 12}, // box_db_select
+	{ 160,  26, 290,  18, FL_COURIER_BOLD, 12}, // box_db_select
 	{ 230,  45, 155, 255, FL_COURIER, 12}, // dbSelectGroup  24
 	{ 240,  65,  40,  25, FL_COURIER, 12}, // boxLoginSuffix  25
 	{ 285,  65,  30,  25, FL_COURIER, 12}, // boxLoginPrefix  26
@@ -90,7 +90,7 @@ UI_SIZES UI_big[] = {
 	{   0,   0, 475, 635, FL_COURIER, 16}, // window
 	{   0,   0, 475,  25, FL_COURIER, 12}, // menu_ bar
 	{   0,  25, 475, 414, FL_COURIER, 16}, // myUI
-	{  17,  26, 143,  32, FL_COURIER_BOLD, 15}, // box_callins
+	{  17,  28, 163,  28, FL_COURIER_BOLD, 15}, // box_callins
 	{   0,  49, 275, 396, FL_COURIER, 14}, // net_grp1
 	{   2, 180,  15,  24, FL_COURIER, 16}, // ptr_left
 	{ 270, 180,  15,  24, FL_COURIER, 16}, // ptr_right
@@ -112,7 +112,7 @@ UI_SIZES UI_big[] = {
 	{  17, 396, 251,  24, FL_COURIER, 15}, // txtLine[13]
 	{  17, 420, 251,  24, FL_COURIER, 15}, // txtLine[14]
 
-	{ 160,  26, 310,  32, FL_COURIER_BOLD, 15}, // box_db_select
+	{ 190,  28, 435,  28, FL_COURIER_BOLD, 15}, // box_db_select
 	{ 284,  60, 185, 380, FL_COURIER, 18}, // dbSelectGroup
 	{ 291,  87,  60,  30, FL_COURIER, 18}, // boxLoginSuffix
 	{ 355,  87,  60,  30, FL_COURIER, 18}, // boxLoginPrefix

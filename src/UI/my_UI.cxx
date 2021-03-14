@@ -137,8 +137,11 @@ void updateCallins (bool fldigi_flag)
 	szDistance.clear();
 
 	static char lbl[50];
-	snprintf(lbl, sizeof(lbl), "Check-ins: %d", callinlist.numlist());
-	while (strlen(lbl) < 15) strcat(lbl, " ");
+	if (WhoIsUp >= 0 && callinlist.numlist())
+		snprintf(lbl, sizeof(lbl), "Check-ins: %d/%d", WhoIsUp + 1, callinlist.numlist());
+	else
+		strcpy(lbl, "Check-ins:");
+	while (strlen(lbl) < 20) strcat(lbl, " ");
 	box_callins->label(lbl);
 	box_callins->redraw_label();
 
@@ -485,11 +488,9 @@ int my_UI::PickedToCallinsDB (size_t record_number)
 }
 
 my_UI::my_UI (int x, int y, int w, int h, const char *l) : Fl_Input(x,y,w,h,"")
-//Fl_Group(x,y,w,h)
 {
 	callinlist = loglist ();
 	my_status = LOGLIST;
-//	end();
 }
 
 void my_UI::clearSAP ()
@@ -519,10 +520,10 @@ void debounce (void *d)
 std::string binary(int val)
 {
 	static std::string ans;
-	ans.assign("000000000000000000000000");
-	int d = 2;
-	for (size_t i = 0; i < ans.length(); i++) {
-		if (d & val) ans[ans.length() -1 - i] = '1';
+	ans.assign(24, '0');
+	int d = 1;
+	for (size_t i = 1; i <= ans.length(); i++) {
+		if (d & val) ans[ans.length() - i] = '1';
 		d *= 2;
 	}
 	return ans;
@@ -574,8 +575,6 @@ int my_UI::handle (int e)
 	int k = Fl::event_key();
 	int state = Fl::event_state();
 
-//	if (!k || !e) return 0;  // not keyboard events
-
 	if (keywait && oldkey == k) { // debounce
 		return 1;
 	}
@@ -607,6 +606,7 @@ std::cout <<
 #endif
 
 	if ((state & FL_ALT) == FL_ALT) {
+		if (e == FL_KEYUP) return 1;
 		if ( (e & FL_KEYDOWN) == FL_KEYDOWN)
 			switch (k) {
 				case 'E' : case 'e' :
@@ -627,7 +627,7 @@ std::cout <<
 			default:
 				break;
 		}
-		Fl::add_timeout (0.1, debounce);
+		Fl::add_timeout (0.2, debounce);
 		oldkey = k;
 		keywait = 1;
 		return 1;
@@ -643,7 +643,7 @@ std::cout <<
 					dispCallIns (false);
 				} else {
 					WhoIsUp++;
-					if (WhoIsUp == callinlist.numlist ())
+					if (WhoIsUp >= callinlist.numlist ())
 						WhoIsUp--;
 					dispCallIns (false);
 				}
@@ -877,7 +877,7 @@ std::cout <<
 	}
 
 	if ((k == FL_Enter || k == FL_KP_Enter) && my_status == AREA) {
-		int found = IsInDB(szPrefix.c_str(), szArea.c_str(), szSuffix.c_str());
+		int found = netdb.find_callsign(std::string(szPrefix).append(szArea).append(szSuffix));
 		if (found >= 0) {
 			PickedToCallinsDB(found);
 			dispCallIns (false);
@@ -900,7 +900,6 @@ std::cout <<
 void add_to_callins(int rnbr)
 {
 	int recnbr = inp_focus->PickedToCallinsDB(rnbr);
-//	myUI->PickedToCallinsDB(rnbr);
 	csvRecord rec;
 	netdb.get(recnbr, rec);
 
@@ -909,6 +908,5 @@ void add_to_callins(int rnbr)
 	}
 
 	updateLogins();
-//	myUI->dispCallIns (false);
 	inp_focus->dispCallIns (false);
 }

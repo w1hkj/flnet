@@ -111,7 +111,5 @@ extern void refresh_logins();
 
 extern void update_select_label();
 
-extern long IsInDB(const char *p, const char *a, const char *s);
-
 #endif
 

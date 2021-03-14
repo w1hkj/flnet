@@ -209,14 +209,13 @@ Fl_Double_Window* newNetControl() {
 		myUI->align(Fl_Align(FL_ALIGN_TOP));
 		myUI->when(FL_WHEN_RELEASE);
 
-		box_callins = new Fl_Box( 20, 24, 180, 22, "Check-ins: 0");
+		box_callins = new Fl_Box( 20, 26, 200, 22, "Check-ins:");
 		box_callins->color(FL_BACKGROUND_COLOR);
 		box_callins->box(FL_FLAT_BOX);
 		box_callins->align(FL_ALIGN_INSIDE | FL_ALIGN_LEFT);
 
 // hidden input widget to capture keyboard events
 		inp_focus = new my_UI( 0, 25, 0, 0, "");
-//		inp_focus->hide();
 
 		net_grp1 = new Fl_Group(0, 45, 225, 255, "");
 		net_grp1->tooltip("Use UP/DN arrow keys to scroll list");
@@ -252,7 +251,7 @@ Fl_Double_Window* newNetControl() {
 
 		net_grp1->end();
 
-		box_db_select = new Fl_Box(200, 27, 155, 18, "");
+		box_db_select = new Fl_Box(200, 26, 155, 18, "");
 		box_db_select->color(FL_BACKGROUND_COLOR);
 		box_db_select->box(FL_FLAT_BOX);
 		box_db_select->align(FL_ALIGN_INSIDE | FL_ALIGN_LEFT);

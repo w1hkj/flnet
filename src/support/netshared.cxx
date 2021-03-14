@@ -138,11 +138,11 @@ void showState ()
 			btnNewSave->label ("Save");
 			btnUpdateCancel->label ("Cancel");
 			btnNewSave->show ();
-			btnDelete->show ();
-			btnFirst->show ();
-			btnPrev->show ();
-			btnNext->show ();
-			btnLast->show ();
+			btnDelete->hide ();
+			btnFirst->hide ();
+			btnPrev->hide ();
+			btnNext->hide ();
+			btnLast->hide ();
 			btn2Queue->hide ();
 			btnClose->hide();
 			break;
@@ -185,37 +185,6 @@ void toggleState()
 	}
 }
 
-long IsInDB (const char *p, const char *a, const char *s)
-{
-	std::string prefix = trim (uppercase (p));
-	std::string area = trim (uppercase(a));
-	std::string suffix = trim (uppercase(s));
-	long found;
-	int cmp, suffix_only = 0;
-
-	found = -1L;
-	if (area.empty() && prefix.empty()) suffix_only = 1;
-
-	SortBySAP ();
-
-	for (size_t n = 0; n < netdb.numrecs(); n++) {
-		cmp = suffix.compare( trim (indexed_list[n].suffix) );
-		if (cmp > 0) continue;
-		if (cmp < 0) break;
-		// only looking for a suffix match
-		if (suffix_only) {
-			found = n;
-			break;
-		}
-		if (prefix.compare (trim (indexed_list[n].prefix) ) == 0 &&
-			area.compare (trim (indexed_list[n].area) ) == 0) {
-			found = n;
-			break;
-		}
-	}
-	if (found >= 0) return indexed_list[found].recN;
-	return found;
-}
 
 // execute after database record modification of any kind
 void refresh_logins()
@@ -579,7 +548,7 @@ void add_fldigi_record(void)
 		return;
 	}
 
-	int recn = IsInDB (prefix.c_str(), area.c_str(), suffix.c_str());
+	int recn = netdb.find_callsign(data->callsign);
 
 	if (recn >= 0) {	// existing record in data base
 		add_to_callins(recn);
@@ -621,7 +590,8 @@ void add_fldigi_record(void)
 	netdb.add (rec);
 
 	getindexed_list ();
-	recn = IsInDB(prefix.c_str(), area.c_str(), suffix.c_str());
+
+	recn = netdb.find_callsign(data->callsign);
 	if (recn >= 0) {
 		add_to_callins(recn);
 	}
@@ -1062,7 +1032,12 @@ void cb_mnuSearchNetNbr (Fl_Menu_ *m, void *d)
 
 void cb_btn2Queue(Fl_Button *b, void *d)
 {
-	add_to_callins(indexed_list[list_index].recN);
+	std::string call = trim(inpPrefix->value());
+	call.append(trim(inpArea->value()));
+	call.append(trim(inpSuffix->value()));
+
+	long rn = netdb.find_callsign(call);
+	add_to_callins(rn);
 }
 
 void cb_btnUpdateCancel(Fl_Button *b, void *d)
@@ -1160,51 +1135,39 @@ void cbGoLastRec(Fl_Button *b, void *d)
 
 void cb_btnNewSave(Fl_Button *b, void *d)
 {
-	if (editState == NEW || editState == ADD) {
-		if (IsInDB (inpPrefix->value(), inpArea->value(), inpSuffix->value()) == -1) {
+	std::string newPrefix;
+	std::string newArea;
+	std::string newSuffix;
+	std::string chkcall;
 
-			std::string newPrefix;
-			std::string newArea;
-			std::string newSuffix;
+	newPrefix.assign(trim(inpPrefix->value()));
+	newArea.assign(trim(inpArea->value()));
+	newSuffix.assign(trim(inpSuffix->value()));
+	chkcall.assign(newPrefix).append(newArea).append(newSuffix);
 
-			newPrefix.assign(trim(inpPrefix->value()));
-			newArea.assign(trim(inpArea->value()));
-			newSuffix.assign(trim(inpSuffix->value()));
 // do not allow empty database records !!
-			if (newPrefix.empty() || newArea.empty() || newSuffix.empty()) {
-				fl_alert2("Prefix/Area/Suffix are required entries");
-				return;
-			}
+	if (newPrefix.empty() || newArea.empty() || newSuffix.empty()) {
+		fl_alert2("Prefix/Area/Suffix are required entries");
+		return;
+	}
+
+	if (editState == NEW || editState == ADD) {
+
+		if (netdb.find_callsign(chkcall) == -1) {
 
 			appendNewRecord ();
-			SortBySAP();
-
-			if(newPrefix.size() && newArea.size() && newSuffix.size()) {
-
-				long found = binary_search_SAP(0, netdb.numrecs(), 
-								newPrefix,
-								newArea,
-								newSuffix);
-
-//				long found =  IsInDB (newPrefix.c_str(), newArea.c_str(), newSuffix.c_str());
-
-				if (found > -1) {
-					currec = found;
-					gotoRec(currec);
-					toggleState ();
-					return;
-				}
-			}
+			getindexed_list();
+			SortByPAS();
+			currec = binary_search_PAS(0, netdb.numrecs() - 1, newPrefix, newArea, newSuffix);
+			gotoRec (currec);
 
 			if (editState == ADD) {
-				if (!editor) newEditWindow();
-//				myUI->UpdateWhoIsUp (netdb.numrecs() - 1);
-				inp_focus->UpdateWhoIsUp (netdb.numrecs() - 1);
-				toggleState ();
-				updateCallins ();
-				return;
+				inp_focus->UpdateWhoIsUp (currec);
 			}
+			toggleState ();
 			update_select_label();
+			updateCallins ();
+			return;
 		} else {
 			clearEditForm();
 			gotoRec(currec);
