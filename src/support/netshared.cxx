@@ -730,6 +730,8 @@ void cb_F12(int WhoIsUp)
 	ModifyRecord(rnbr);
 
 	editor->show();
+	inpNickname->take_focus();
+
 }
 
 void cb_ShiftF12(void)
@@ -749,6 +751,7 @@ void cbEditor ()
 	showState ();
 	editor->show();
 	cbGoFirstRec (NULL, NULL);
+	inpNickname->take_focus();
 }
 
 void cbCloseEditor ()

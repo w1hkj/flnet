@@ -572,6 +572,8 @@ std::string keycode(int val)
 static bool ignore_event = false;
 int my_UI::handle (int e)
 {
+	if (e == FL_FOCUS) return 1;
+
 	int k = Fl::event_key();
 	int state = Fl::event_state();
 
@@ -754,6 +756,10 @@ std::cout <<
 		if (k == FL_F + 10) { // Move this call dn in list
 			WhoIsUp = callinlist.MoveLater (WhoIsUp);
 			dispCallIns (false);
+			return 1;
+		}
+		if (k == FL_F + 11) {
+			cb_ShiftF12();
 			return 1;
 		}
 		if (k == FL_F + 12) {
