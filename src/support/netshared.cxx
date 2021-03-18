@@ -119,6 +119,15 @@ void gotoRec (long L)
 
 void showState ()
 {
+	Fl_Menu_Item *item1 = NULL, *item2 = NULL, *item3 = NULL;
+	item1 = (Fl_Menu_Item*)mbarMain->find_item("Sea&rch");
+	item2 = (Fl_Menu_Item*)mbarMain->find_item("&Browse");
+	item3 = (Fl_Menu_Item*)mbarMain->find_item("&Sort");
+
+	if ( item1 != NULL ) item1->activate();
+	if ( item2 != NULL ) item2->activate();
+	if ( item3 != NULL ) item3->activate();
+
 	switch (editState) {
 		case UPDATE:
 			btnNewSave->label("New");
@@ -171,6 +180,11 @@ void showState ()
 			btnUpdateCancel->label ("Update");
 			btnUpdateCancel->show();
 			btnClose->show();
+
+			if ( item1 != NULL ) item1->deactivate();
+			if ( item2 != NULL ) item2->deactivate();
+			if ( item3 != NULL ) item3->deactivate();
+
 			break;
 	}
 }
@@ -189,17 +203,29 @@ void toggleState()
 // execute after database record modification of any kind
 void refresh_logins()
 {
+	if (!callinlist.numlist()) return;
+
 	std::string p, a, s;
 	SortBySAP();
 	int rn;
-	for (int i = 0; i < callinlist.numlist(); i++) {
+	int i = 0, num = callinlist.numlist();
+	while (i < num) {
 		p = callinlist.prefix(i);
 		a = callinlist.area(i);
 		s = callinlist.suffix(i);
 		rn = binary_search_SAP(0, netdb.numrecs(), p, a ,s);
-		callinlist.recN(i, rn);
+		if (rn == -1) {
+			callinlist.del(i);
+			num--;
+		} else {
+			callinlist.recN(i, rn);
+			i++;
+		}
 	}
 	SortByPreferred();
+	while (WhoIsUp >= callinlist.numlist()) WhoIsUp--;
+	if (WhoIsUp < 0) WhoIsUp = 0;
+	updateCallins (false);
 }
 
 extern Fl_Input2 *inpCallsign;
@@ -251,14 +277,13 @@ void getindexed_list()
 		memset(indexed_list[n].netnbr, 0, 5);
 		memset(indexed_list[n].prefix, 0, 4);
 		memset(indexed_list[n].area, 0, 2);
-		memset(indexed_list[n].suffix, 0, 4);
+		memset(indexed_list[n].suffix, 0, 5);
 		strncpy (indexed_list[n].netnbr, rec.netnbr.c_str(), 4);
 		strncpy (indexed_list[n].prefix, rec.prefix.c_str(), 3);
 		strncpy (indexed_list[n].area, rec.area.c_str(), 1);
-		strncpy (indexed_list[n].suffix, rec.suffix.c_str(), 3);
+		strncpy (indexed_list[n].suffix, rec.suffix.c_str(), 4);
 
-
-		while (strlen(indexed_list[n].suffix) < 3)
+		while (strlen(indexed_list[n].suffix) < 4)
 			strcat (indexed_list[n].suffix, " ");
 	}
 	netdb.get(currec, rec);
@@ -547,6 +572,7 @@ void add_fldigi_record(void)
 		delete data;
 		return;
 	}
+	data->callsign.assign(prefix).append(area).append(suffix);
 
 	int recn = netdb.find_callsign(data->callsign);
 
@@ -602,56 +628,93 @@ void add_fldigi_record(void)
 
 bool split_call(std::string src, std::string &pre, std::string &area, std::string &post)
 {
-	if(src.empty()) return false;
 
-	int index = 0;
-	int start = 0;
-	int end = 0;
-	std::string temp;
-
-	for(index = src.size() - 1; index > -1; index--) {
-		if(src[index] <= ' ') continue;
-		if(isdigit(src[index])) break;
-		if(!end) end = index;
-		start = index;
+	if(src.empty()) {
+		return false;
 	}
 
-	temp.clear();
-	for(int j = start; j <= end; j++)
-		temp += toupper(src[j]);
-	post.assign(temp);
+	size_t index = 0;
 
-	start = 0;
-	end = 0;
+	index = src.rfind("/");
+	if (index != std::string::npos)
+		src.erase(index);
+	index = src.find("/");
+	if (index != std::string::npos)
+		src.erase(0, index + 1);
 
-	for(; index > -1; index--) {
-		if(src[index] <= ' ') continue;
-		if(isalpha(src[index])) break;
-		if(!end) end = index;
-		start = index;
+	for (index = 0; index < src.length(); index++)
+		if (!isdigit(src[index]) && !isalpha(src[index])) {
+			return false;
+		}
+
+	for (index = 0; index < src.length(); index++)
+		src[index] = toupper(src[index]);
+
+	if (src.length() == 3) {
+		pre = src[0];
+		area = src[1];
+		post = src[2];
+		return true;
 	}
 
-	temp.clear();
-	for(int j = start; j <= end; j++)
-		temp += src[j];
-	area.assign(temp);
-
-	start = 0;
-	end = 0;
-
-	for(; index > -1; index--) {
-		if(src[index] <= ' ') continue;
-		if(!isalnum(src[index])) break;
-		if(!end) end = index;
-		start = index;
+	if (src.length() == 4) {
+		if (isdigit(src[1])) { // PNSS
+			pre = src[0];
+			area = src[1];
+			post = src.substr(2);
+			return true;
+		}
+		if (isdigit(src[2])) { // PPNS
+			pre = src.substr(0, 2);
+			area = src[2];
+			post = src[3];
+			return true;
+		}
+		return false;
 	}
 
-	temp.clear();
-	for(int j = start; j <= end; j++)
-		temp += toupper(src[j]);
-	pre.assign(temp);
+	if ((src.length() == 5) && isdigit(src[1])) { // PNSSS
+		pre = src[0];
+		area = src[1];
+		post = src.substr(2);
+			return true;
+	}
 
-	return true;
+	if ((src.length() == 5) && isdigit(src[2])) { // PPNSS
+		pre = src.substr(0, 2);
+		area = src[2];
+		post = src.substr(3);
+		return true;
+	}
+
+	if ((src.length() == 6) && isdigit(src[2])) { // PPNSSS
+		pre = src.substr(0,2);
+		area = src[2];
+		post = src.substr(3);
+		return true;
+	}
+
+	if ((src.length() == 6) && isdigit(src[3])) { // PPPNSS
+		pre = src.substr(0,3);
+		area = src[3];
+		post = src.substr(4);
+		return true;
+	}
+	if ((src.length() == 7) && isdigit(src[2])) { // PPNSSSS
+		pre = src.substr(0,2);
+		area = src[2];
+		post = src.substr(3);
+		return true;
+	}
+
+	if ((src.length() == 7) && isdigit(src[3])) { // PPPNSSS
+		pre = src.substr(0,3);
+		area = src[3];
+		post = src.substr(4);
+		return true;
+	}
+
+	return false;
 }
 
 void cb_mnuFldigiEditor(Fl_Menu_*, void*)
@@ -1038,7 +1101,6 @@ void cb_btn2Queue(Fl_Button *b, void *d)
 	std::string call = trim(inpPrefix->value());
 	call.append(trim(inpArea->value()));
 	call.append(trim(inpSuffix->value()));
-
 	long rn = netdb.find_callsign(call);
 	add_to_callins(rn);
 }
@@ -1070,19 +1132,16 @@ void cb_btnUpdateCancel(Fl_Button *b, void *d)
 			break;
 		case UPDATE :
 			if (netdb.numrecs() > 0) {
-				std::string p, a, s;
-				p = inpPrefix->value();
-				a = inpArea->value();
-				s = inpSuffix->value();
 				saveCurRecord ();
 				getindexed_list ();
-				long rN = callinlist.locate (p, a, s);
+				int  rN = callinlist.locate(currec);
 				if (rN >= 0)
 					callinlist.modify (rN, currec,
 						   inpPrefix->value(),
 						   inpArea->value (),
 						   inpSuffix->value (),
 						   inpNickname->value ());
+				refresh_logins();
 				updateCallins ();
 			}
 			break;
@@ -1093,7 +1152,7 @@ void cb_btnUpdateCancel(Fl_Button *b, void *d)
 
 void cb_btnDelete(Fl_Button *b, void *d)
 {
-	if (fl_choice("Confirm Delete", "cancel", "OK", NULL) == 1) {
+	if (fl_choice("Confirm Delete","cancel","OK", NULL) == 1) {
 		netdb.erase (currec);
 		getindexed_list ();
 		refresh_logins ();

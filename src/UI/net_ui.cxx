@@ -112,8 +112,8 @@ Fl_Check_Button *chk_mdb_nbrlogins = (Fl_Check_Button *)0;
 Fl_Check_Button *chk_mdb_status = (Fl_Check_Button *)0;
 Fl_Check_Button *chk_mdb_joined = (Fl_Check_Button *)0;
 
-Fl_Check_Button *chk_call_left_justify = (Fl_Check_Button *)0;
-Fl_Check_Button *chk_name_left_justify = (Fl_Check_Button *)0;
+Fl_Choice     *cbo_call_justify = (Fl_Choice *)0;
+Fl_Choice     *cbo_name_justify = (Fl_Choice *)0;
 
 Fl_Choice *combo_arc_conversion = (Fl_Choice *)0;
 
@@ -232,7 +232,7 @@ Fl_Double_Window* newNetControl() {
 			net_grp2->color(FL_BACKGROUND2_COLOR);
 			net_grp2->align(FL_ALIGN_CENTER);
 
-				txtTitles = new Fl_Box(20, 47, 190, 22, " Call |    Name     |Time|F");
+				txtTitles = new Fl_Box(20, 47, 190, 22, " Call   |   Name    |Time|F");
 				txtTitles->box(FL_FLAT_BOX);
 				txtTitles->color((Fl_Color)23);
 				txtTitles->labelfont(FL_SCREEN);
@@ -579,14 +579,18 @@ static void cb_close_masterdb( Fl_Button *, void *)
 	close_masterdb();
 }
 
-static void cb_call_left_justify(Fl_Check_Button *, void *)
+static void cb_call_justify(Fl_Check_Button *, void *)
 {
-	progStatus.call_left_justify = chk_call_left_justify->value();
+	progStatus.call_justify = cbo_call_justify->value();
+	callinlist.justify();
+	updateCallins(false);
 }
 
-static void cb_name_left_justify(Fl_Check_Button *, void *)
+static void cb_name_justify(Fl_Check_Button *, void *)
 {
-	progStatus.name_left_justify = chk_name_left_justify->value();
+	progStatus.name_justify = cbo_name_justify->value();
+	callinlist.justify();
+	updateCallins(false);
 }
 
 static void cb_arc_conversion (Fl_Choice *w, void *)
@@ -899,33 +903,40 @@ Fl_Double_Window* configDialog() {
 	tabsConfig = new Fl_Tabs(0, 10, 440, 210);
 	tabsConfig->color((Fl_Color)44);
 		tabGroupUI = new Fl_Group(0, 35, 440, 185, "UI");
-			btn_new_login_is_up = new Fl_Check_Button(20, 50, 70, 15, "New login is up");
+			btn_new_login_is_up = new Fl_Check_Button(15, 50, 70, 15, "New login is up");
 			btn_new_login_is_up->tooltip("Move first time login to the >...<\nspot in the call in list");
 			btn_new_login_is_up->down_box(FL_DOWN_BOX);
 			btn_new_login_is_up->callback((Fl_Callback*)cb_btn_new_login_is_up);
 			btn_new_login_is_up->value(progStatus.disp_new_login);
 
-			btnOpenEditor = new Fl_Check_Button(20, 75, 70, 15, "Open editor for new login");
+			btnOpenEditor = new Fl_Check_Button(15, 75, 70, 15, "Open editor for new login");
 			btnOpenEditor->tooltip("Open editor for first time call in\nNew login is up must be enabled");
 			btnOpenEditor->down_box(FL_DOWN_BOX);
 			btnOpenEditor->callback((Fl_Callback*)cb_btnOpenEditor);
 			btnOpenEditor->value(progStatus.open_editor);
 
-			btn_current_call_in_is_up = new Fl_Check_Button(20, 100, 70, 15, "Current call in is up");
+			btn_current_call_in_is_up = new Fl_Check_Button(15, 100, 70, 15, "Current call in is up");
 			btn_current_call_in_is_up->tooltip("Move last login to the >...<\nspot in the calll in list");
 			btn_current_call_in_is_up->down_box(FL_DOWN_BOX);
 			btn_current_call_in_is_up->callback((Fl_Callback*)cb_btn_current_call_in_is_up);
 			btn_current_call_in_is_up->value(progStatus.callin_is_up);
 
-			chk_call_left_justify = new Fl_Check_Button(20, 125, 120, 24, "Left_Justify callsign");
-			chk_call_left_justify->value(progStatus.call_left_justify);
-			chk_call_left_justify->callback((Fl_Callback*)cb_call_left_justify);
+			cbo_call_justify = new Fl_Choice(15, 125, 100, 24, "Justify callsign");
+			cbo_call_justify->value(progStatus.call_justify);
+			cbo_call_justify->add("RIGHT");
+			cbo_call_justify->add("LEFT");
+			cbo_call_justify->add("AREA");
+			cbo_call_justify->align(FL_ALIGN_RIGHT);
+			cbo_call_justify->callback((Fl_Callback*)cb_call_justify);
 
-			chk_name_left_justify = new Fl_Check_Button(20, 150, 120, 24, "Left_Justify nickname");
-			chk_name_left_justify->value(progStatus.name_left_justify);
-			chk_name_left_justify->callback((Fl_Callback*)cb_name_left_justify);
+			cbo_name_justify = new Fl_Choice(15, 150, 100, 24, "Justify nickname");
+			cbo_name_justify->value(progStatus.name_justify);
+			cbo_name_justify->add("RIGHT");
+			cbo_name_justify->add("LEFT");
+			cbo_name_justify->align(FL_ALIGN_RIGHT);
+			cbo_name_justify->callback((Fl_Callback*)cb_name_justify);
 
-			combo_arc_conversion = new Fl_Choice (20, 180, 120, 24, "Arc Distance");
+			combo_arc_conversion = new Fl_Choice (15, 180, 120, 24, "Arc Distance");
 			combo_arc_conversion->add("Kilometers");
 			combo_arc_conversion->add("Nautical Miles");
 			combo_arc_conversion->add("Statute Miles");

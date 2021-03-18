@@ -25,6 +25,8 @@
 
 using namespace std;
 
+enum { RIGHT_JUSTIFY, LEFT_JUSTIFY, AREA_JUSTIFY };
+
 struct status {
 	int		mainX;
 	int		mainY;
@@ -39,8 +41,8 @@ struct status {
 	int		QRZXML;
 
 	int		chAuto;
-	int		call_left_justify;
-	int		name_left_justify;
+	int		call_justify;
+	int		name_justify;
 	int		arc_conversion;
 
 	int		preferred_sort_order;

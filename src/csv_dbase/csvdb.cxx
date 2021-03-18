@@ -457,6 +457,7 @@ int csvdb::get(size_t n, csvRecord &rec)
 int csvdb::put(size_t recnbr, csvRecord &rec)
 {
 	dbrecs[recnbr] = rec;
+	update_clist();
 	return 0;
 }
 

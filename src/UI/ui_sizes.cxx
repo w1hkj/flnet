@@ -51,23 +51,23 @@ UI_SIZES UI_small[] = {
 	{   0,  45, 230, 255, FL_COURIER, 12}, // net_grp1  4
 	{   2, 125,  15,  25, FL_COURIER, 12}, // ptr_left  4
 	{ 215, 125,  15,  25, FL_COURIER, 12}, // ptr_right  6
-	{  15,  45, 198, 256, FL_COURIER_BOLD, 14}, // net_grp2  7
-	{  17,  47, 196,  26, FL_COURIER_BOLD, 12}, // txtTitles  8
-	{  17,  70, 196,  16, FL_COURIER, 12}, // txtLine[0]  9
-	{  17,  85, 196,  16, FL_COURIER, 12}, // txtLine[1]  10
-	{  17, 100, 196,  16, FL_COURIER, 12}, // txtLine[2]  11
-	{  17, 115, 196,  16, FL_COURIER, 12}, // txtLine[3]  12
-	{  17, 130, 196,  16, FL_COURIER, 12}, // txtLine[4]  13
-	{  17, 145, 196,  16, FL_COURIER, 12}, // txtLine[5]  14
-	{  17, 160, 196,  16, FL_COURIER, 12}, // txtLine[6]  15
-	{  17, 175, 196,  16, FL_COURIER, 12}, // txtLine[7]  16
-	{  17, 190, 196,  16, FL_COURIER, 12}, // txtLine[8]  17
-	{  17, 205, 196,  16, FL_COURIER, 12}, // txtLine[9]  18
-	{  17, 220, 196,  16, FL_COURIER, 12}, // txtLine[10]  19
-	{  17, 235, 196,  16, FL_COURIER, 12}, // txtLine[11]  20
-	{  17, 250, 196,  16, FL_COURIER, 12}, // txtLine[12]  21
-	{  17, 265, 196,  16, FL_COURIER, 12}, // txtLine[13]  22
-	{  17, 280, 196,  16, FL_COURIER, 12}, // txtLine[14]  23
+	{  15,  45, 198, 255, FL_COURIER_BOLD, 14}, // net_grp2  7
+	{  17,  47, 194,  26, FL_COURIER_BOLD, 12}, // txtTitles  8
+	{  17,  70, 194,  16, FL_COURIER, 12}, // txtLine[0]  9
+	{  17,  85, 194,  16, FL_COURIER, 12}, // txtLine[1]  10
+	{  17, 100, 194,  16, FL_COURIER, 12}, // txtLine[2]  11
+	{  17, 115, 194,  16, FL_COURIER, 12}, // txtLine[3]  12
+	{  17, 130, 194,  16, FL_COURIER, 12}, // txtLine[4]  13
+	{  17, 145, 194,  16, FL_COURIER, 12}, // txtLine[5]  14
+	{  17, 160, 194,  16, FL_COURIER, 12}, // txtLine[6]  15
+	{  17, 175, 194,  16, FL_COURIER, 12}, // txtLine[7]  16
+	{  17, 190, 194,  16, FL_COURIER, 12}, // txtLine[8]  17
+	{  17, 205, 194,  16, FL_COURIER, 12}, // txtLine[9]  18
+	{  17, 220, 194,  16, FL_COURIER, 12}, // txtLine[10]  19
+	{  17, 235, 194,  16, FL_COURIER, 12}, // txtLine[11]  20
+	{  17, 250, 194,  16, FL_COURIER, 12}, // txtLine[12]  21
+	{  17, 265, 194,  16, FL_COURIER, 12}, // txtLine[13]  22
+	{  17, 280, 194,  16, FL_COURIER, 12}, // txtLine[14]  23
 
 	{ 160,  26, 290,  18, FL_COURIER_BOLD, 12}, // box_db_select
 	{ 230,  45, 155, 255, FL_COURIER, 12}, // dbSelectGroup  24

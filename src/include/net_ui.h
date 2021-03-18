@@ -40,6 +40,7 @@
 #include <FL/Fl_Choice.H>
 
 #include "flinput2.h"
+#include "combo.h"
 #include "my_UI.h"
 
 extern Fl_Menu_Bar *mnu_bar;
@@ -136,8 +137,8 @@ extern Fl_Check_Button *chk_hamqth;
 extern Fl_Check_Button *chk_hamcall;
 extern Fl_Check_Button *chk_qrz;
 extern Fl_Check_Button *chk_mdb_netnbr;
-extern Fl_Check_Button *chk_call_left_justify;
-extern Fl_Check_Button *chk_name_left_justify;
+extern Fl_Choice       *cbo_call_justify;
+extern Fl_Choice       *cbo_name_justify;
 extern Fl_Check_Button *btn_sort_by_PAS;
 extern Fl_Check_Button *btn_sort_by_APS;
 extern Fl_Check_Button *btn_sort_by_SAP;

@@ -42,7 +42,7 @@ struct index_struct {
 	int  recN;
 	char prefix[4];
 	char area[2];
-	char suffix[4];
+	char suffix[5];
 	char netnbr[5];
 };
 

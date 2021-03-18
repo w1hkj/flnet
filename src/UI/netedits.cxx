@@ -208,7 +208,6 @@ void cb_add_record_to_masterdb(Fl_Menu_ *, void *) {
 	}
 }
 
-
 Fl_Menu_Item menu_mbarMain[] = {
 	{"Sea&rch", 0,  0, 0, 64, 0, 0, 14, 56},
 		{"&Callsign", 0,  (Fl_Callback*)cb_mnuSearchCallsign, 0, 0, 0, 0, 14, 56},
@@ -254,6 +253,7 @@ void cb_prefix(Fl_Input2 *w, void *)
 	static std::string str;
 	str = inpPrefix->value();
 	for (size_t n = 0; n < str.length(); n++) str[n] = toupper(str[n]);
+	if (str.length() > 3) str.erase(3);
 	inpPrefix->value(str.c_str());
 	inpPrefix->redraw();
 	static std::string call;
@@ -267,6 +267,7 @@ void cb_area(Fl_Input2 *w, void *)
 	static std::string str;
 	str = inpArea->value();
 	for (size_t n = 0; n < str.length(); n++) str[n] = toupper(str[n]);
+	if (str.length() > 1) str.erase(1);
 	inpArea->value(str.c_str());
 	inpArea->redraw();
 	static std::string call;
@@ -280,6 +281,9 @@ void cb_suffix(Fl_Input2 *w, void *)
 	static std::string str;
 	str = inpSuffix->value();
 	for (size_t n = 0; n < str.length(); n++) str[n] = toupper(str[n]);
+	if (str.length() > 4) str.erase(4);
+	size_t p = str.find("/");
+	if (p != std::string::npos) str.erase(p);
 	inpSuffix->value(str.c_str());
 	inpSuffix->redraw();
 	static std::string call;
@@ -310,19 +314,19 @@ void newEditWindow()
 	out_sorted_by = new Fl_Output(460, 0, 75, 25, "Sorted by:");
 	out_sorted_by->color( (Fl_Color)20);
 
-	inpPrefix = new Fl_Input2(10, 75, 35, 24, "Prefix");
+	inpPrefix = new Fl_Input2(10, 75, 40, 24, "Prefix");
 	inpPrefix->align(FL_ALIGN_TOP_LEFT);
 	inpPrefix->callback((Fl_Callback *)cb_prefix);
 
-	inpArea = new Fl_Input2(55, 75, 30, 24, "Area");
+	inpArea = new Fl_Input2(54, 75, 28, 24, "Area");
 	inpArea->align(FL_ALIGN_TOP_LEFT);
 	inpArea->callback((Fl_Callback *)cb_area);
 
-	inpSuffix = new Fl_Input2(95, 75, 45, 24, "Suffix");
+	inpSuffix = new Fl_Input2(86, 75, 64, 24, "Suffix");
 	inpSuffix->align(FL_ALIGN_TOP_LEFT);
 	inpSuffix->callback((Fl_Callback *)cb_suffix);
 
-	inpNickname = new Fl_Input2(155, 75, 150, 24, "Nickname");
+	inpNickname = new Fl_Input2(154, 75, 147, 24, "Nickname");
 	inpNickname->align(FL_ALIGN_TOP_LEFT);
 
 	inpNetNbr = new Fl_Input2(305, 75, 60, 24, "Net #");
@@ -331,7 +335,7 @@ void newEditWindow()
 	inpCountry = new Fl_Input2(375, 75, 155, 24, "Country");
 	inpCountry->align(FL_ALIGN_TOP_LEFT);
 
-	inpCallsign = new Fl_Input2(10, 120, 85, 24, "Callsign");
+	inpCallsign = new Fl_Input2(10, 120, 110, 24, "Callsign");
 	inpCallsign->align(FL_ALIGN_TOP_LEFT);
 
 	inpPrevDate = new Fl_DateInput(125, 120, 110, 24, "Prev Date");

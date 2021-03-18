@@ -39,9 +39,9 @@ enum logStatus{EMPTY,LOGIN,FIRST,SECOND,LOGOUT};
 struct _logged {
 	size_t    recN;
 	logStatus status;
-	char szPrefix[3];
+	char szPrefix[4];
 	char szArea[2];
-	char szSuffix[4];
+	char szSuffix[5];
 	char szName[15];
 	char szTime[6];
 	char szdt[15];
@@ -85,6 +85,7 @@ public:
 	char *area (int n);
 	char *suffix (long n);
 	int inList (size_t N);
+	int inList (std::string);
 	int Pri_0 (int n);
 	int Pri_1 (int n);
 	int Pri_2 (int n);
@@ -100,7 +101,9 @@ public:
 	void lastup (int);
 	int  lastup ();
 	void sort (int by);
-	int  locate(std::string prefix, std::string area, std::string suffix);
+	int  locate (std::string prefix, std::string area, std::string suffix);
+	int  locate (size_t refn);
+	void justify();
 };
 
 #endif

@@ -367,20 +367,23 @@ void my_UI::fillPickList ()
 	int i;
 	int cmp;
 	size_t rc;
-	char padded[4];
+	char padded[5];
 
 	if (!indexed_list) getindexed_list ();
 	SortBySAP ();
 
 	clearPickList ();
 	strcpy (padded, szSuffix.c_str());
-	while (strlen(padded) < 3) strcat (padded, " ");
+	while (strlen(padded) < 4) strcat (padded, " ");
 
 	i = 0; rc = 0;
-	while (rc < netdb.numrecs() && padded[0] > indexed_list[rc].suffix[0]) rc++;
+	while (rc < netdb.numrecs() && padded[0] > indexed_list[rc].suffix[0]) {
+		rc++;
+	}
 
 	while (rc < netdb.numrecs()) {
 		cmp = strcmp(padded, indexed_list[rc].suffix);
+
 		if (cmp < 0) break;
 		if (cmp == 0 && i < NPICKITEMS) {
 			Pick[i].recN = indexed_list[rc].recN;
@@ -432,13 +435,6 @@ int my_UI::PickedToCallins (int n)
 
 int my_UI::PickedToCallinsDB (size_t record_number)
 {
-
-	if (callinlist.inList(record_number)) {
-		clearPickList ();
-		clearSAP ();
-		return -1;
-	}
-
 	csvRecord rec;
 	netdb.get(record_number, rec);
 	std::string pr, ar, su, nm, st;
@@ -447,6 +443,15 @@ int my_UI::PickedToCallinsDB (size_t record_number)
 	su = uppercase (trim(rec.suffix));
 	nm = trim(rec.name);
 	st = uppercase(trim(rec.state));
+
+	std::string cll;
+	cll.assign(pr).append(ar).append(su);
+
+	if (callinlist.inList(cll)) {
+		clearPickList ();
+		clearSAP ();
+		return -1;
+	}
 
 	std::string strP1, strP2, strP3;
 	strP1 = uppercase(trim(progStatus.strP1));
@@ -839,7 +844,7 @@ std::cout <<
 				break;
 			case SUFFIX :
 				szSuffix.append(keyval);
-				if (szSuffix.length() > 3) szSuffix.erase(0,1);
+				if (szSuffix.length() > 4) szSuffix.erase(0,1);
 				boxLoginSuffix->label (szSuffix.c_str());
 				fillPickList ();
 				break;

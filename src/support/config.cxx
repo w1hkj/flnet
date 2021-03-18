@@ -63,8 +63,10 @@ void cbConfig ()
 	btn_new_login_is_up->value(progStatus.disp_new_login);
 	btnOpenEditor->value(progStatus.open_editor);
 	btn_current_call_in_is_up->value(progStatus.callin_is_up);
-	chk_call_left_justify->value(progStatus.call_left_justify);
-	chk_name_left_justify->value(progStatus.name_left_justify);
+
+	cbo_call_justify->value(progStatus.call_justify);
+	cbo_name_justify->value(progStatus.name_justify);
+
 	combo_arc_conversion->value(progStatus.arc_conversion);
 
 	btn_sort_by_PAS->value(progStatus.preferred_sort_order == 0);
