@@ -63,10 +63,6 @@ extern string sSimpleName;
 
 extern Fl_Input2 *inpPrefix;
 
-extern void saveCurRecord ();
-extern void clearEditForm ();
-extern void appendNewRecord ();
-
 extern std::string uppercase (std::string s);
 extern std::string trim (std::string s);
 
@@ -110,6 +106,10 @@ extern bool split_call(std::string src, std::string &p, std::string &a, std::str
 extern void refresh_logins();
 
 extern void update_select_label();
+
+extern int  binary_search_APS(int, int, std::string &, std::string &, std::string &);
+extern int  binary_search_PAS(int, int, std::string &, std::string &, std::string &);
+extern int  binary_search_SAP(int, int, std::string &, std::string &, std::string &);
 
 #endif
 

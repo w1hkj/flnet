@@ -30,6 +30,7 @@
 #include "netshared.h"
 #include "masterdb.h"
 #include "csvdb.h"
+#include "my_UI.h"
 
 status progStatus = {
 	50,			// int	mainX;
@@ -266,6 +267,7 @@ void status::loadLastState()
 	flnetpref.get("mdb_color", mdb_color, mdb_color);
 
 	flnetpref.get("chAuto", chAuto, chAuto);
+	callinlist.AutoPriority(chAuto);
 
 	flnetpref.get("call_justify", call_justify, call_justify);
 	flnetpref.get("name_justify", name_justify, name_justify);

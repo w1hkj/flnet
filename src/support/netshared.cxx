@@ -187,6 +187,7 @@ void showState ()
 
 			break;
 	}
+	editor->redraw();
 }
 
 void toggleState()
@@ -208,19 +209,12 @@ void refresh_logins()
 	std::string p, a, s;
 	SortBySAP();
 	int rn;
-	int i = 0, num = callinlist.numlist();
-	while (i < num) {
+	for (int i = 0; i < callinlist.numlist(); i++) {
 		p = callinlist.prefix(i);
 		a = callinlist.area(i);
 		s = callinlist.suffix(i);
 		rn = binary_search_SAP(0, netdb.numrecs(), p, a ,s);
-		if (rn == -1) {
-			callinlist.del(i);
-			num--;
-		} else {
-			callinlist.recN(i, rn);
-			i++;
-		}
+		callinlist.recN(i, rn);
 	}
 	SortByPreferred();
 	while (WhoIsUp >= callinlist.numlist()) WhoIsUp--;
@@ -295,7 +289,12 @@ int NetNbrCompare (const void *p1, const void *p2)
 	index_struct *s2 = (index_struct *)p2;
 	int n1 = atoi(s1->netnbr);
 	int n2 = atoi(s2->netnbr);
-	if (n1 == n2) return 0;
+	if (n1 == 0 && n2 == 0) {
+		int cmp;
+		if ((cmp = strcmp(s1->prefix, s2->prefix)) != 0) return cmp;
+		if ((cmp = strcmp(s1->area, s2->area)) != 0) return cmp;
+		return strcmp(s1->suffix, s2->suffix);
+	}
 	if (n1 == 0) return 1;
 	if (n2 == 0) return -1;
 	if (n1 < n2) return -1;
@@ -364,6 +363,35 @@ void SortByNetNbr()
 	show_sort_order();
 }
 
+void reSort ()
+{
+	if (!indexed_list || !netdb.numrecs()) return;
+	int found = -1;
+
+	std::string p = trim(inpPrefix->value());
+	std::string a = trim(inpArea->value());
+	std::string s = trim(inpSuffix->value());
+	switch (sorted_by) {
+		case PAS : 
+		case NETNBR :
+			sorted_by = PAS;
+			qsort ( &(indexed_list[0]), netdb.numrecs(), sizeof(index_struct), PAScompare);
+			found = binary_search_PAS( 0, netdb.numrecs() - 1, p, a, s);
+			break;
+		case APS :
+			qsort ( &(indexed_list[0]), netdb.numrecs(), sizeof(index_struct), APScompare);
+			found = binary_search_APS( 0, netdb.numrecs() - 1, p, a, s);
+			break;
+		case SAP :
+			qsort ( &(indexed_list[0]), netdb.numrecs(), sizeof(index_struct), SAPcompare);
+			found = binary_search_SAP( 0, netdb.numrecs() - 1, p, a, s);
+			break;
+	}
+	show_sort_order ();
+	if (found > -1)
+		gotoRec(found);
+}
+
 void SortByPreferred()
 {
 	switch (progStatus.preferred_sort_order) {
@@ -403,16 +431,15 @@ void openDB(string fname)
 		fl_message("Not an flnet csv file");
 		exit(0);
 	}
+	callinlist.AutoPriority (progStatus.chAuto);
 	if (netdb.numrecs()) {
 		callinlist.setPri_1 (progStatus.chP1[0]);
 		callinlist.setPri_2 (progStatus.chP2[0]);
 		callinlist.setPri_3 (progStatus.chP3[0]);
-		if (progStatus.chAuto)
-			callinlist.AutoPriority (1);
-		else
-			callinlist.AutoPriority (0);
+		callinlist.sort(loglist::BYPRIORITY);
 		getindexed_list();
 	} else {
+		callinlist.sort(loglist::BYDATETIME);
 		update_select_label();
 	}
 }
@@ -533,6 +560,7 @@ void saveCurRecord ()
 	csvRecord rec;
 	setFields (rec);
 	netdb.put(currec, rec);
+	getindexed_list ();
 	dispRec ();
 }
 
@@ -810,11 +838,11 @@ void cbEditor ()
 	SortByPreferred ();
 	show_sort_order();
 	clearEditForm ();
-	editState = UPDATE;
-	showState ();
 	editor->show();
 	cbGoFirstRec (NULL, NULL);
 	inpNickname->take_focus();
+	editState = UPDATE;
+	showState ();
 }
 
 void cbCloseEditor ()
@@ -1129,6 +1157,7 @@ void cb_btnUpdateCancel(Fl_Button *b, void *d)
 			toggleState ();
 			refresh_logins ();
 			updateCallins ();
+			reSort ();
 			break;
 		case UPDATE :
 			if (netdb.numrecs() > 0) {
@@ -1143,6 +1172,7 @@ void cb_btnUpdateCancel(Fl_Button *b, void *d)
 						   inpNickname->value ());
 				refresh_logins();
 				updateCallins ();
+				reSort ();
 			}
 			break;
 		default :
@@ -1177,7 +1207,8 @@ void cbGoPrevRec(Fl_Button *b, void *d)
 	if (!indexed_list || list_index == 0) return;
 	list_index--;
 	if (list_index < 0) list_index = 0;
-	gotoRec (indexed_list[list_index].recN);
+	int rn = indexed_list[list_index].recN;
+	gotoRec (rn);
 }
 
 void cbGoNextRec(Fl_Button *b, void *d)
@@ -1185,7 +1216,8 @@ void cbGoNextRec(Fl_Button *b, void *d)
 	if (!indexed_list || list_index == (netdb.numrecs() - 1)) return;
 	list_index++;
 	if (list_index >= netdb.numrecs()) list_index = netdb.numrecs() - 1;
-	gotoRec (indexed_list[list_index].recN);
+	int rn = indexed_list[list_index].recN;
+	gotoRec (rn);
 }
 
 void cbGoLastRec(Fl_Button *b, void *d)

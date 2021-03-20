@@ -266,6 +266,10 @@ char * loglist::displine (int n)
 
 int loglist::del (int n)
 {
+	if (nlist <= BLANKS) {
+		nlist = BLANKS;
+		return 1;
+	}
 	int nn = n + BLANKS;
 	if ( nn > nlist ) return 0;
 	if (nn == iLastup) iLastup = BLANKS;

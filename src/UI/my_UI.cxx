@@ -775,7 +775,11 @@ std::cout <<
 			return 1;
 		}
 		if (k == FL_Delete) {
-			if (!((WhoIsUp == 0) && (callinlist.status(WhoIsUp) == EMPTY))) {
+			if (callinlist.numlist() == 0) {
+				inp_focus->take_focus();
+				ignore_event = true;
+			}
+			else if (!((WhoIsUp == 0) && (callinlist.status(WhoIsUp) == EMPTY))) {
 				if (fl_choice("Confirm Delete", "cancel", "OK", NULL) == 1) {
 					callinlist.del(WhoIsUp);
 					WhoIsUp--;

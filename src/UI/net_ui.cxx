@@ -681,19 +681,16 @@ void cb_inpStatesList3 (Fl_Input2 *w, void *)
 void cb_chkAutoPriority (Fl_Check_Button *w, void *)
 {
 	progStatus.chAuto = chkAutoPriority->value();
+	callinlist.AutoPriority (progStatus.chAuto);
 
-	if (callinlist.numlist() == 0)
+	if (callinlist.numlist() <= 0)
 		return;
+
 	std::string prefix = callinlist.prefix(WhoIsUp);
 	std::string area   = callinlist.area(WhoIsUp);
 	std::string suffix = callinlist.suffix(WhoIsUp);
-	if (progStatus.chAuto) {
-		callinlist.AutoPriority(1);
-		callinlist.sort(loglist::BYPRIORITY);
-	} else {
-		callinlist.AutoPriority(0);
-		callinlist.sort(loglist::BYDATETIME);
-	}
+
+	callinlist.sort( (progStatus.chAuto ? loglist::BYPRIORITY : loglist::BYDATETIME) );
 
 	getindexed_list ();
 	refresh_logins ();
@@ -702,7 +699,6 @@ void cb_chkAutoPriority (Fl_Check_Button *w, void *)
 
 	WhoIsUp = callinlist.locate(prefix, area, suffix);
 
-//	myUI->dispCallIns(false);
 	inp_focus->dispCallIns(false);
 
 }
