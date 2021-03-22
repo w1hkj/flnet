@@ -86,23 +86,39 @@ Fl_Output *outAzimuth = (Fl_Output *)0;
 Fl_Output *outDistance = (Fl_Output *)0;
 
 static void cb_mnuSortByAPS(Fl_Menu_*, void*) {
+	std::string p = trim(inpPrefix->value());
+	std::string a = trim(inpArea->value());
+	std::string s = trim(inpSuffix->value());
 	SortByAPS ();
-	cbGoFirstRec (NULL, NULL);
+	int rnbr = getRecNbr(p, a, s);
+	gotoRec(rnbr);
 }
 
 static void cb_mnuSortBySAP(Fl_Menu_*, void*) {
+	std::string p = trim(inpPrefix->value());
+	std::string a = trim(inpArea->value());
+	std::string s = trim(inpSuffix->value());
 	SortBySAP ();
-	cbGoFirstRec (NULL, NULL);
+	int rnbr = getRecNbr(p, a, s);
+	gotoRec(rnbr);
 }
 
 static void cb_mnuSortByPAS(Fl_Menu_*, void *) {
+	std::string p = trim(inpPrefix->value());
+	std::string a = trim(inpArea->value());
+	std::string s = trim(inpSuffix->value());
 	SortByPAS ();
-	cbGoFirstRec (NULL, NULL);
+	int rnbr = getRecNbr(p, a, s);
+	gotoRec(rnbr);
 }
 
 static void cb_mnuSortByNetNbr(Fl_Menu_*, void*) {
+	std::string p = trim(inpPrefix->value());
+	std::string a = trim(inpArea->value());
+	std::string s = trim(inpSuffix->value());
 	SortByNetNbr ();
-	cbGoFirstRec (NULL, NULL);
+	int rnbr = getRecNbr(p, a, s);
+	gotoRec(rnbr);
 }
 
 void show_sort_order()

@@ -370,6 +370,7 @@ void my_UI::fillPickList ()
 	char padded[5];
 
 	if (!indexed_list) getindexed_list ();
+	int save_sort = sorted_by;
 	SortBySAP ();
 
 	clearPickList ();
@@ -405,6 +406,7 @@ void my_UI::fillPickList ()
 		rc++;
 	}
 	nbrPicked = i;
+	SortBy (save_sort);
 }
 
 void my_UI::PickedColors ()
@@ -628,10 +630,16 @@ std::cout <<
 			case 'Z' : case 'z' :
 				change_size();
 				break;
+			case 'P' : case 'p' :
+				progStatus.chAuto = !progStatus.chAuto;
+				chkAutoPriority->value(progStatus.chAuto);
+				adjust_priority();
+				break;
 			case FL_F + 4 :
 				cleanExit();
 				break;
 			default:
+				return 0;
 				break;
 		}
 		Fl::add_timeout (0.2, debounce);

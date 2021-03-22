@@ -127,10 +127,10 @@ extern void close_misc_dialogs(void);
 
 void cleanExit(void)
 {
-	switch (fl_choice2("Exit program", NULL, "Cancel", "Yes")) {
-		case 0: break;
-		case 1: return;
-		case 2: break;
+	switch (fl_choice2("Exit program", 0, "Cancel", "Yes")) {
+		case 0: return; // Esc pressed
+		case 1: return; // Cancel button pressed, Enter pressed
+		case 2: break;  // Yes button pressed
 	}
 	updateLogins (true);
 	progStatus.saveLastState();

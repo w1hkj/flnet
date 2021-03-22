@@ -678,9 +678,8 @@ void cb_inpStatesList3 (Fl_Input2 *w, void *)
 	progStatus.strP3 = inpStatesList3->value();
 }
 
-void cb_chkAutoPriority (Fl_Check_Button *w, void *)
+void adjust_priority()
 {
-	progStatus.chAuto = chkAutoPriority->value();
 	callinlist.AutoPriority (progStatus.chAuto);
 
 	if (callinlist.numlist() <= 0)
@@ -700,7 +699,12 @@ void cb_chkAutoPriority (Fl_Check_Button *w, void *)
 	WhoIsUp = callinlist.locate(prefix, area, suffix);
 
 	inp_focus->dispCallIns(false);
+}
 
+void cb_chkAutoPriority (Fl_Check_Button *w, void *)
+{
+	progStatus.chAuto = chkAutoPriority->value();
+	adjust_priority();
 }
 
 void cb_chk_mdb_netnbr (Fl_Check_Button *w, void *)

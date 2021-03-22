@@ -75,6 +75,9 @@ extern int APSCompare (const void *, const void *);
 extern void AddNewRecord (const char *prefix, const char *area, const char *suffix);
 extern void setAddState ();
 
+extern void gotoRec (long L);
+extern int  getRecNbr(std::string p, std::string a, std::string s);
+extern void SortBy (int);
 extern void SortByPAS ();
 extern void SortByAPS ();
 extern void SortBySAP ();

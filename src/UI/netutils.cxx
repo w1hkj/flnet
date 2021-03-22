@@ -2,7 +2,7 @@
 #include "icons.h"
 #include "flinput2.h"
 
-Fl_Browser *brwsCallsign = (Fl_Browser *)0;
+mybrowser *brwsCallsign = (mybrowser *)0;
 Fl_Button *btnCancelCallsignSearch = (Fl_Button *)0;
 Fl_Button *btn_OkCallsignSearch = (Fl_Button *)0;
 
@@ -11,10 +11,11 @@ Fl_Double_Window* winCallsignBrowse() {
 
 		w->color(FL_LIGHT2);
 
-		brwsCallsign = new Fl_Browser(0, 0, 215, 230);
+		brwsCallsign = new mybrowser(0, 0, 215, 230);
 		brwsCallsign->type(2);
 		brwsCallsign->textfont(13);
-		brwsCallsign->when(FL_WHEN_RELEASE);
+		brwsCallsign->callback((Fl_Callback*)cb_CallsignSearch);
+		brwsCallsign->when(FL_WHEN_ENTER_KEY_ALWAYS);
 
 		btnCancelCallsignSearch = new Fl_Button(230, 35, 60, 40, "Cancel");
 		btnCancelCallsignSearch->callback((Fl_Callback*)cb_btnCancelCallsignSearch);
@@ -28,7 +29,7 @@ Fl_Double_Window* winCallsignBrowse() {
 	return w;
 }
 
-Fl_Browser *brwsNetNbr = (Fl_Browser *)0;
+mybrowser *brwsNetNbr = (mybrowser *)0;
 Fl_Button *btnCancelNetNbrSearch = (Fl_Button *)0;
 Fl_Button *btn_OkNetNbrSearch = (Fl_Button *)0;
 
@@ -36,10 +37,11 @@ Fl_Double_Window* winNetNbrBrowse() {
 	Fl_Double_Window* w = new Fl_Double_Window(300, 230, "Browse by Net Nbr");
 		w->color(FL_LIGHT2);
 
-		brwsNetNbr = new Fl_Browser(0, 0, 215, 230);
+		brwsNetNbr = new mybrowser(0, 0, 215, 230);
 		brwsNetNbr->type(2);
 		brwsNetNbr->textfont(4);
-		brwsNetNbr->when(FL_WHEN_RELEASE);
+		brwsNetNbr->callback((Fl_Callback*)cb_NetNbrSearch);
+		brwsNetNbr->when(FL_WHEN_ENTER_KEY_ALWAYS);
 
 		btnCancelNetNbrSearch = new Fl_Button(225, 45, 60, 40, "Cancel");
 		btnCancelNetNbrSearch->callback((Fl_Callback*)cb_btnCancelNetNbrSearch);
@@ -64,6 +66,8 @@ Fl_Double_Window* newSearchCallsignDialog() {
 		sSrchCall = new Fl_Input2 (50, 35, 120, 25, "Call");
 		sSrchCall->textfont(13);
 		sSrchCall->align(Fl_Align(FL_ALIGN_LEFT));
+		sSrchCall->callback((Fl_Callback *)cb_SrchCall);
+		sSrchCall->when(FL_WHEN_ENTER_KEY_ALWAYS);
 
 		btnSearchCancel = new Fl_Button(20, 70, 80, 25, "Cancel");
 		btnSearchCancel->callback((Fl_Callback*)cb_btnSearchCancel);
@@ -91,6 +95,8 @@ Fl_Double_Window* newSearchNetNbrDialog() {
 		sSrchNetNbr = new Fl_Input2(80, 30, 100, 25, "Enter Net Number");
 		sSrchNetNbr->textfont(13);
 		sSrchNetNbr->align(Fl_Align(FL_ALIGN_TOP));
+		sSrchNetNbr->callback((Fl_Callback*)cb_SrchNetNbr);
+		sSrchNetNbr->when(FL_WHEN_ENTER_KEY_ALWAYS);
 
 		btnSearchNetNbrCancel = new Fl_Button(20, 70, 80, 25, "Cancel");
 		btnSearchNetNbrCancel->callback((Fl_Callback*)cb_btnSearchNetNbrCancel);

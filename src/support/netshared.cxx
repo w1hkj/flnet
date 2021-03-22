@@ -371,6 +371,7 @@ void reSort ()
 	std::string p = trim(inpPrefix->value());
 	std::string a = trim(inpArea->value());
 	std::string s = trim(inpSuffix->value());
+
 	switch (sorted_by) {
 		case PAS : 
 		case NETNBR :
@@ -395,6 +396,16 @@ void reSort ()
 void SortByPreferred()
 {
 	switch (progStatus.preferred_sort_order) {
+		case PAS : SortByPAS (); break;
+		case APS : SortByAPS (); break;
+		case SAP : SortBySAP (); break;
+		case NETNBR : SortByNetNbr (); break;
+	}
+}
+
+void SortBy (int by)
+{
+	switch (by) {
 		case PAS : SortByPAS (); break;
 		case APS : SortByAPS (); break;
 		case SAP : SortBySAP (); break;
@@ -831,18 +842,76 @@ void cb_ShiftF12(void)
 	return;
 }
 
+int  getRecNbr(std::string p, std::string a, std::string s)
+{
+	int rnbr = -1;
+	switch (sorted_by) {
+		case NETNBR :
+			qsort (&(indexed_list[0]), netdb.numrecs(), sizeof(index_struct), NetNbrCompare);
+			rnbr = -1;
+			for (size_t i = 0; i < netdb.numrecs(); i++) {
+				if ((p == trim(indexed_list[i].prefix)) && 
+					(a == trim(indexed_list[i].area)) &&
+					(s == trim(indexed_list[i].suffix))) {
+					list_index = i;
+					rnbr = indexed_list[i].recN;
+					break;
+				}
+			}
+			break;
+		case PAS : 
+			qsort ( &(indexed_list[0]), netdb.numrecs(), sizeof(index_struct), PAScompare);
+			rnbr = binary_search_PAS( 0, netdb.numrecs() - 1, p, a, s);
+			break;
+		case APS :
+			qsort ( &(indexed_list[0]), netdb.numrecs(), sizeof(index_struct), APScompare);
+			rnbr = binary_search_APS( 0, netdb.numrecs() - 1, p, a, s);
+			break;
+		case SAP :
+			qsort ( &(indexed_list[0]), netdb.numrecs(), sizeof(index_struct), SAPcompare);
+			rnbr = binary_search_SAP( 0, netdb.numrecs() - 1, p, a, s);
+			break;
+	}
+	return rnbr;
+}
+
 void cbEditor ()
 {
 	if (!editor) newEditWindow();
 
-	SortByPreferred ();
-	show_sort_order();
-	clearEditForm ();
-	editor->show();
-	cbGoFirstRec (NULL, NULL);
+	std::string p;
+	std::string a;
+	std::string s;
+
+	if (WhoIsUp >= 0) {
+		p = trim(callinlist.prefix (WhoIsUp));
+		a = trim(callinlist.area (WhoIsUp));
+		s = trim(callinlist.suffix (WhoIsUp));
+	}
+
+	if (p.empty() || a.empty() || s.empty()) {
+		show_sort_order();
+		clearEditForm ();
+		editor->show();
+		cbGoFirstRec (NULL, NULL);
+		inpNickname->take_focus();
+		editState = UPDATE;
+		showState ();
+		return;
+	}
+
+	int rnbr = getRecNbr(p, a, s);
+	show_sort_order ();
+	if (rnbr > -1)
+		gotoRec(rnbr);
+	else
+		gotoRec(0);
+
 	inpNickname->take_focus();
 	editState = UPDATE;
 	showState ();
+	editor->show();
+	return;
 }
 
 void cbCloseEditor ()
@@ -861,7 +930,7 @@ void cb_btnCancelCallsignSearch(Fl_Button*, void*)
 	CallsignBrowse->hide();
 }
 
-void cb_OkCallsignSearch(Fl_Button*, void*)
+void browserCallsignSearch()
 {
 	int selrec = brwsCallsign->value();
 	CallsignBrowse->hide();
@@ -869,6 +938,18 @@ void cb_OkCallsignSearch(Fl_Button*, void*)
 		list_index = selrec - 1;
 		gotoRec ( indexed_list[list_index].recN);
 	}
+}
+
+void cb_CallsignSearch(Fl_Select_Browser *, void *)
+{
+	int e = Fl::event_key();
+	if (e == FL_Enter || e == FL_KP_Enter)
+		browserCallsignSearch();
+}
+
+void cb_OkCallsignSearch(Fl_Button*, void*)
+{
+	browserCallsignSearch();
 }
 
 void cb_mnuBrowseCallsign (Fl_Menu_*, void*)
@@ -889,6 +970,8 @@ void cb_mnuBrowseCallsign (Fl_Menu_*, void*)
 		strcat(brwsLine, indexed_list[i].suffix);
 		brwsCallsign->add (brwsLine);
 	}
+	brwsCallsign->topline(1);
+	brwsCallsign->select(1);
 	CallsignBrowse->show();
 }
 
@@ -897,7 +980,7 @@ void cb_btnCancelNetNbrSearch(Fl_Button*, void*)
 	NetNbrBrowse->hide();
 }
 
-void cb_OkNetNbrSearch(Fl_Button*, void*)
+void browserNetNbrSearch()
 {
 	int selrec = brwsNetNbr->value();
 	NetNbrBrowse->hide();
@@ -905,6 +988,18 @@ void cb_OkNetNbrSearch(Fl_Button*, void*)
 		list_index = selrec - 1;
 		gotoRec (indexed_list[list_index].recN);
 	}
+}
+
+void cb_NetNbrSearch(Fl_Select_Browser *, void *)
+{
+	int e = Fl::event_key();
+	if (e == FL_Enter || e == FL_KP_Enter)
+		browserNetNbrSearch();
+}
+
+void cb_OkNetNbrSearch(Fl_Button*, void*)
+{
+	browserNetNbrSearch();
 }
 
 void cb_mnuBrowseNetNbr (Fl_Menu_*, void*)
@@ -925,6 +1020,7 @@ void cb_mnuBrowseNetNbr (Fl_Menu_*, void*)
 		strcat(brwsLine, indexed_list[i].suffix);
 		brwsNetNbr->add (brwsLine);
 	}
+	brwsNetNbr->select(1);
 	NetNbrBrowse->show();
 }
 
@@ -1013,7 +1109,7 @@ int  binary_search_APS(int l, int r, std::string &p, std::string &a, std::string
 	return -1;
 }
 
-void cb_btnSearchOK(Fl_Return_Button *b, void *d)
+void CallsignSearchOK()
 {
 	long found = -1;
 	if (!indexed_list) return;
@@ -1040,25 +1136,19 @@ void cb_btnSearchOK(Fl_Return_Button *b, void *d)
 
 	if (p.empty() || a.empty() || s.empty() ) return;
 
-	switch (sorted_by) {
-		case PAS : 
-			found = binary_search_PAS( 0, netdb.numrecs() - 1, p, a, s);
-			break;
-		case APS :
-			found = binary_search_APS( 0, netdb.numrecs() - 1, p, a, s);
-			break;
-		case SAP :
-			found = binary_search_SAP( 0, netdb.numrecs() - 1, p, a, s);
-			break;
-		case NETNBR :  // change to PAS sort for the search
-			SortByPAS();
-			found = binary_search_PAS( 0, netdb.numrecs() - 1, p, a, s);
-			break;
-	}
+	found = getRecNbr(p, a, s);
 
-	if (found > -1) {
-		gotoRec(found);
-	}
+	gotoRec(found);
+}
+
+void cb_SrchCall(Fl_Input2 *c, void *d)
+{
+	CallsignSearchOK();
+}
+
+void cb_btnSearchOK(Fl_Return_Button *b, void *d)
+{
+	CallsignSearchOK();
 }
 
 void cb_mnuSearchCallsign (Fl_Menu_ *m, void *d)
@@ -1099,7 +1189,7 @@ int  binary_search_netnbr(int l, int r, int x)
 	return -1;
 }
 
-void cb_btnSearchNetNbrOK (Fl_Return_Button *b, void *d)
+void SearchNetNbrOK()
 {
 	if (!indexed_list) return;
 	int srchnbr = atol(sSrchNetNbr->value());
@@ -1114,6 +1204,16 @@ void cb_btnSearchNetNbrOK (Fl_Return_Button *b, void *d)
 	if (found == -1) return;
 
 	gotoRec(indexed_list[found].recN);
+}
+
+void cb_SrchNetNbr(Fl_Input2 *c, void *d)
+{
+	SearchNetNbrOK();
+}
+
+void cb_btnSearchNetNbrOK (Fl_Return_Button *b, void *d)
+{
+	SearchNetNbrOK();
 }
 
 void cb_mnuSearchNetNbr (Fl_Menu_ *m, void *d)
@@ -1161,17 +1261,19 @@ void cb_btnUpdateCancel(Fl_Button *b, void *d)
 			break;
 		case UPDATE :
 			if (netdb.numrecs() > 0) {
+				int returnto = currec;
 				saveCurRecord ();
 				getindexed_list ();
-				int  rN = callinlist.locate(currec);
-				if (rN >= 0)
-					callinlist.modify (rN, currec,
-						   inpPrefix->value(),
-						   inpArea->value (),
-						   inpSuffix->value (),
-						   inpNickname->value ());
+				csvRecord rec;
+				int recN;
+				for (int rN = 0; rN < callinlist.numlist(); rN++) {
+					recN = callinlist.recN(rN);
+					netdb.get(recN, rec);
+					callinlist.modify (rN, recN, rec.prefix.c_str(), rec.area.c_str(), rec.suffix.c_str(), rec.name.c_str() );
+				}
 				refresh_logins();
 				updateCallins ();
+				gotoRec(returnto);
 				reSort ();
 			}
 			break;
