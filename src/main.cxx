@@ -176,14 +176,7 @@ void visit_URL(void* arg)
 					 strerror(errno), url);
 	}
 #else
-	// gurgle... gurgle... HOWL
-	// "The return value is cast as an HINSTANCE for backward
-	// compatibility with 16-bit Windows applications. It is
-	// not a true HINSTANCE, however. The only thing that can
-	// be done with the returned HINSTANCE is to cast it to an
-	// int and compare it with the value 32 or one of the error
-	// codes below." (Error codes omitted to preserve sanity).
-	if ((int)ShellExecute(NULL, "open", url, NULL, NULL, SW_SHOWNORMAL) <= 32)
+	if ((size_t)ShellExecute(NULL, "open", url, NULL, NULL, SW_SHOWNORMAL) <= 32)
 		fl_alert("Could not open url:\n%s\n", url);
 #endif
 }
