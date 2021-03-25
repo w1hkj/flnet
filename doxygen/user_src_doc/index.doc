@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (C) 2014 Robert Stiles, KK5VD.
+ * Copyright (C) 2021 David Freese, W1HKKJ
  *
  * Permission to use, copy, modify, and distribute this software and its
  * documentation under the terms of the GNU General Public License is hereby
@@ -15,10 +15,12 @@
  *
  */
 
-
 /*!
 
-\mainpage FLNET Users Manual - Version 7.2
+<!--FLNET User Manual-->
+\mainpage
+
+\section mpage Version 7.4
 
 \tableofcontents
 
@@ -27,27 +29,21 @@
 \image html flnetlogo.png ""
 </center>
 
-<!--FLNET User Manual-->
-\section flnetDesc FLNET Description
-
-Net provides the Amateur Radio Net Control Station operator with a real
+Flnet provides the Amateur Radio Net Control Station operator with a real
 time tool to assist him or her in managing the net activities.  A single
-screen with multiple windows is used to allow rapid entry, search, pick
+dialog with multiple panels is used to allow rapid entry, search, pick
 and display of all stations calling in to the net.  All operations on
-the main screen are accomplished with keyboard entries only.  No mouse
+the main dialog are accomplished with keyboard entries only.  No mouse
 action is required to perform the net control functions.  Experience
 has shown that most net control operators prefer this method of operation
 to improve the speed of entry and selection
 
+\section mainControlDialog Main Dialog
 
-\section mainControlDialog Main Control Dialog
-
-\subsection ssProgramExec Program Execution
-
-\subsubsection ssWindows FLNET Window
-
-Invoke flnet by clicking on the desktop program icon.  The main dialog
-and a file selection dialog will open:
+Invoke flnet by clicking on the desktop program icon.  The main dialog will
+open.  If this is not the first execution, the program will load the last 
+used database file.  Use the <i>Files</i> menu to either start a new or open
+an existing database file.
 
 <center>
 \image latex flnet.png "" width=3.9in
@@ -72,26 +68,24 @@ The main window is divided into three sections.  The Call In List to the
 left contains all of the net members callsigns, nicknames and time of
 login, who have been entered for this session.  The data in this window
 can be scrolled using the UP and DWN arrow keys.  The callsign contained
-within the confines of the two dark arrows (WB1HKJ above) is the active
+within the confines of the two dark arrows is the active
 call.  That will be the person who is presently acknowledged by the
 control operator.  It is significant for another reason.  The function
-keys F1, F2, F3 and F4 when pressed with change the color of that
+keys F1, F2, F3 and F4 when pressed will change the color of that
 entry to BLACK, BLUE, GREEN or RED respectively.  The color coding
 can be used by the net control operator in any way that he or she
 chooses.  One use might choose to designate.
 
 <center>
-
-| Action                | Color     |
-| :-------------------  | :-------  |
-| Logged in to the net  | BLACK     |
-| Acknowledged #1       | BLUE      |
-| Acknowledged #2       | GREEN     |
-| Logged out            | RED       |
-
+| Action                | Key       | Color     |
+| :-------------------  | :-------: | :-------  |
+| Logged in to the net  |    F1     | BLACK     |
+| Acknowledged #1       |    F2     | BLUE      |
+| Acknowledged #2       |    F3     | GREEN     |
+| Logged out            |    F4     | RED       |
 </center>
 
-The colors are selected from the configuration dialog.
+The Function keys and colors are assigned in the configuration dialog.
 
 The right most column is a FLAG that specifies some special characteristic
 about that callsign.  For example: this call might be from a mobile
@@ -100,8 +94,7 @@ or early recognition by the net operator.  Up to three special flags
 may be assigned (\ref sConfigure "see configuration information").
 
 Entering a callsign into the "Call In List" is quite simple.  Key in
-the letters associated with the suffix of the call being entered.  In
-the screen above the S has been entered (case independent).  As each
+the letters associated with the suffix of the call being entered.  As each
 letter in entered the calls which match that sequence will be shown in
 the pick list just below the Suffix box.
 
@@ -112,17 +105,28 @@ control.  Standard GUI controls would have the habit of wanting to control
 what happens when given keyboard or mouse focus.  That would destroy the
 quick response mechanism associated with the net functionality.  You can
 click your mouse on these controls all day long and nothing will happen.
-You don't need the mouse for the net control function.
+You do not use the mouse for the net control function.
+
+<center>
+\image latex SelectCall.png "Select Call" width=3.9in
+\image html  SelectCall.png "Select Call"
+</center>
 
 If the desired call is singular in the list or at the top of the list
-as is NK2G in the example screen you can select it by pressing the ENTER
+you can select it by pressing the ENTER
 key.  The call will be transfered to the end of the Call In List along
 with the nick name of that member and the time of logging.  If the call
 is in the list but not at the top, then press the DOWN (or UP) arrow
 key.  Control now passes to the pick list below the Suffix box and the
 2nd call in the list will be highlighted RED.  You can move between
-entered using the UP and DOWN arrow keys until the desired call is
-highlighted.  Press ENTER to select the highlighted call.
+entries using the UP and DOWN arrow keys until the desired call is
+highlighted.  The list wraps from last to first and first to last.  
+Press ENTER to select the highlighted call.
+
+<center>
+\image latex CallSelected.png "After selection" width=3.9in
+\image html  CallSelected.png "After Selection"
+</center>
 
 The newly transfered call may or may not be immediately shown in the Call
 In List box depending on whether the box is presently filled with calls.  Do
@@ -130,7 +134,23 @@ not be concerned.  It is at the end of the list.  To convince yourself of
 this, press the END key after making the selection.  The last call entered
 in the Call In List will be moved to the current call position.  Pressing
 HOME will put the first call entered in the current call position.
-(\ref sFuncKeys "Function Key definitions").
+
+The <i>After Selection</i> image shows the callin list in time order, earliest
+to last.  Note the A, B, C flags indicating a priority ordering.  The list
+can be reordered by priority, and new entries added by priority.  Setting the Priority
+configuration panel item <i>Auto By Priority</i>
+<center>
+\image latex ConfigPriority.png "" width=3.0in
+\image html  ConfigPriority.png ""
+</center>
+changes the callin list to
+<center>
+\image latex flnet-callin-by-priority.png "" width=3.9in
+\image html  flnet-callin-by-priority.png ""
+</center>
+The position of the callin list will change to insure that the current call is
+at the "up" position as the priority control is toggled.  The callin list ordering
+can be toggled between time and priority order using the combination of alt and P keys.
 
 <h3>Transferring Flnet CALL to Fldigi</h3>
 
@@ -160,14 +180,27 @@ you move between log-in entries.
 
 \subsection ssClosingProgram Closing down the program
 
-You close the program by selecting the menu <b>File / Exit</b>.  The program
-will update the database if appropriate and create a daily log if the Call
-In List contains values.  The log is an appended file for each day of
-operation.  The name of the log file is <b>databasename</b>YYYYMMDD.log.
-Where the YYYYMMDD is the current days value.  If you open the net
-multiple times during the day, the data for each session is appended
-to the previous for the day.  A blank line will appear between each
-session.  The data in this file is identical to the Call In List values.
+You close the program by selecting the menu <b>File / Exit</b>, using the
+alt-F4 key combination, or the cmd-Q key combination on a Mac.  You will
+be prompted to confirm the program shutdown.
+<center>
+\image latex ConfirmQuit.png "" width=3.0in
+\image html  ConfirmQuit.png ""
+</center>
+
+The program will update the database if appropriate and create a daily log 
+if the Call In List contains values.  The log is an appended file for each 
+day of operation.  The name of the log file is 
+<ul>
+<li><b>databasename</b>YYYY.MM.DD.hhmm.log.</li>
+</ul>
+Where the YYYY.MM.DD.hhmm is the current date/time value.  If you open the net
+multiple times during the day, the data for each session is recorded in a 
+separate file.  The data in this file is identical to the Call In List values.
+<center>
+\image latex LogFileContents.png "" width=3.0in
+\image html  LogFileContents.png ""
+</center>
 
 \subsection ssOpenNewDB Opening a new or existing database
 
@@ -199,22 +232,38 @@ where $HOME is
    <li> on OS X : /Users/<username></li>
 </ul>
 
+<center>
+\image latex files.png "flnet files" width=5.0in
+\image html  files.png "flnet files"
+</center>
+
 The database files for flnet are simple comma separated value that can
 also be opened using a spreadsheet.  You should avoid modifying the contents
 of the file using a spreadsheet program.  These files may be stored
 anywhere on your computer system.
+
+Each time it starts or opens a new database, flnet will create 2 aged backup 
+files of the active database file.
+
+Typical file contents:
+<ul>
+<li>\ref flnet_csv</li>
+<li>\ref flnet_debug_log</li>
+<li>\ref flnet_log</li>
+<li>\ref flnet_prefs</li>
+</ul>
 
 \subsection ssXmlRpcLink Add call-ins using FLNET/FLDIGI XMLRPC's data link.
 
 While running digital nets using FLDIGI, transfering callsign information
 from FLDIGI to FLNET is possible.  From FLDIGI's receive window double click or
 right click on the callsign and select the 'call' menu item. This action
-fills the callsign field.  If you have the callbook feature set up, press
-the callbook button to fill in the remaining information fields.  Otherwise
+fills the callsign field.  If you have the call lookp feature set up, press
+the QRZ button to fill in the remaining information fields.  Otherwise
 use the right click menu items to fill in the relavent data.
 
 Return to FLNET's main window (editor window must be closed). Pressing
-Shift-F12 transfers the data from FLDIGI to FLNET.  If the callsign is not
+Fll or Shift-F12 transfers the data from FLDIGI to FLNET.  If the callsign is not
 present in the database it will be created and the following data will be
 assigned; callsign, name, nickname, qth, state, logged date, and join date.
 The logged in and join dates are set to the local time zone. The transfered
@@ -228,7 +277,7 @@ is created. Modify as needed, the nickname is the information passed back to
 FLDIGI's name field. Add/Modify the other fields as required. Press the update
 button to save the changes.
 
-\ref flnetDesc "Top of Page"
+\ref mpage "Top of Page"
 
 \section sEditorDialog Editor Dialog
 
@@ -258,72 +307,117 @@ browse window will either be by callsign or by net nbr.
 \subsection ssTransferF2F Transferring Data from FLDIGI to FLNET
 
 Selecting "Fldigi" menu item will transfer Call Sign, Name, QTH, and State
-information from FLDIGI to FLNET. Use of the CALLBOOK feature of
-FLDIGI is recommended prior to the transfer.  In the event the call sign is
-not located in FLNET's database a new entry will be added and subsequently
-selected as the active entry in the editor.
+information from the FLDIGI logbook to FLNET. Use of the CALLBOOK feature of
+FLDIGI is recommended prior to the transfer.
 
 \subsection ssQueTranfer Transfer selected DB entry to Call-in List
 
 The currently selected database entry can be transfer to the Call-in list
 by selecting the "Queue" button located at the bottom of the Editor Window.
 
-<center>
-\image latex BrowseCallsign.png "" width=3.0in
-\image html BrowseCallsign.png ""
-</center>
+\subsection ssFindCall Searching for Callsign / Net number
 
-This view shows the callsign browse window.  Click on the desired callsign
-and press OK.  Pressing Cancel just returns to the Editor window with no
-changes.  You may also search for a callsign by Prefix, Area & Suffix; or
-by just Suffix alone.  The search window looks like:
+Searches for existing records can be made by either call or net number.  A
+browser selector and search dialog is available for both:
 
 <center>
-\image latex SearchCallsign.png "" width=2.0in
-\image html SearchCallsign.png ""
+<table>
+<tr>
+<td>\image latex BrowseCallsign.png "" width=3.0in
+\image html  BrowseCallsign.png ""
+</td>
+<td>\image latex BrowseNetnbr.png "" width=3.0in
+\image html  BrowseNetnbr.png ""
+</td>
+</tr>
+</table>
 </center>
 
-You do not need to be concered about upper/lower case letters.
+Move through either list using the up/down keyboard arrow keys.  Home moves to
+first item.  End moves to last item.  Select highlighted item using the Enter key
+or with the OK button.  Close the browse dialog using either the close button or with the Escape key.
 
-\subsection ssImportQRZ Importing data from QRZ database
+<center>
+<table>
+<tr>
+<td>\image latex SearchCallsign.png "" width=2.0in
+\image html  SearchCallsign.png ""
+</td>
+<td>\image latex SearchNetnbr.png "" width=2.0in
+\image html  SearchNetnbr.png ""
+</td>
+</tr>
+</table>
+</center>
 
-If you own a copy of the QRZ database CDROM you may opt to fill in all of
-the available entries from that source.  Be sure to enter the Prefix, Area,
-and Suffix entries and then press the QRZ menu button.  The program will
-search for the QRZ database (first on the hard drive(s)) and then on
-available CD drives.  Place the QRZ CD in the drive before selecting this
-option.  For really speedy searches against the QRZ database I suggest
-copying the entire "callbk" directory from the CD to your c: drive if you
-are using Windows.
+Enter the desired call / net number.  You do not need to be concerned about upper/lower case letters.
+Execute the search by either pressing the Search button or with the Enter key.
 
-\ref flnetDesc "Top of Page"
+\subsection ssImportQRZ Importing data from External / Online database
+
+flnet can search a variety of external database sources to assist filling in
+the various database record elements:
+<ul>
+<li>callook.info online</li>
+<li>hamqth.com online</li>
+<li>hamcall.net on line</li>
+<li>qrz.com on line</li>
+</ul>
+
+\subsection ssEditorSortOrder Editor Sort Order
+
+Change the sort order of the working database:
+<ul>
+<li>Prefix / Area / Suffix</li>
+<li>Area / Prefix / Suffix</li>
+<li>Suffix / Area / Prefix</li>
+<li>Net number</li>
+</ul>
+Each change to sort order is indicated in the upper right corner label control.
+Changing sort order does not change the current record.
+
+\ref mpage "Top of Page"
 
 
-\section sFuncKeys Functions Keys
+\section sSpecialKeys Special Keys & Key Combinations
 
 <h2>Main Window</h2>
-
 <center>
-
-| Function Key   | Action                                      |
-| :------------: | :-----------------------------------------  |
-| F1             | Set Color to BLACK - new login              |
-| F2             | Set color to BLUE - recognized one time     |
-| F3             | Set color to GREEN - recognized second time |
-| F4             | Set color to RED - logged out               |
-| F5             | Set priority to none - flag is blanked & <br>call moves in list if autopriority is true |
-| F6             | Set priority to FIRST - flag changed & <br>call moves in list if autopriority is true   |
-| F7             | Set priority to SECOND - flag changed & <br>call moves in list if autopriority is true  |
-| F8             | Set priority to THIRD - flag changed & <br>call moves in list if autopriority is true   |
-| F9             | Move current call one up in the call-in list    |
-| F10            | Move current call one down in the call-in list  |
-| F11            | not assigned                                    |
-| F12            | Open editor dialog with current call <br>as database selection |
-| Shift F12      | Transfers data from FLDIGI, creates DB entry <br>if needed, and adds the call to <br>the call-in list |
-
+| Key(s)    | Action                                      |
+| :-------: | :-----------------------------------------  |
+| F1        | Set Color to BLACK - new login              |
+| F2        | Set color to BLUE - recognized one time     |
+| F3        | Set color to GREEN - recognized second time |
+| F4        | Set color to RED - logged out               |
+| F5        | Set priority to none - flag is blanked & <br>call moves in list if autopriority is true |
+| F6        | Set priority to FIRST - flag changed & <br>call moves in list if autopriority is true   |
+| F7        | Set priority to SECOND - flag changed & <br>call moves in list if autopriority is true  |
+| F8        | Set priority to THIRD - flag changed & <br>call moves in list if autopriority is true   |
+| F9        | Move current call one up in the call-in list    |
+| F10       | Move current call one down in the call-in list  |
+| F11       | Transfers data from FLDIGI, creates DB entry <br>if needed, and adds the call to the call-in list |
+| F12       | Open editor dialog to current call for update only |
+| Shift F12 | same as F11 |
+| --- | --- |
+| alt-C (c) | Open configuration dialog |
+| alt-E (e) | Open editor to current call with full record access |
+| alt-I (i) | Open log-in recap |
+| alt-P (p) | Toggle callin list ordering date-time / priority |
+| alt-Z (z) | Toggle main dialog size |
 </center>
 
-\ref flnetDesc "Top of Page"
+<h2>Editor</h2>
+<center>
+| Key(s)    | Action                         |
+| :-------: | :----------------------------- |
+| alt-B (b) | Open <b>B</b>rowser menu items |
+| alt-L (l) | Open <b>L</b>ookup menu items  |
+| alt-M (m) | Open <b>M</b>aster menu items  |
+| alt-R (r) | Open Sea<b>r</b>ch menu items  |
+| alt-S (s) | Open <b>S</b>ort menu items    |
+</center>
+
+\ref mpage "Top of Page"
 
 \section sDataFormat Data File Format
 
@@ -334,32 +428,34 @@ sheet programs.
 The first line in the file is a header line consisting of the following
 comma separated strings:
 
-\verbatim
-PREFIX
-AREA
-SUFFIX
-CALLSIGN
-NAME
-NETNBR
-LOGDATE
-NBRLOGINS
-STATUS
-JOINED
-FNAME
-LNAME
-ADDR
-CITY
-STATE
-ZIP
-PHONE
-BIRTHDATE
-SPOUSE
-SP_BIRTH
-COMMENT1
-COMMENT2
-EMAIL
-PREVDATE
-\endverbatim
+<ul>
+<li>PREFIX</li>
+<li>AREA</li>
+<li>SUFFIX</li>
+<li>CALLSIGN</li>
+<li>NAME</li>
+<li>NETNBR</li>
+<li>LOGDATE</li>
+<li>NBRLOGINS</li>
+<li>STATUS</li>
+<li>JOINED</li>
+<li>FNAME</li>
+<li>LNAME</li>
+<li>ADDR</li>
+<li>CITY</li>
+<li>STATE</li>
+<li>ZIP</li>
+<li>PHONE</li>
+<li>BIRTHDATE</li>
+<li>SPOUSE</li>
+<li>SP_BIRTH</li>
+<li>COMMENT1</li>
+<li>COMMENT2</li>
+<li>EMAIL</li>
+<li>PREVDATE</li>
+<li>LOCATOR</li>
+<li>COUNTRY</li>
+</ul>
 
 Three fields must be present for flnet to consider the file to contain
 valid data: PREFIX, AREA and SUFFIX.
@@ -376,6 +472,11 @@ in the default order.
 
 You can open an flnet csv file using Excel, Open Office, Gnumeric, etc.  If
 you modify the file just be sure to save it again in the csv format.
+
+<center>
+\image latex gnumeric-net.png "" width=7.0in
+\image html  gnumeric-net.png ""
+</center>
 
 \section sImportPre Importing data from pre flnet 7.x
 
@@ -395,13 +496,13 @@ The file will be saved in the same location as the original dbf file,
 using the same filename but with the extension csv.  flnet 7.x will be
 able to open and use this file.
 
-\ref flnetDesc "Top of Page"
+\ref mpage "Top of Page"
 
 
 \section sConfigure Configuring flnet
-
+\subsection ssUserInterface User interface
 <center>
-\image latex ConfigUI.png "" width=4.4in
+\image latex ConfigUI.png "" width=4.0in
 \image html ConfigUI.png ""
 </center>
 
@@ -417,14 +518,14 @@ will open so that details can immediately be added to the database.
 
 Current call in is up - Every new log in will move that entry to the "up"
 position in the Call In List.
-
+\subsection ssColors Colors
 <center>
-\image latex ConfigColors.png "" width=4.4in
+\image latex ConfigColors.png "" width=4.0in
 \image html ConfigColors.png ""
 </center>
 
-The function keys F1, F2, F3 and F4 when pressed with change the color
-of the main dialog current callsign foreground and background colors. The
+The function keys F1, F2, F3 and F4 when pressed will change the forground and background colors
+of the current callsign (between the arrows in the Check-ins list). The
 color coding can be used by the net control operator in any way that he or
 she chooses. One use might choose to designate
 
@@ -441,12 +542,11 @@ she chooses. One use might choose to designate
 
 These are the default colors. You can modify them to suit your operation.
 
-
+\subsection ssConfigPriority Priority
 <center>
-\image latex ConfigPriority.png "" width=4.4in
+\image latex ConfigPriority.png "" width=4.0in
 \image html ConfigPriority.png ""
 </center>
-
 
 The priority characters can be changed to suit the way that your net
 operates.  You can also specify certain states to have priority during the
@@ -457,7 +557,29 @@ early responses to a check in process to accommodate band conditions.
 You can check the Auto By Priority box if you want prioritization to be
 automatic.
 
-\ref flnetDesc "Top of Page"
+\subsection ssLookup External data sources
+<center>
+\image latex ConfigLookup.png "" width=4.0in
+\image html  ConfigLookup.png ""
+</center>
+Enter your user name and password (if required) and select the on line database
+to access for online lookups.
+
+\subsection ssMasterDB Master database
+<center>
+\image latex ConfigMasterDB.png "" width=4.0in
+\image html  ConfigMasterDB.png ""
+</center>
+Assign a local flnet style csv file to use as a Master database.
+
+\subsection ssSharedFields Shared fields
+<center>
+\image latex ConfigSharedFields.png "" width=4.0in
+\image html  ConfigSharedFields.png ""
+</center>
+Select which fields will be shared between the working and master database.
+
+\ref mpage "Top of Page"
 
 \section sComError FLNET to/from FLDIGI Communication Error
 
@@ -488,6 +610,6 @@ The primary reasons for this failure are:
 	--xmlrpc-server-port <port> default:7362
 \endverbatim
 
-\ref flnetDesc "Top of Page"
+\ref mpage "Top of Page"
 
 */

@@ -1,0 +1,88 @@
+/**
+\page page_flnet_prefs
+
+\section flnet_prefs Preferences File
+
+<pre>
+; FLTK preferences file format 1.0
+; vendor: w1hkj.com
+; application: FLNET
+
+[.]
+
+version:7.3.3
+mainx:61
+mainy:20
+ui_size:0
+fgColors[0]:56
+fgColors[1]:56
+fgColors[2]:255
+fgColors[3]:95
+fgColors[4]:255
+bgColors[0]:56
+bgColors[1]:255
+bgColors[2]:216
+bgColors[3]:60
+bgColors[4]:72
+disp_new_login:1
+open_editor:0
+callin_is_up:0
+QRZXML:1
+chAuto:0
+left_justify:1
+chP1:A
+chP2:B
+chP3:C
+strP1:FL AL
+strP2:TX MS
+strP3:AZ CA
+myLocator:EM64qv
+user_name:w1hkj
+user_password:perri06
+callookurl:https://www.callook.info/
+hamqthurl:https://www.hamqth.com/
+hamcallurl:https://www.hamcall.net/
+qrzurl:https://www.qrz.com/
+arc_conversion:2
+call_left_justify:1
+name_left_justify:1
+masterdb:/home/dave/flnet.files/fh.csv
+preferred_sort_order:0
+mdb_netnbr:1
+mdb_isopen:1
+mdb_color:571670272
+fgColors[5]:1022951168
+bgColors[5]:269488128
+mdb_prefix:0
+mdb_area:1
+mdb_suffix:0
+mdb_callsign:1
+mdb_name:0
+mdb_fname:1
+mdb_lname:0
+mdb_addr:1
+mdb_city:0
+mdb_state:1
+mdb_zip:0
+mdb_phone:1
+mdb_birthdate:0
+mdb_spouse:1
+mdb_sp_birth:0
+mdb_comment1:1
+mdb_comment2:0
+mdb_email:1
+mdb_locator:0
+mdb_country:1
+mdb_logdate:0
+mdb_prevdate:1
+mdb_nbrlogins:0
+mdb_status:1
+mdb_joined:0
+call_justify:0
+name_justify:1
+</pre>
+
+\ref mpage "Return to Main Page"
+
+
+*/

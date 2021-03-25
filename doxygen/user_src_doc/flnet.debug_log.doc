@@ -1,0 +1,12 @@
+/**
+\page page_flnet_debug_log
+
+\section flnet_debug_log Debug Log
+<pre>
+I: main: flnet debug log
+I: main: Opened: /home/dave/flnet.files/new_net.csv
+I: xmlrpc_loop: Fldigi OFF line
+</pre>
+\ref mpage "Return to Main Page"
+
+*/

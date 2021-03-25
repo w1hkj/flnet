@@ -1,7 +1,7 @@
 #
 #
 #
-# Copyright (C) 2014 Robert Stiles, KK5VD.
+# Copyright (C) 2021 David Freese, W1HKJ
 #
 # Permission to use, copy, modify, and distribute this software and its
 # documentation under the terms of the GNU General Public License is hereby
@@ -12,8 +12,8 @@
 # Documents produced by Doxygen are derivative works derived from the
 # input used in their production; they are not affected by this license.
 
-PROJECT_NAME         = "FLNET Users Manual"
-PROJECT_NUMBER       = 7.2
+PROJECT_NAME         = "FLNET"
+PROJECT_NUMBER       = 7.4
 PROJECT_BRIEF        =
 ALLEXTERNALS         = NO
 CASE_SENSE_NAMES     = NO
@@ -35,7 +35,11 @@ HTML_COLORSTYLE_SAT  = 0
 HTML_FOOTER          =
 HTML_HEADER          =
 IMAGE_PATH           = ../images
-INPUT                = index.doc
+INPUT                = index.doc \
+                       flnet.cfg.doc \
+                       flnet.debug_log.doc \
+                       flnet.log.doc \
+                       flnet.prefs.doc
 OUTPUT_DIRECTORY     = ../../doc/user_docs
 OUTPUT_LANGUAGE      = English
 PDF_HYPERLINKS       = YES
