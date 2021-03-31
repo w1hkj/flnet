@@ -1,9 +1,55 @@
+2021-03-31  David Freese  <w1hkj@bellsouth.net>
 
+	cd28a36: Version 7.4.0
 
-=Version 7.3.3=
+2021-03-25  dave-w1hkj  <w1hkj@bellsouth.net>
 
-2019-05-10  David Freese  <w1hkj@bellsouth.net>
+	e7c6480: Doc update
+	646a948: mxe64 update
+	2fe47ae: Like-to-haves
+	11e05d9: Exit / Priority
+	3c673d5: Callsign usage
+	488fa5c: focus
+	b1c2a81: Callin list index
+	34e0c78: Apple CMD keyboard
+	57fcd0d: Netedit Queue
+	a6ef993: Netedit sorts
+	6b10747: debounce
+	9ece682: logins
+	a86eaab: Callsign Search
+	4aeb100: Apple Cmd-Q
+	86ab41a: Edit mods
 
+2021-03-01  David Freese  <w1hkj@bellsouth.net>
+
+	b6756f3: csvdb mods
+	80b4b66: UP/DN repeat
+	3518f0b: Editor
+	6002a8d: Import/Export fldigi data
+	28509d0: macOS Info.plist
+	078f8c3: Editor UI
+	faf5727: Net nbr transfer
+	b96bb1f: Config values
+	9580613: csvdb
+	e29cd9b: Scripts
+	188ffb1: Fl_Input widgets
+	b5211b0: Master csv file
+	7d2200e: check-in-list
+	1241540: HamQTH queries
+	cff3a49: Color coding
+	4187eee: Write Log
+	f1a5c23: Optimizer
+	83024bd: Callook lookup
+	25b8d13: UI mods
+	9a07f17: new fields
+	540aa58: Distance Display
+	1a4b515: UI fixes
+	92348d3: autofiles
+	bbd1791: mkappbundle
+	45c503c: Keyboard Shortcuts
+	827feb9: Status
+	580862e: OS-X i386
+	3c0d1b6: Version 7.3.3
 	d0f16d5: hamcall
 	e978cc1: qrzlib
 	130a950: network
@@ -14,25 +60,13 @@
 	82a122c: mingw-win
 	7d0dc60: flxmlrpc config
 	d2d7fd3: INSTALL
-
-
-=Version 7.3.2=
-
+	4edc731: Version 7.3.2
 	cbea7d2: Fix for bogus csv files
-
-
-=Version 7.3.1=
-
+	8f51928: Version 7.3.1
 	75d3c68: Default dir
-
-
-=Version 7.3.0=
-
+	eaedfbd: Version 7.3.0
 	348f6a7: Xcode8 MODS
-
-
-=Version 7.2.6=
-
+	39f880a: Version 7.2.6
 	1ca5144: Maintenance mods
 
 2016-07-10  Kamal Mostafa  <kamal@whence.com>
@@ -43,36 +77,24 @@
 
 	e95afd5: mxe update
 
-
-=Version 7.2.5=
-
-
 2015-12-01  David Freese  <iam_w1hkj@w1hkj.com>
 
+	e5e1f80: Version 7.2.5
 	b1c350e: Update csvdb
-
-
-=Version 7.2.4=
-
+	b6b5f94: Version 7.2.4
 	fa21cb5: MXE update
 
 2015-06-11  Kamal Mostafa  <kamal@whence.com>
 
 	df5333d: BUILD_{DATE,USER,HOST}
 
+2015-04-24  David Freese  <iam_w1hkj@w1hkj.com>
 
-=Version 7.2.3=
-
-
-2015-04-17  David Freese  <iam_w1hkj@w1hkj.com>
-
+	c584420: Version 7.2.3
 	e303bf7: xmlrpc
 	2acf736: FSF address
 	742b70a: openSUSE warning
-
-
-=Version 7.2.2=
-
+	0147542: Version 7.2.2
 	2a1dc6a: Delete record
 	e1eb6b1: New Check-in
 
@@ -83,15 +105,9 @@
 2014-06-26  David Freese  <w1hkj@w1hkj.com>
 
 	8fa5f19: More version numbering
-
-
-=Version 7.2.1=
-
+	0737050: Version 7.2.1
 	5f57589: User doc
-
-
-=Version 7.2.0=
-
+	4135b76: Version 7.2.0
 
 2014-06-02  Robert Stiles  <kk5vd@yahoo.com>
 
@@ -101,31 +117,19 @@
 
 	45d4765: rm configure
 	4b19677: Corrections
-
-
-=Version 7.1=
-
+	3a6b91d: Version 7.1
 
 2014-05-27  Robert Stiles  <kk5vd@yahoo.com>
 
 	fe05d96: Integrate XMLRPC for name and call sign transfers to/from FLDIGI
 
+2014-03-12  David Freese  <w1hkj@w1hkj.com>
 
-=Version 7.0.2=
-
-
-2014-03-11  David Freese  <w1hkj@w1hkj.com>
-
+	5ade4fa: Version 7.0.2
 	9d096c1: Log-in listing
 	6674e61: Callin-processing
-
-
-=Version 7.0.1=
-
-
-
-=Version 7.0.0=
-
+	27c7524: Version 7.0.1
+	f070f21: Version 7.0.0
 	1b634a1: Help file update
 	b9e8772: Missing fields
 	ab4ae69: Initial commit
