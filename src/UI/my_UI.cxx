@@ -153,7 +153,9 @@ void updateCallins (bool fldigi_flag)
 		csvRecord rec;
 		netdb.get(rc, rec);
 
-		if(fldigi_flag) {
+std::cout << "fldigi_flag " << fldigi_flag << std::endl;
+
+		if (fldigi_flag == true) {
 			if(rec.name.empty())
 				szFirstName.assign(trim(rec.fname.c_str()));
 			else
@@ -576,7 +578,8 @@ std::string keycode(int val)
 }
 */
 
-static bool ignore_event = false;
+//static bool ignore_event = false;
+
 int my_UI::handle (int e)
 {
 	if (e == FL_FOCUS) return 1;
@@ -649,7 +652,9 @@ std::cout <<
 	}
 
 	if (k == FL_Up || k == FL_Down) {
-		if (e == FL_SHORTCUT) {					// keydown event
+//std::cout << FL_Up << " or " << FL_Down << " ? " << k << std::endl;
+//std::cout << FL_KEYDOWN << " / " << FL_KEYUP << " / " << FL_SHORTCUT << " ? " << e << std::endl;
+		if (e == FL_KEYDOWN) {
 			if (my_status == LOGLIST) {
 				if (k == FL_Up) {
 					WhoIsUp--;
@@ -709,102 +714,110 @@ std::cout <<
 	}
 
 	if (my_status == LOGLIST) {
-		if (k == FL_Home) {
-			lastUp = WhoIsUp;
-			WhoIsUp = 0;
-			dispCallIns (false);
-			return 1;
-		}
-		if (k == FL_End) {
-			lastUp = WhoIsUp;
-			WhoIsUp = callinlist.numlist () - 1;
-			dispCallIns (false);
-			return 1;
-		}
-		if (k == FL_F + 1) {
-			callinlist.status(WhoIsUp, LOGIN);
-			dispCallIns (false);
-			return 1;
-		}
-		if (k == FL_F + 2) {
-			callinlist.status(WhoIsUp, FIRST);
-			dispCallIns (false);
-			return 1;
-		}
-		if (k == FL_F + 3) {
-			callinlist.status(WhoIsUp, SECOND);
-			dispCallIns (false);
-			return 1;
-		}
-		if (k == FL_F + 4) {
-			callinlist.status(WhoIsUp, LOGOUT);
-			dispCallIns (false);
-			return 1;
-		}
-		if (k == FL_F + 5) { // Priority 0 station
-			WhoIsUp = callinlist.Pri_0 (WhoIsUp);
-			dispCallIns (false);
-			return 1;
-		}
-		if (k == FL_F + 6) { // Priority 1 station
-			WhoIsUp = callinlist.Pri_1 (WhoIsUp);
-			dispCallIns (false);
-			return 1;
-		}
-		if (k == FL_F + 7) { // Priority 2 station
-			WhoIsUp = callinlist.Pri_2 (WhoIsUp);
-			dispCallIns (false);
-			return 1;
-		}
-		if (k == FL_F + 8) { // Priority 2 station
-			WhoIsUp = callinlist.Pri_3 (WhoIsUp);
-			dispCallIns (false);
-			return 1;
-		}
-		if (k == FL_F + 9) { // Move this call up in list
-			WhoIsUp = callinlist.MoveEarlier (WhoIsUp);
-			dispCallIns (false);
-			return 1;
-		}
-		if (k == FL_F + 10) { // Move this call dn in list
-			WhoIsUp = callinlist.MoveLater (WhoIsUp);
-			dispCallIns (false);
-			return 1;
-		}
-		if (k == FL_F + 11) {
-			cb_ShiftF12();
-			return 1;
-		}
-		if (k == FL_F + 12) {
-			if((Fl::event_state() & FL_SHIFT) == FL_SHIFT)
+		bool handled = false;
+		switch (k) {
+			case FL_Home:
+				lastUp = WhoIsUp;
+				WhoIsUp = 0;
+				dispCallIns (false);
+				handled = true;
+				break;
+			case FL_End:
+				lastUp = WhoIsUp;
+				WhoIsUp = callinlist.numlist () - 1;
+				dispCallIns (false);
+				handled = true;
+				break;
+			case (FL_F + 1):
+				callinlist.status(WhoIsUp, LOGIN);
+				dispCallIns (false);
+				handled = true;
+				break;
+			case (FL_F + 2):
+				callinlist.status(WhoIsUp, FIRST);
+				dispCallIns (false);
+				handled = true;
+				break;
+			case (FL_F + 3):
+				callinlist.status(WhoIsUp, SECOND);
+				dispCallIns (false);
+				handled = true;
+				break;
+			case (FL_F + 4): {
+				callinlist.status(WhoIsUp, LOGOUT);
+				dispCallIns (false);
+				handled = true;
+				break;
+			}
+			case (FL_F + 5): // Priority 0 station
+				WhoIsUp = callinlist.Pri_0 (WhoIsUp);
+				dispCallIns (false);
+				handled = true;
+				break;
+			case (FL_F + 6): // Priority 1 station
+				WhoIsUp = callinlist.Pri_1 (WhoIsUp);
+				dispCallIns (false);
+				handled = true;
+				break;
+			case (FL_F + 7): // Priority 2 station
+				WhoIsUp = callinlist.Pri_2 (WhoIsUp);
+				dispCallIns (false);
+				handled = true;
+				break;
+			case (FL_F + 8): // Priority 2 station
+				WhoIsUp = callinlist.Pri_3 (WhoIsUp);
+				dispCallIns (false);
+				handled = true;
+				break;
+			case (FL_F + 9): // Move this call up in list
+				WhoIsUp = callinlist.MoveEarlier (WhoIsUp);
+				dispCallIns (false);
+				handled = true;
+				break;
+			case (FL_F + 10): // Move this call dn in list
+				WhoIsUp = callinlist.MoveLater (WhoIsUp);
+				dispCallIns (false);
+				handled = true;
+				break;
+			case (FL_F + 11):
 				cb_ShiftF12();
-			else
-				cb_F12 (WhoIsUp);
-			return 1;
-		}
-		if (k == FL_Delete) {
-			if (callinlist.numlist() == 0) {
-				inp_focus->take_focus();
-				ignore_event = true;
-			}
-			else if (!((WhoIsUp == 0) && (callinlist.status(WhoIsUp) == EMPTY))) {
-				if (fl_choice("Confirm Delete", "cancel", "OK", NULL) == 1) {
-					callinlist.del(WhoIsUp);
-					WhoIsUp--;
-					if (WhoIsUp < 0) WhoIsUp = 0;
-					updateLogins();
-					dispCallIns (false);
+				handled = true;
+				break;
+			case (FL_F + 12):
+				if((Fl::event_state() & FL_SHIFT) == FL_SHIFT)
+					cb_ShiftF12();
+				else
+					cb_F12 (WhoIsUp);
+				handled = true;
+				break;
+			case (FL_Delete):
+				if (callinlist.numlist() == 0) {
+					inp_focus->take_focus();
 				}
-			}
-			inp_focus->take_focus();
-			ignore_event = true;
-			return 1;
-		}
-		if (k == FL_Enter || k == FL_KP_Enter) {
-			if (!ignore_event) {
+				else if (!((WhoIsUp == 0) && (callinlist.status(WhoIsUp) == EMPTY))) {
+					if (fl_choice("Confirm Delete", "cancel", "OK", NULL) == 1) {
+						callinlist.del(WhoIsUp);
+						WhoIsUp--;
+						if (WhoIsUp < 0) WhoIsUp = 0;
+						updateLogins();
+						dispCallIns (false);
+					}
+				}
+				inp_focus->take_focus();
+				handled = true;
+				break;
+			case (FL_Enter): 
+			case (FL_KP_Enter):
 				dispCallIns(updateFldigi);
-			}
-			ignore_event = false;
+				handled = true;
+				break;
+			default:
+				break;
+		}
+		if (handled) {
+			Fl::add_timeout (0.1, debounce);
+			oldkey = k;
+			keywait = 1;
 			return 1;
 		}
 	}
@@ -871,7 +884,7 @@ std::cout <<
 				break;
 			default : ;
 		}
-		return 1;
+//		return 1;
 	}
 
 	if (k == FL_Tab) {
@@ -896,7 +909,7 @@ std::cout <<
 			default :
 				break;
 		}
-		return 1;
+//		return 1;
 	}
 
 	if ((k == FL_Enter || k == FL_KP_Enter) && my_status == AREA) {
@@ -914,8 +927,13 @@ std::cout <<
 		clearSAP ();
 		if (progStatus.disp_new_login && progStatus.open_editor) cb_F12 (WhoIsUp);
 		updateLogins();
-		return 1;
+//		return 1;
 	}
+
+	Fl::add_timeout (0.1, debounce);
+	oldkey = k;
+	keywait = 1;
+	return 1;
 
 	return 0;
 }
