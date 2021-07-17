@@ -1170,7 +1170,7 @@ void ssl_calc_verify_ssl( mbedtls_ssl_context *ssl, unsigned char hash[36] )
 #endif /* MBEDTLS_SSL_PROTO_SSL3 */
 
 #if defined(MBEDTLS_SSL_PROTO_TLS1) || defined(MBEDTLS_SSL_PROTO_TLS1_1)
-void ssl_calc_verify_tls( mbedtls_ssl_context *ssl, unsigned char hash[36] )
+void ssl_calc_verify_tls( mbedtls_ssl_context *ssl, unsigned char *hash) // hash[36] )
 {
     mbedtls_md5_context md5;
     mbedtls_sha1_context sha1;
@@ -1198,7 +1198,7 @@ void ssl_calc_verify_tls( mbedtls_ssl_context *ssl, unsigned char hash[36] )
 
 #if defined(MBEDTLS_SSL_PROTO_TLS1_2)
 #if defined(MBEDTLS_SHA256_C)
-void ssl_calc_verify_tls_sha256( mbedtls_ssl_context *ssl, unsigned char hash[32] )
+void ssl_calc_verify_tls_sha256( mbedtls_ssl_context *ssl, unsigned char *hash) // hash[32] )
 {
     mbedtls_sha256_context sha256;
 
@@ -1219,7 +1219,7 @@ void ssl_calc_verify_tls_sha256( mbedtls_ssl_context *ssl, unsigned char hash[32
 #endif /* MBEDTLS_SHA256_C */
 
 #if defined(MBEDTLS_SHA512_C)
-void ssl_calc_verify_tls_sha384( mbedtls_ssl_context *ssl, unsigned char hash[48] )
+void ssl_calc_verify_tls_sha384( mbedtls_ssl_context *ssl, unsigned char *hash) //hash[48] )
 {
     mbedtls_sha512_context sha512;
 
@@ -6263,7 +6263,7 @@ static void ssl_calc_finished_tls_sha384(
     int len = 12;
     const char *sender;
     mbedtls_sha512_context sha512;
-    unsigned char padbuf[48];
+    unsigned char padbuf[64];
 
     mbedtls_ssl_session *session = ssl->session_negotiate;
     if( !session )
