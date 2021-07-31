@@ -87,6 +87,8 @@
 #include <FL/Fl_Image.H>
 #include <FL/Fl_File_Chooser.H>
 
+#include "XmlRpcClient.h"
+
 Fl_Window *main_window = (Fl_Window *)0;
 
 std::string home_dir = "";
@@ -208,8 +210,17 @@ void check_home_directory(std::string home_dir)
 	mkdir(home_dir.c_str(), 0766);
 }
 
-int main(int argc, char **argv)
+static std::string pname = "";
+
+int main (int argc, char *argv[])
 {
+	pname = argv[0];
+	size_t pn = pname.rfind("/");
+	if (pn != std::string::npos) pname.erase(0, pn + 1);
+	pn = pname.rfind("\\");
+	if (pn != std::string::npos) pname.erase(0, pn + 1);
+	XmlRpc::set_pname(pname);
+
 	Fl::lock();
 	int arg_idx;
 
