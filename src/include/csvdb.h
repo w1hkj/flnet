@@ -75,6 +75,8 @@ struct csvRecord {
 	string prevdate;
 	string locator;
 	string country;
+	string county;
+	string traffic;
 	csvRecord() {
 		prefix.clear(); area.clear(); suffix.clear(); callsign.clear();
 		name.clear(); netnbr.clear(); logdate.clear(); nbrlogins.clear();
@@ -82,7 +84,7 @@ struct csvRecord {
 		addr.clear(); city.clear(); state.clear(); zip.clear();
 		phone.clear(); birthdate.clear(); spouse.clear(); sp_birth.clear();
 		comment1.clear(); comment2.clear(); email.clear(); prevdate.clear();
-		locator.clear(); country.clear();
+		locator.clear(); country.clear(); county.clear(); traffic.clear();
 	}
 	std::string print();
 
@@ -93,7 +95,7 @@ class csvdb {
 enum FIELDS {
 	PREFIX,AREA,SUFFIX,CALLSIGN,NAME,NETNBR,LOGDATE,NBRLOGINS,STATUS,JOINED,
 	FNAME,LNAME,ADDR,CITY,STATE,ZIP,PHONE,BIRTHDATE,SPOUSE,SP_BIRTH,
-	COMMENT1,COMMENT2,EMAIL,PREVDATE,LOCATOR,COUNTRY, LAST_FIELD
+	COMMENT1,COMMENT2,EMAIL,PREVDATE,LOCATOR,COUNTRY,COUNTY,TRAFFIC, LAST_FIELD
  };
 
  

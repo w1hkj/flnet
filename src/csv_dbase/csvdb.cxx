@@ -45,6 +45,8 @@ std::string csvRecord::print()
 	retstr.append("\nzip code ..... ").append(zip);
 	retstr.append("\nlocator ...... ").append(locator);
 	retstr.append("\ncountry ...... ").append(country);
+	retstr.append("\ncounty ....... ").append(county);
+	retstr.append("\ntraffic ...... ").append(traffic);
 	retstr.append("\nphone ........ ").append(phone);
 	retstr.append("\nemail ........ ").append(email);
 	retstr.append("\nbirth date ... ").append(birthdate);
@@ -63,12 +65,12 @@ STATUS    JOINED    FNAME     LNAME     \
 ADDR      CITY      STATE     ZIP       \
 PHONE     BIRTHDATE SPOUSE    SP_BIRTH  \
 COMMENT1  COMMENT2  EMAIL     PREVDATE  \
-LOCATOR   COUNTRY   ";
+LOCATOR   COUNTRY   COUNTY    TRAFFIC";
 
 const char *csvdb::csvFields = "\
 PREFIX,AREA,SUFFIX,CALLSIGN,NAME,NETNBR,LOGDATE,NBRLOGINS,STATUS,JOINED,\
 FNAME,LNAME,ADDR,CITY,STATE,ZIP,PHONE,BIRTHDATE,SPOUSE,SP_BIRTH,\
-COMMENT1,COMMENT2,EMAIL,PREVDATE,LOCATOR,COUNTRY";
+COMMENT1,COMMENT2,EMAIL,PREVDATE,LOCATOR,COUNTRY,COUNTY,TRAFFIC";
 
 bool csvdb::mapheader(string header)
 {
@@ -250,6 +252,8 @@ bool csvdb::split(string s, csvRecord &rec)
 			case PREVDATE :		field(s, rec.prevdate); break;
 			case LOCATOR :		field(s, rec.locator); break;
 			case COUNTRY :		field(s, rec.country); break;
+			case COUNTY :		field(s, rec.county); break;
+			case TRAFFIC :		field(s, rec.traffic); break;
 		}
 	}
 	if (rec.prefix.empty() && rec.area.empty() && rec.suffix.empty())
@@ -363,7 +367,9 @@ void csvdb::join(csvRecord &rec, string &str)
 	str.append(delimit(rec.email)).append(",");
 	str.append(delimit(rec.prevdate)).append(",");
 	str.append(delimit(rec.locator)).append(",");
-	str.append(delimit(rec.country));
+	str.append(delimit(rec.country)).append(",");
+	str.append(delimit(rec.county)).append(",");
+	str.append(delimit(rec.traffic));
 }
 
 void csvdb::update_clist()
@@ -431,6 +437,8 @@ void csvdb::clearrec(csvRecord &rec)
 	rec.prevdate.clear();
 	rec.locator.clear();
 	rec.country.clear();
+	rec.county.clear();
+	rec.traffic.clear();
 }
 
 int csvdb::get(size_t n, csvRecord &rec)
@@ -440,7 +448,7 @@ int csvdb::get(size_t n, csvRecord &rec)
 	rec.fname = rec.lname = rec.addr = rec.city = rec.state =
 	rec.zip = rec.phone = rec.birthdate = rec.spouse = rec.sp_birth =
 	rec.comment1 = rec.comment2 = rec.email = rec.prevdate =
-	rec.locator = rec.country = "";
+	rec.locator = rec.country = rec.county = rec.traffic = "";
 
 	if (n < 0 || n >= dbrecs.size()) return -1;
 

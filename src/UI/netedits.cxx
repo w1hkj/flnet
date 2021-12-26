@@ -42,42 +42,44 @@
 #include "status.h"
 
 Fl_Menu_Bar *mbarMain = (Fl_Menu_Bar *)0;
-Fl_Input2 *inpPrefix=(Fl_Input2 *)0;
-Fl_Input2 *inpArea=(Fl_Input2 *)0;
-Fl_Input2 *inpSuffix=(Fl_Input2 *)0;
-Fl_Input2 *inpNickname=(Fl_Input2 *)0;
-Fl_Input2 *inpNetNbr=(Fl_Input2 *)0;
-Fl_Input2 *inpFname=(Fl_Input2 *)0;
-Fl_Input2 *inpLname=(Fl_Input2 *)0;
-Fl_Input2 *inpAddress=(Fl_Input2 *)0;
-Fl_Input2 *inpCity=(Fl_Input2 *)0;
-Fl_Input2 *inpState=(Fl_Input2 *)0;
-Fl_Input2 *inpZip=(Fl_Input2 *)0;
-Fl_Input2 *inpPhone=(Fl_Input2 *)0;
-Fl_DateInput *inpBirthday=(Fl_DateInput *)0;
-Fl_Input2 *inpSpouse=(Fl_Input2 *)0;
-Fl_Input2 *inpSpBirthday=(Fl_Input2 *)0;
-Fl_DateInput *txtLogDate=(Fl_DateInput *)0;
-Fl_Button *btnFirst=(Fl_Button *)0;
-Fl_Button *btnPrev=(Fl_Button *)0;
-Fl_Button *btnNext=(Fl_Button *)0;
-Fl_Button *btnLast=(Fl_Button *)0;
-Fl_Button *btnNewSave=(Fl_Button *)0;
-Fl_Button *btn2Queue=(Fl_Button *)0;
-Fl_Button *btnDelete=(Fl_Button *)0;
-Fl_Button *btnUpdateCancel=(Fl_Button *)0;
-Fl_Button *btnClose=(Fl_Button *)0;
-Fl_Output *lblFileName=(Fl_Output *)0;
-Fl_Output *lblNumRecs=(Fl_Output *)0;
-Fl_Input2 *inpCallsign=(Fl_Input2 *)0;
-Fl_DateInput *inpPrevDate=(Fl_DateInput *)0;
-Fl_Input2 *inpNbrLogins=(Fl_Input2 *)0;
-Fl_Input2 *inpStatus=(Fl_Input2 *)0;
-Fl_DateInput *inpJoined=(Fl_DateInput *)0;
-Fl_Input2 *inpEmail=(Fl_Input2 *)0;
-Fl_Input2 *inpComment1=(Fl_Input2 *)0;
-Fl_Input2 *inpComment2=(Fl_Input2 *)0;
 
+Fl_Input2 *inpPrefix = (Fl_Input2 *)0;
+Fl_Input2 *inpArea = (Fl_Input2 *)0;
+Fl_Input2 *inpSuffix = (Fl_Input2 *)0;
+Fl_Input2 *inpNickname = (Fl_Input2 *)0;
+Fl_Input2 *inpNetNbr = (Fl_Input2 *)0;
+Fl_Input2 *inpFname = (Fl_Input2 *)0;
+Fl_Input2 *inpLname = (Fl_Input2 *)0;
+Fl_Input2 *inpAddress = (Fl_Input2 *)0;
+Fl_Input2 *inpCity = (Fl_Input2 *)0;
+Fl_Input2 *inpState = (Fl_Input2 *)0;
+Fl_Input2 *inpZip = (Fl_Input2 *)0;
+Fl_Input2 *inpPhone = (Fl_Input2 *)0;
+Fl_DateInput *inpBirthday = (Fl_DateInput *)0;
+Fl_Input2 *inpSpouse = (Fl_Input2 *)0;
+Fl_Input2 *inpSpBirthday = (Fl_Input2 *)0;
+Fl_DateInput *txtLogDate = (Fl_DateInput *)0;
+Fl_Button *btnFirst = (Fl_Button *)0;
+Fl_Button *btnPrev = (Fl_Button *)0;
+Fl_Button *btnNext = (Fl_Button *)0;
+Fl_Button *btnLast = (Fl_Button *)0;
+Fl_Button *btnNewSave = (Fl_Button *)0;
+Fl_Button *btn2Queue = (Fl_Button *)0;
+Fl_Button *btnDelete = (Fl_Button *)0;
+Fl_Button *btnUpdateCancel = (Fl_Button *)0;
+Fl_Button *btnClose = (Fl_Button *)0;
+Fl_Output *lblFileName = (Fl_Output *)0;
+Fl_Output *lblNumRecs = (Fl_Output *)0;
+Fl_Input2 *inpCallsign = (Fl_Input2 *)0;
+Fl_DateInput *inpPrevDate = (Fl_DateInput *)0;
+Fl_Input2 *inpNbrLogins = (Fl_Input2 *)0;
+Fl_Input2 *inpStatus = (Fl_Input2 *)0;
+Fl_DateInput *inpJoined = (Fl_DateInput *)0;
+Fl_Input2 *inpEmail = (Fl_Input2 *)0;
+Fl_Input2 *inpComment1 = (Fl_Input2 *)0;
+Fl_Input2 *inpComment2 = (Fl_Input2 *)0;
+Fl_Input2 *inpTraffic = (Fl_Input2 *)0;
+Fl_Input2 *inpCounty = (Fl_Input2 *)0;
 Fl_Input2 *inpCountry = (Fl_Input2 *)0;
 Fl_Input2 *inpLocator = (Fl_Input2 *)0;
 
@@ -330,92 +332,113 @@ void newEditWindow()
 	out_sorted_by = new Fl_Output(460, 0, 75, 25, "Sorted by:");
 	out_sorted_by->color( (Fl_Color)20);
 
-	inpPrefix = new Fl_Input2(10, 75, 40, 24, "Prefix");
+	int y = 75;
+	inpPrefix = new Fl_Input2(10, y, 40, 22, "Prefix");
 	inpPrefix->align(FL_ALIGN_TOP_LEFT);
 	inpPrefix->callback((Fl_Callback *)cb_prefix);
 
-	inpArea = new Fl_Input2(54, 75, 28, 24, "Area");
+	inpArea = new Fl_Input2(54, y, 28, 22, "Area");
 	inpArea->align(FL_ALIGN_TOP_LEFT);
 	inpArea->callback((Fl_Callback *)cb_area);
 
-	inpSuffix = new Fl_Input2(86, 75, 64, 24, "Suffix");
+	inpSuffix = new Fl_Input2(86, y, 64, 22, "Suffix");
 	inpSuffix->align(FL_ALIGN_TOP_LEFT);
 	inpSuffix->callback((Fl_Callback *)cb_suffix);
 
-	inpNickname = new Fl_Input2(154, 75, 147, 24, "Nickname");
+	inpNickname = new Fl_Input2(154, y, 147, 22, "Nickname");
 	inpNickname->align(FL_ALIGN_TOP_LEFT);
 
-	inpNetNbr = new Fl_Input2(305, 75, 60, 24, "Net #");
+	inpNetNbr = new Fl_Input2(305, y, 60, 22, "Net #");
 	inpNetNbr->align(FL_ALIGN_TOP_LEFT);
 
-	inpCountry = new Fl_Input2(375, 75, 155, 24, "Country");
-	inpCountry->align(FL_ALIGN_TOP_LEFT);
+	inpCounty = new Fl_Input2(375, y, 155, 22, "County/Prov");
+	inpCounty->align(FL_ALIGN_TOP_LEFT);
 
-	inpCallsign = new Fl_Input2(10, 120, 110, 24, "Callsign");
+	y += 40;
+	inpCallsign = new Fl_Input2(10, y, 110, 22, "Callsign");
 	inpCallsign->align(FL_ALIGN_TOP_LEFT);
 
-	inpPrevDate = new Fl_DateInput(125, 120, 110, 24, "Prev Date");
+	inpPrevDate = new Fl_DateInput(125, y, 110, 22, "Prev Date");
 	inpPrevDate->format(2);
 	inpPrevDate->align(FL_ALIGN_TOP_LEFT);
 
-	txtLogDate = new Fl_DateInput(245, 120, 110, 24, "Log Date");
+	txtLogDate = new Fl_DateInput(245, y, 110, 22, "Log Date");
 	txtLogDate->format(2);
 	txtLogDate->align(FL_ALIGN_TOP_LEFT);
 
-	inpJoined = new Fl_DateInput(365, 120, 110, 24, "Joined");
+	inpJoined = new Fl_DateInput(365, y, 110, 22, "Joined");
 	inpJoined->format(2);
 	inpJoined->align(FL_ALIGN_TOP_LEFT);
 
-	inpNbrLogins = new Fl_Input2(10, 165, 80, 24, "Nbr Logins");
+	y += 40;
+	inpNbrLogins = new Fl_Input2(10, y, 70, 22, "Nbr Logins");
 	inpNbrLogins->align(FL_ALIGN_TOP_LEFT);
 
-	inpStatus = new Fl_Input2(105, 165, 24, 24, "Status");
+	inpStatus = new Fl_Input2(105, y, 22, 22, "Status");
 	inpStatus->align(FL_ALIGN_TOP);
 
-	inpLocator = new Fl_Input2(155, 165, 80, 24, "Locator");
+	inpLocator = new Fl_Input2(155, y, 70, 22, "Locator");
 	inpLocator->align(FL_ALIGN_TOP_LEFT);
 	inpLocator->callback((Fl_Callback *)cb_locator);
 	inpLocator->when(FL_WHEN_CHANGED);
 
-	outAzimuth = new Fl_Output(245, 165, 80, 24, "Azimuth");
+	outAzimuth = new Fl_Output(245, y, 70, 22, "Azimuth");
 	outAzimuth->align(FL_ALIGN_TOP_LEFT);
 	outAzimuth->color((Fl_Color)20);
 
-	outDistance = new Fl_Output(335, 165, 100, 24, "Distance");
+	outDistance = new Fl_Output(335, y, 100, 22, "Distance");
 	outDistance->align(FL_ALIGN_TOP_LEFT);
 	outDistance->color((Fl_Color)20);
 
 //----------------------------------------------------------------------
-	inpFname = new Fl_Input2(80, 205, 105, 24, "Name:");
 
-	inpLname = new Fl_Input2(190, 205, 170, 25);
+	y += 40;
+	inpFname = new Fl_Input2(70, y, 105, 22, "Name:");
+	inpFname->tooltip("first name");
 
-	inpAddress = new Fl_Input2(80, 235, 280, 24, "Address:");
+	inpLname = new Fl_Input2(180, y, 165, 22);
+	inpLname->tooltip("lase name");
 
-	inpCity = new Fl_Input2(80, 265, 190, 24, "");
+	inpBirthday = new Fl_DateInput(390, y, 120, 22, "Bday:");
+	inpBirthday->tooltip("date of birth");
 
-	inpState = new Fl_Input2(275, 265, 35, 25);
+	y += 26;
+	inpAddress = new Fl_Input2(70, y, 275, 22, "Addr:");
+	inpAddress->tooltip("street");
+	inpPhone = new Fl_Input2(390, y, 135, 22, "Ph:");
+	inpPhone->tooltip("phone #");
+
+	y += 26;
+	inpCity = new Fl_Input2(70, y, 190, 22, "");
+	inpCity->tooltip("city");
+
+	inpState = new Fl_Input2(265, y, 35, 22);
 	inpState->callback((Fl_Callback *)cbState);
 	inpState->when(FL_WHEN_CHANGED);
+	inpState->tooltip("state");
 
-	inpZip = new Fl_Input2(320, 265, 60, 25);
+	inpZip = new Fl_Input2(305, y, 60, 22);
+	inpZip->tooltip("zip");
 
-	inpBirthday = new Fl_DateInput(385, 217, 120, 24, "Birthday:");
-	inpBirthday->align(FL_ALIGN_TOP_LEFT);
-	inpBirthday->format(1);
+	inpCountry = new Fl_Input2(370, y, 140, 22);
+	inpCountry->tooltip("country");
 
-	inpPhone = new Fl_Input2(385, 265, 135, 24, "Phone:");
-	inpPhone->align(FL_ALIGN_TOP_LEFT);
+	y += 26;
+	inpEmail = new Fl_Input2(70, y, 440, 22, "Email:");
 
-	inpEmail = new Fl_Input2(80, 295, 440, 24, "Email:");
+	y += 26;
+	inpSpouse = new Fl_Input2(70, y, 85, 22, "Spouse:");
 
-	inpSpouse = new Fl_Input2(80, 324, 85, 24, "Spouse:");
+	inpSpBirthday = new Fl_Input2(235, y, 75, 22, "Sp Bday:");
 
-	inpSpBirthday = new Fl_Input2(235, 324, 75, 24, "Birthday:");
+	y += 26;
+	inpTraffic = new Fl_Input2(70, y, 440, 22, "Traffic:");
+	inpTraffic->tooltip("traffic net, passed etc");
 
-	inpComment1 = new Fl_Input2(80, 355, 440, 24, "Comments");
-
-	inpComment2 = new Fl_Input2(80, 385, 440, 24);
+	y += 26;
+	inpComment1 = new Fl_Input2(70, y, 440, 22, "Info:");
+	y += 26;
+	inpComment2 = new Fl_Input2(70, y, 440, 24);
 
 	int xpos = 45;
 	int ypos = 420;
