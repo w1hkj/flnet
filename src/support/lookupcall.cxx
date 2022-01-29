@@ -279,6 +279,12 @@ void display_lookup_result(void *)
 	}
 
 		if (DISP_DEBUG) std::cout << "Qth: " << query.qth << std::endl;
+	if (!query.qth.empty()) {
+		inpCity->value(query.qth.c_str());
+		inpCity->position (0);
+		inpCity->redraw();
+	}
+
 //	inpQth->value(query.qth.c_str());
 //	inpQth->position (0);
 
@@ -824,12 +830,12 @@ void CALLOOKquery()
 // Hamcall specific functions
 // ---------------------------------------------------------------------
 
-#define HAMCALL_CALL   "181"
-#define HAMCALL_FIRST  "184"
-#define HAMCALL_CITY   "191"
-#define HAMCALL_STATE  "192"
-#define HAMCALL_LOCATOR   "202"
-#define HAMCALL_DOB    "194"
+#define HAMCALL_CALL   181
+#define HAMCALL_FIRST  184
+#define HAMCALL_CITY   191
+#define HAMCALL_STATE  192
+#define HAMCALL_LOCATOR 202
+#define HAMCALL_DOB    194
 
 void parse_html(const string& htmlpage)
 {
@@ -870,27 +876,21 @@ void parse_html(const string& htmlpage)
 
 bool HAMCALLget(string& htmlpage)
 {
-	string html = "http://";
-	html.append(progStatus.hamcallurl);
-	html.append("  /call?username=");
-	html.append(progStatus.user_name);
-	html.append("&password=");
-	html.append(progStatus.user_password);
-	html.append("&rawlookup=1&callsign=");
-	html.append(callsign);
-	html.append("&program=flnet-");
-	html.append(VERSION);
-	return get_http(html, htmlpage, 5.0);
-
-//	print_query("hamcall", url_html);
-
-//	string url = progStatus.hamcallurl;
-//	size_t p = url.find("//");
-//	string service = url.substr(0, p);
-//	url.erase(0, p+2);
-//	size_t len = url.length();
-//	if (url[len-1]=='/') url.erase(len-1, 1);
-//	return network_query(url, service, url_html, htmlpage, 5.0);
+        string url = progStatus.hamcallurl;
+        size_t p = url.find("//");
+        string service = url.substr(0, p);
+        url.erase(0, p+2);
+        size_t len = url.length();
+        if (url[len-1]!='/') url.append("/");
+        url.append("call?username=");
+        url.append(progStatus.user_name);
+        url.append("&password=");
+        url.append(progStatus.user_password);
+        url.append("&rawlookup=1&callsign=");
+        url.append(callsign);
+        url.append("&program=flnet-");
+        url.append(VERSION);
+        return get_http(url, htmlpage, 5.0);
 }
 
 void HAMCALLquery()
