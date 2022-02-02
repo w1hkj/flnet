@@ -31,15 +31,18 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <FL/fl_draw.H>
+
 #include "loglist.h"
 #include "netshared.h"
+#include "sorting.h"
 #include "status.h"
 
 void loglist::clear (void)
 {
 	for (int i = 0; i < lsize; i++) {
 		llist[i].recN = -1;
-		llist[i].status = LOGIN;
+		llist[i].status = STATUS_1;
 		llist[i].displine[0] = 0;
 		llist[i].chPriority = ' ';
 		llist[i].szPrefix[0] = 0;
@@ -131,18 +134,89 @@ void loglist::CreateDispLine (int n)
 	return;
 }
 
-const char *loglist::report_line(int n)
+inline void uline(std::string &rline, std::string a, int *widths, int &wN) { \
+std::string tmp=a; tmp.append("XX");
+if (widths[wN] < (fl_width(tmp.c_str()))) widths[wN] = fl_width(tmp.c_str()); \
+wN++; \
+rline.append(a);\
+rline += (char)progStatus.column_char; \
+}
+
+std::string  loglist::header_line(int *widths)
 {
-	int nn = n + BLANKS;
-	static std::string rline;
-	rline.assign(trim(llist[nn].szPrefix))
-		 .append(trim(llist[nn].szArea))
-		 .append(trim(llist[nn].szSuffix))
-		 .append("\t")
-		 .append(llist[nn].szName)
-		 .append("\t")
-		 .append(llist[nn].szTime);
-	return rline.c_str();
+	std::string rline;
+	int wN = 0;
+
+	int n = 0;
+	while (!columns[n].header.empty()) {
+		if (columns[n].checked)
+			uline(rline, columns[n].header, widths, wN);
+		n++;
+	}
+	if (rline.length() > 0)
+		rline.erase(rline.length() - 1, 1);
+	return rline;
+}
+
+std::string  loglist::report_line(int recn, int *widths)
+{
+	std::string rline;
+
+	std::string logtime = callinlist.qsotime(recn);
+	csvRecord rec;
+
+	netdb.get(callinlist.recN(recn), rec);
+
+	int wN = 0;
+
+	int n = 0;
+	while (!columns[n].header.empty()) {
+		if (columns[n].checked) {
+
+			if (columns[n].header == "CALLSIGN") uline(rline, rec.callsign, widths, wN);
+			if (columns[n].header == "NAME") uline(rline, rec.name, widths, wN);
+			if (columns[n].header == "NETNBR") uline(rline, rec.netnbr, widths, wN);
+			if (columns[n].header == "PREFIX") uline(rline, rec.prefix, widths, wN);
+			if (columns[n].header == "AREA") uline(rline, rec.area, widths, wN);
+			if (columns[n].header == "SUFFIX") uline(rline, rec.suffix, widths, wN);
+			if (columns[n].header == "FNAME") uline(rline, rec.fname, widths, wN);
+			if (columns[n].header == "LNAME") uline(rline, rec.lname, widths, wN);
+			if (columns[n].header == "ADDR") uline(rline, rec.addr, widths, wN);
+			if (columns[n].header == "CITY") uline(rline, rec.city, widths, wN);
+			if (columns[n].header == "STATE") uline(rline, rec.state, widths, wN);
+			if (columns[n].header == "ZIP") uline(rline, rec.zip, widths, wN);
+			if (columns[n].header == "PHONE") uline(rline, rec.phone, widths, wN);
+			if (columns[n].header == "BIRTHDATE") uline(rline, rec.birthdate, widths, wN);
+			if (columns[n].header == "SPOUSE") uline(rline, rec.spouse, widths, wN);
+			if (columns[n].header == "SP_BIRTH") uline(rline, rec.sp_birth, widths, wN);
+			if (columns[n].header == "COMMENT1") uline(rline, rec.comment1, widths, wN);
+			if (columns[n].header == "COMMENT2") uline(rline, rec.comment2, widths, wN);
+			if (columns[n].header == "EMAIL") uline(rline, rec.email, widths, wN);
+			if (columns[n].header == "LOCATOR") uline(rline, rec.locator, widths, wN);
+			if (columns[n].header == "COUNTRY") uline(rline, rec.country, widths, wN);
+			if (columns[n].header == "JOINED") uline(rline, rec.joined, widths, wN);
+			if (columns[n].header == "COUNTY") uline(rline, rec.county, widths, wN);
+			if (columns[n].header == "TRAFFIC") uline(rline, rec.traffic, widths, wN);
+			if (columns[n].header == "LOGDATE") uline(rline, rec.logdate, widths, wN);
+			if (columns[n].header == "LOGTIME") uline(rline, logtime, widths, wN);
+			if (columns[n].header == "PREVDATE") uline(rline, rec.prevdate, widths, wN);
+			if (columns[n].header == "NBRLOGINS") uline(rline, rec.nbrlogins, widths, wN);
+
+			if (columns[n].header == "STATUS") {
+				switch (callinlist.status(recn)) {
+					case STATUS_1: uline(rline, progStatus.f1_text, widths, wN); break;
+					case STATUS_2: uline(rline, progStatus.f2_text, widths, wN); break;
+					case STATUS_3: uline(rline, progStatus.f3_text, widths, wN); break;
+					case STATUS_4: uline(rline, progStatus.f4_text, widths, wN); break;
+					default: break;
+				}
+			}
+		}
+		n++;
+	}
+	if (rline.length() > 0)
+	rline.erase(rline.length() - 1, 1);
+	return rline;
 }
 
 int loglist::add (long N,
@@ -157,7 +231,7 @@ int loglist::add (long N,
 		}
 		for (int i = 0; i < lsize + LISTINCR; i++) {
 			llist[i].recN = -1;
-			llist[i].status = EMPTY;
+			llist[i].status = STATUS_0;
 			llist[i].displine[0] = 0;
 		}
 		for (int i = 0; i < lsize; i++) temp[i] = llist[i];
@@ -167,7 +241,7 @@ int loglist::add (long N,
 	}
 
 	llist[nlist].recN = N;
-	llist[nlist].status = LOGIN;
+	llist[nlist].status = STATUS_1;
 
 	memset (llist[nlist].szPrefix, 0, 4);
 	memset (llist[nlist].szArea, 0, 2);
@@ -245,7 +319,7 @@ logStatus loglist::status (int n)
 	int nn = n + BLANKS;
 	if (nn <= nlist)
 		return llist[nn].status;
-	return LOGIN;
+	return STATUS_1;
 }
 
 void loglist::status (int n, logStatus st)
@@ -444,7 +518,7 @@ int loglist::Pri_3 (int n)
 int loglist::nextup (void)
 {
 	for (int i = BLANKS; i < nlist; i++)
-		if (llist[i].status == LOGIN) return (i - BLANKS);
+		if (llist[i].status == STATUS_1) return (i - BLANKS);
 	return (nlist -1 - BLANKS);
 }
 

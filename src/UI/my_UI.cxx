@@ -1,4 +1,4 @@
- // =====================================================================
+// =====================================================================
 //
 // my_UI.cxx
 //
@@ -113,8 +113,8 @@ void updateCallins (bool fldigi_flag)
 	Fl_Color fg, bg;
 
 	for (i = WhoIsUp - 4, j = 0; i < WhoIsUp + 11; i++, j++) {
-		fg = progStatus.fgColors[callinlist.status(i)];
-		bg = progStatus.bgColors[callinlist.status(i)];
+		fg = progStatus.fgColors[callinlist.status(i) - 1];
+		bg = progStatus.bgColors[callinlist.status(i) - 1];
 		txtLine[j]->labelcolor (fg);
 		txtLine[j]->color (bg);
 		txtLine[j]->label (callinlist.displine(i));
@@ -152,8 +152,6 @@ void updateCallins (bool fldigi_flag)
 	if (rc >= 0 && rc < (long)netdb.numrecs()) {
 		csvRecord rec;
 		netdb.get(rc, rec);
-
-std::cout << "fldigi_flag " << fldigi_flag << std::endl;
 
 		if (fldigi_flag == true) {
 			if(rec.name.empty())
@@ -275,7 +273,10 @@ std::cout << "fldigi_flag " << fldigi_flag << std::endl;
 	} else if (callinlist.numlist() == 0)
 		txtInfo->label ("");
 	else
-		txtInfo->label ("NOT IN DATABASE");
+		txtInfo->label ("New record!");
+
+	if (login_list && login_list->visible())
+		update_log_ins();
 
 }
 
@@ -286,15 +287,19 @@ void clear_outfilename()
 	outfilename.clear();
 }
 
+std::string ascii_copy;
+
 void updateLogins (bool closing = false)
 {
 	int i, n;
 	long rc;
-	FILE *fToday;
+	FILE *txt_file;
+	FILE *csv_file;
+
 	char today[80];
 	char ftoday[80];
-	char szLine[40];
 	char sztemp[40];
+
 	csvRecord rec;
 	if (callinlist.numlist() == 0)
 		return;
@@ -306,20 +311,37 @@ void updateLogins (bool closing = false)
 	strftime(today, sizeof(today), "%Y%m%d", &tim);
 	strftime(ftoday, sizeof(ftoday), "%Y.%m.%d.%H%M", &tim);
 
-	if (outfilename.empty()) {
-		outfilename = selected_file;
-		size_t p = outfilename.find(".csv");
-		if (p != string::npos) outfilename.erase(p);
-		p = outfilename.find(".CSV");
-		if (p != string::npos) outfilename.erase(p);
-		outfilename.append("-").append(ftoday).append(".log");
-		fToday = fopen(outfilename.c_str(), "w");
-	} else
-		fToday = fopen(outfilename.c_str(), "w");
+	std::string csv_filename;
+	std::string txt_filename;
 
-	for (i = 0; i < callinlist.numlist(); i++) {
-		strcpy (szLine, callinlist.displine(i));
-		fprintf (fToday, "%s\n", szLine);
+	csv_filename = selected_file;
+	size_t p = csv_filename.find(".csv");
+	if (p != string::npos) csv_filename.erase(p);
+	p = csv_filename.find(".CSV");
+	if (p != string::npos) csv_filename.erase(p);
+	csv_filename.append("-").append(ftoday);
+
+	txt_filename = csv_filename;
+
+	csv_filename.append(".csv");
+	txt_filename.append(".txt");
+
+	csv_file = fopen(csv_filename.c_str(), "w");
+
+	int widths[30];
+	int N = callinlist.numlist();
+	std::string lines[N + 1];
+
+	for (int i = 0; i < 30; i++) widths[i] = 0;
+
+	lines[0] = callinlist.header_line(widths);
+	for (int i = 0; i < N; i++) {
+		lines[i+1] = callinlist.report_line(i, widths);
+	}
+
+// CSV format file
+	for (i = 0; i <= N; i++) {
+		fprintf (csv_file, "%s\n", lines[i].c_str());
 		if (closing) {
 			rc = callinlist.recN (i);
 			if (rc >= 0 && rc < (long)netdb.numrecs()) {
@@ -334,8 +356,57 @@ void updateLogins (bool closing = false)
 			}
 		}
 	}
+	fclose (csv_file);
 
-	fclose (fToday);
+// create space filled copy of report
+	size_t colpos = 0;
+	size_t next_colpos = 0;
+	size_t cols[30];
+
+	for (int i = 0; i < 30; i++) cols[i] = 0;
+
+// find column positions based on max string size in each column
+	for (int j = 0; j <= N; j++) {
+		colpos = 0;
+		for (int col = 0; col < 30; col++) {
+			next_colpos = lines[j].find(progStatus.column_char, colpos + 1);
+			if (next_colpos != std::string::npos)  {
+				if (cols[col] < (next_colpos - colpos)) cols[col] = next_colpos - colpos;
+				colpos = next_colpos;
+			} else
+				break;
+		}
+	}
+	cols[0] += progStatus.col_spaces;
+	for (int j = 1; j < 30; j++) {
+		if (cols[j]) {
+			cols[j] += cols[j-1];
+			cols[j] += progStatus.col_spaces - 1;
+		}
+	}
+
+// create space filled ascii_copy
+
+	ascii_copy.clear();
+	std::string ascii_line;
+
+	for (int j = 0; j <= N; j++) {
+		ascii_line = lines[j];
+		for (int n = 0; n < 30; n++) {
+			if (cols[n] == 0) continue;
+			colpos = ascii_line.find(progStatus.column_char);
+			if (colpos != std::string::npos) {
+				ascii_line.erase(colpos, 1);
+				ascii_line.insert( colpos, cols[n] - colpos, ' ');
+			}
+		}
+		ascii_copy.append(ascii_line).append("\n");
+	}
+
+	txt_file = fopen(txt_filename.c_str(), "w");
+	fprintf(txt_file, "%s", ascii_copy.c_str());
+	fclose (txt_file);
+
 }
 
 void my_UI::UpdateWhoIsUp (long L)
@@ -395,8 +466,8 @@ void my_UI::fillPickList ()
 			strcat (Pick[i].callsign, indexed_list[rc].suffix);
 			txtPick[i]->label (Pick[i].callsign);
 			if (i == 0) {
-				txtPick[i]->labelcolor (progStatus.fgColors[5]);
-				txtPick[i]->color (progStatus.bgColors[5]);
+				txtPick[i]->labelcolor (progStatus.fgColors[4]);
+				txtPick[i]->color (progStatus.bgColors[4]);
 			} else {
 				txtPick[i]->labelcolor (FL_BLACK);
 				txtPick[i]->color (FL_BACKGROUND2_COLOR);
@@ -416,8 +487,8 @@ void my_UI::PickedColors ()
 	int i;
 	for (i = 0; i < NPICKITEMS; i++) {
 		if (i == whoPicked) {
-			txtPick[i]->labelcolor (progStatus.fgColors[5]);
-			txtPick[i]->color (progStatus.bgColors[5]);
+			txtPick[i]->labelcolor (progStatus.fgColors[4]);
+			txtPick[i]->color (progStatus.bgColors[4]);
 		} else {
 			txtPick[i]->labelcolor (FL_BLACK);
 			txtPick[i]->color (FL_BACKGROUND2_COLOR);
@@ -729,54 +800,64 @@ std::cout <<
 				handled = true;
 				break;
 			case (FL_F + 1):
-				callinlist.status(WhoIsUp, LOGIN);
+				callinlist.status(WhoIsUp, STATUS_1);
 				dispCallIns (false);
+				update_log_ins();
 				handled = true;
 				break;
 			case (FL_F + 2):
-				callinlist.status(WhoIsUp, FIRST);
+				callinlist.status(WhoIsUp, STATUS_2);
 				dispCallIns (false);
+				update_log_ins();
 				handled = true;
 				break;
 			case (FL_F + 3):
-				callinlist.status(WhoIsUp, SECOND);
+				callinlist.status(WhoIsUp, STATUS_3);
 				dispCallIns (false);
+				update_log_ins();
 				handled = true;
 				break;
 			case (FL_F + 4): {
-				callinlist.status(WhoIsUp, LOGOUT);
+				callinlist.status(WhoIsUp, STATUS_4);
 				dispCallIns (false);
+				update_log_ins();
 				handled = true;
 				break;
 			}
 			case (FL_F + 5): // Priority 0 station
 				WhoIsUp = callinlist.Pri_0 (WhoIsUp);
 				dispCallIns (false);
+				update_log_ins();
 				handled = true;
 				break;
 			case (FL_F + 6): // Priority 1 station
 				WhoIsUp = callinlist.Pri_1 (WhoIsUp);
 				dispCallIns (false);
+				update_log_ins();
 				handled = true;
 				break;
 			case (FL_F + 7): // Priority 2 station
 				WhoIsUp = callinlist.Pri_2 (WhoIsUp);
 				dispCallIns (false);
+				update_log_ins();
 				handled = true;
 				break;
 			case (FL_F + 8): // Priority 2 station
 				WhoIsUp = callinlist.Pri_3 (WhoIsUp);
 				dispCallIns (false);
+				update_log_ins();
 				handled = true;
 				break;
 			case (FL_F + 9): // Move this call up in list
 				WhoIsUp = callinlist.MoveEarlier (WhoIsUp);
 				dispCallIns (false);
+				update_log_ins();
 				handled = true;
 				break;
 			case (FL_F + 10): // Move this call dn in list
 				WhoIsUp = callinlist.MoveLater (WhoIsUp);
 				dispCallIns (false);
+				update_log_ins();
 				handled = true;
 				break;
 			case (FL_F + 11):
@@ -794,7 +875,7 @@ std::cout <<
 				if (callinlist.numlist() == 0) {
 					inp_focus->take_focus();
 				}
-				else if (!((WhoIsUp == 0) && (callinlist.status(WhoIsUp) == EMPTY))) {
+				else if (!((WhoIsUp == 0) && (callinlist.status(WhoIsUp) == STATUS_0))) {
 					if (fl_choice("Confirm Delete", "cancel", "OK", NULL) == 1) {
 						callinlist.del(WhoIsUp);
 						WhoIsUp--;

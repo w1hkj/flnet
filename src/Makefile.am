@@ -348,6 +348,7 @@ flnet_SOURCES += \
 	UI/netedits.cxx \
 	UI/net_ui.cxx \
 	UI/netutils.cxx \
+	UI/sorting.cxx \
 	UI/ui_sizes.cxx \
 	include/calendar.h \
 	include/combo.h \
@@ -375,6 +376,7 @@ flnet_SOURCES += \
 	include/network.h \
 	include/pixmaps.h \
 	include/socket.h \
+	include/sorting.h \
 	include/status.h \
 	include/timeops.h \
 	include/util.h \

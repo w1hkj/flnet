@@ -25,6 +25,12 @@
 #ifndef _NETSUPPORT
 #define _NETSUPPORT
 
+#include <FL/Fl.H>
+#include <FL/Fl_Menu.H>
+#include <FL/Fl_Double_Window.H>
+#include <FL/Fl_Return_Button.H>
+#include <FL/Fl_Button.H>
+
 #include <string>
 
 extern void openDB(std::string);
@@ -42,7 +48,10 @@ extern void cb_mnuMigrate (Fl_Menu_ *, void*);
 
 extern void visit_URL(void *);
 
+extern Fl_Double_Window *login_list;
+
 extern void open_log_ins();
+extern void update_log_ins();
 extern void copy_to_clipboard();
 
 #endif

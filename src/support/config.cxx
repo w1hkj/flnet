@@ -74,10 +74,12 @@ void cbConfig ()
 	btn_sort_by_SAP->value(progStatus.preferred_sort_order == 2);
 	btn_sort_by_NETNBR->value(progStatus.preferred_sort_order == 3);
 
-	txtSample[1]->value("Text");
-	txtSample[2]->value("Text");
-	txtSample[3]->value("Text");
-	txtSample[4]->value("Text");
+	f1_text->value(progStatus.f1_text.c_str());
+	f2_text->value(progStatus.f2_text.c_str());
+	f3_text->value(progStatus.f3_text.c_str());
+	f4_text->value(progStatus.f4_text.c_str());
+
+	txt_sample->value("sample text");
 
 	cfgP1->value (progStatus.chP1.c_str());
 	cfgP2->value (progStatus.chP2.c_str());

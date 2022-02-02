@@ -167,6 +167,8 @@ static void cb_lookup_masterdb_record(Fl_Menu_ *, void *) {
 		if (progStatus.mdb_status)	inpStatus->value(mrec.status.c_str());
 		if (progStatus.mdb_joined)	inpJoined->value(mrec.joined.c_str());
 		if (progStatus.mdb_netnbr)	inpNetNbr->value(mrec.netnbr.c_str());
+		if (progStatus.mdb_county)	inpCounty->value(mrec.county.c_str());
+		if (progStatus.mdb_traffic)	inpTraffic->value(mrec.traffic.c_str());
 		compute();
 	}
 }
@@ -205,6 +207,8 @@ void cb_add_record_to_masterdb(Fl_Menu_ *, void *) {
 	if (progStatus.mdb_status)		mrec.status = inpStatus->value();
 	if (progStatus.mdb_joined)		mrec.joined = inpJoined->value();
 	if (progStatus.mdb_netnbr)		mrec.netnbr = inpNetNbr->value();
+	if (progStatus.mdb_county)		mrec.county = inpCounty->value();
+	if (progStatus.mdb_traffic)		mrec.traffic = inpTraffic->value();
 
 	int recn = binary_search_masterdb(
 					0, masterdb->numrecs() - 1, 

@@ -34,6 +34,8 @@ extern void updateCallins (bool fldigi_flag = false);
 extern void add_to_callins(int rnbr);
 extern loglist callinlist;
 
+extern std::string ascii_copy;
+
 #define NPICKITEMS 32
 
 enum MYGUI_STATUS {LOGLIST, SUFFIX, PREFIX, AREA, PICKLIST};

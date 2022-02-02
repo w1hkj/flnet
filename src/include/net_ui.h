@@ -151,6 +151,12 @@ extern Fl_Return_Button *btnConfigOK;
 
 extern Fl_Choice *combo_arc_conversion;
 
-extern Fl_Output *txtSample[];
+extern Fl_Output *txt_sample;
+
+extern Fl_Input2 *f1_text;
+extern Fl_Input2 *f2_text;
+extern Fl_Input2 *f3_text;
+extern Fl_Input2 *f4_text;
+
 
 #endif

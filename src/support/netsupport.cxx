@@ -124,6 +124,7 @@ extern void	close_config(void);
 extern void close_editor(void);
 extern void close_login_list(void);
 extern void close_misc_dialogs(void);
+extern void close_field_select(void);
 
 void cleanExit(void)
 {
@@ -146,6 +147,7 @@ void cleanExit(void)
 	close_editor();
 	close_login_list();
 	close_misc_dialogs();
+	close_field_select();
 	close_main_window();
 }
 
@@ -202,7 +204,6 @@ void cb_mnuEventLog (Fl_Menu_ *mnu, void *d)
 // support of log-in list viewer
 //------------------------------------------------------------------------------
 Fl_Double_Window *login_list = (Fl_Double_Window *)0;
-string copy_list;
 
 void close_login_list(void)
 {
@@ -210,33 +211,66 @@ void close_login_list(void)
 		login_list->hide();
 }
 
+static int widths[30];
+
+void update_log_ins()
+{
+	if (!log_in_view) return;
+	log_in_view->clear();
+
+	int N = callinlist.numlist();
+	std::string lines[N + 1];
+
+	fl_font(log_in_view->textfont(), log_in_view->textsize());
+
+	for (int i = 0; i < 30; i++) widths[i] = 0;
+
+	lines[0] = callinlist.header_line(widths);
+	for (int i = 0; i < N; i++) {
+		lines[i+1] = callinlist.report_line(i, widths);
+	}
+
+	int nuW = 0;
+	for (int i = 0; i < 30; i++)  {
+		nuW += widths[i];
+	}
+
+	nuW += 30;
+	if (nuW < 300) nuW = 300;
+	if (nuW > 800) nuW = 800;
+
+	log_in_view->column_widths(widths); // assign array to widget
+	log_in_view->resize(log_in_view->x(), log_in_view->y(), nuW, log_in_view->h());
+
+	login_list->size(nuW + 8, login_list->h());
+	login_list->redraw();
+
+	btn_copy_to_clipboard->position(nuW + 8 - 150, 210);
+	btn_copy_to_clipboard->redraw();
+
+	btn_close_log_ins->position(nuW + 8 - 75, 210);
+	btn_close_log_ins->redraw();
+
+	for (int i = 0; i <= N; i++) {
+		log_in_view->add(lines[i].c_str());
+	}
+	log_in_view->redraw();
+
+	updateLogins(false);
+}
+
 void open_log_ins()
 {
 	if (!login_list) login_list = Log_ins_dialog();
 	if (callinlist.numlist() == 0) return;
 
-	char szLine[40];
-	log_in_view->clear();
-	copy_list.clear();
+	update_log_ins();
 
-// total width 296
-	int w3 = fl_width("88:88n");
-	int w1 = fl_width("WW8WWWn");
-	int w2 = 296 - w1 - w3 - log_in_view->scrollbar_width() - 2;
-	static int widths[] = { w1, w2, 0 };
-
-	log_in_view->column_widths(widths); // assign array to widget
-
-	for (int i = 0; i < callinlist.numlist(); i++) {
-		strcpy(szLine, callinlist.report_line(i));
-		log_in_view->add(szLine);
-		copy_list.append(szLine).append("\n");
-	}
 	login_list->show();
+
 }
 
 void copy_to_clipboard()
 {
-	// copy list to clipboard
-	Fl::copy(copy_list.c_str(), copy_list.length(), 1);
+	Fl::copy(ascii_copy.c_str(), ascii_copy.length(), 1);
 }

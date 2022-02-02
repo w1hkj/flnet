@@ -30,7 +30,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-enum logStatus{EMPTY,LOGIN,FIRST,SECOND,LOGOUT};
+enum logStatus {STATUS_0, STATUS_1, STATUS_2, STATUS_3, STATUS_4};
+
+enum cFIELDS {
+	cCALLSIGN, cPREFIX, cAREA, cSUFFIX, cNAME, cNETNBR,
+	cFNAME, cLNAME, cADDR, cCITY, cSTATE, cZIP, cPHONE, cBIRTHDATE,
+	cLOGDATE, cLOGTIME, cPREVDATE, cNBRLOGINS, cSTATUS, cJOINED,
+	cEMAIL, cLOCATOR, cCOUNTRY, cCOUNTY,
+	cSPOUSE, cSP_BIRTH, cCOMMENT1, cCOMMENT2, cTRAFFIC, cLAST_FIELD
+ };
 
 #define LISTINCR 500
 #define DLINESIZE 30
@@ -80,10 +88,12 @@ public:
 	int del (int n);
 	void clear (void);
 	char *displine (int n);
-	const char *report_line(int n);
+	std::string report_line(int, int *);
+	std::string header_line(int *);
 	char *prefix (int n);
 	char *area (int n);
 	char *suffix (long n);
+	char *qsotime(int n) { return llist[n + BLANKS].szTime; }
 	int inList (size_t N);
 	int inList (std::string);
 	int Pri_0 (int n);

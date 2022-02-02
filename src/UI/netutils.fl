@@ -1,11 +1,11 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0303 
-header_name {.h} 
+version 1.0305
+header_name {.h}
 code_name {.cpp}
 Function {winCallsignBrowse()} {} {
   Fl_Window {} {
     label {Browse by Callsign}
-    xywh {466 272 304 231} type Double color 52 hide modal
+    xywh {601 74 304 230} type Double color 52 modal visible
   } {
     Fl_Browser brwsCallsign {
       xywh {0 0 215 230} type Hold when 4 textfont 13
@@ -21,13 +21,12 @@ Function {winCallsignBrowse()} {} {
       xywh {230 135 60 40}
     }
   }
-} 
+}
 
-Function {winNetNbrBrowse()} {open
-} {
+Function {winNetNbrBrowse()} {} {
   Fl_Window {} {
     label {Browse by Net Nbr} open
-    xywh {582 647 300 230} type Double color 52 modal visible
+    xywh {917 74 300 230} type Double color 52 modal visible
   } {
     Fl_Browser brwsNetNbr {
       xywh {0 0 215 230} type Hold when 4 textfont 4
@@ -43,11 +42,11 @@ Function {winNetNbrBrowse()} {open
       xywh {225 120 60 40}
     }
   }
-} 
+}
 
 Function {newSearchCallsignDialog()} {} {
   Fl_Window winSearchCallsignDialog {open
-    xywh {383 185 207 107} type Double hide modal
+    xywh {604 341 206 106} type Double modal visible
   } {
     Fl_Input sSrchPrefix {
       label Prefix
@@ -76,11 +75,11 @@ Function {newSearchCallsignDialog()} {} {
       xywh {0 0 210 20}
     }
   }
-} 
+}
 
 Function {newSearchNetNbrDialog()} {} {
   Fl_Window winSearchNetNbrDialog {open
-    xywh {393 195 207 107} type Double hide modal
+    xywh {609 485 206 106} type Double modal visible
   } {
     Fl_Input sSrchNetNbr {
       label {Enter Net Number}
@@ -97,13 +96,13 @@ Function {newSearchNetNbrDialog()} {} {
       xywh {105 70 80 25}
     }
   }
-} 
+}
 
 Function {newAboutDialog()} {
-  callback cb_mnuAbout open
+  callback cb_mnuAbout
 } {
-  Fl_Window dlgAbout {open selected
-    xywh {363 200 320 184} type Double color 53 modal visible
+  Fl_Window dlgAbout {open
+    xywh {914 340 320 184} type Double color 53 modal visible
   } {
     Fl_Group lblVersion {
       label {xxx:} open
@@ -119,4 +118,4 @@ Function {newAboutDialog()} {
       xywh {5 115 310 30} box ENGRAVED_FRAME align 16
     } {}
   }
-} 
+}

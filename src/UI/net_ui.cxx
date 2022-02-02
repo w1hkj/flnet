@@ -44,6 +44,7 @@
 #include "status.h"
 #include "combo.h"
 #include "masterdb.h"
+#include "sorting.h"
 
 Fl_Menu_Bar *mnu_bar=(Fl_Menu_Bar *)0;
 Fl_Group *tabGroupColors=(Fl_Group *)0;
@@ -111,6 +112,8 @@ Fl_Check_Button *chk_mdb_prevdate = (Fl_Check_Button *)0;
 Fl_Check_Button *chk_mdb_nbrlogins = (Fl_Check_Button *)0;
 Fl_Check_Button *chk_mdb_status = (Fl_Check_Button *)0;
 Fl_Check_Button *chk_mdb_joined = (Fl_Check_Button *)0;
+Fl_Check_Button *chk_mdb_county = (Fl_Check_Button *)0;
+Fl_Check_Button *chk_mdb_traffic = (Fl_Check_Button *)0;
 
 Fl_Choice     *cbo_call_justify = (Fl_Choice *)0;
 Fl_Choice     *cbo_name_justify = (Fl_Choice *)0;
@@ -130,9 +133,16 @@ Fl_Tabs *tabsConfig=(Fl_Tabs *)0;
 Fl_Check_Button *btn_new_login_is_up=(Fl_Check_Button *)0;
 Fl_Check_Button *btnOpenEditor=(Fl_Check_Button *)0;
 Fl_Check_Button *btn_current_call_in_is_up=(Fl_Check_Button *)0;
-Fl_Output *txtSample[6]={(Fl_Output *)0};
-Fl_Button *btnFg[6]={(Fl_Button *)0};
-Fl_Button *btnBg[6]={(Fl_Button *)0};
+
+Fl_Output *txt_sample = (Fl_Output *)0;
+
+Fl_Input2 *f1_text = (Fl_Input2 *)0;
+Fl_Input2 *f2_text = (Fl_Input2 *)0;
+Fl_Input2 *f3_text = (Fl_Input2 *)0;
+Fl_Input2 *f4_text = (Fl_Input2 *)0;
+
+Fl_Button *btnFg[5]={(Fl_Button *)0};
+Fl_Button *btnBg[5]={(Fl_Button *)0};
 
 //----------------------------------------------------------------------
 // main dialog
@@ -168,6 +178,18 @@ void cb_mnuLogIns(Fl_Menu_*, void*) {
 	open_log_ins();
 }
 
+Fl_Double_Window *field_select = (Fl_Double_Window *)0;
+
+void cb_open_field_select(Fl_Menu_*, void*) {
+	if (field_select == (Fl_Double_Window *)0)
+		field_select = create_sorting_dialog();
+	field_select->show();
+}
+
+void close_field_select(void) {
+	if (field_select) field_select->hide();
+}
+
 void cb_mnuSize(Fl_Menu_*, void*) {
 	change_size();
 }
@@ -180,7 +202,10 @@ Fl_Menu_Item menu_mnu_bar[] = {
 	{0,0,0,0,0,0,0,0,0},
 	{"&Editor", 0,  (Fl_Callback*)cb_mnuEditor, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 	{"&Config", 0,  (Fl_Callback*)cb_mnuConfig, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
-	{"Log-&Ins", 0,  (Fl_Callback*)cb_mnuLogIns, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+	{"Report", 0, 0, 0, 64, FL_NORMAL_LABEL, 0, 14, 0},
+		{"Log-&Ins", 0,  (Fl_Callback*)cb_mnuLogIns, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+		{"Select fields", 0, (Fl_Callback*)cb_open_field_select, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+	{0,0,0,0,0,0,0,0,0},
 	{"Si&ze", 0,  (Fl_Callback*)cb_mnuSize, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 	{"Help", 0,  0, 0, 64, FL_NORMAL_LABEL, 0, 14, 0},
 		{"Content", 0,  (Fl_Callback*)cb_mnuHelpContent, 0, 128, FL_NORMAL_LABEL, 0, 14, 0},
@@ -339,104 +364,124 @@ static void cb_btn_current_call_in_is_up(Fl_Check_Button* o, void*) {
 	progStatus.callin_is_up = o->value();
 }
 
+static void cb_f1_text(Fl_Input2 *, void *)
+{
+	progStatus.f1_text = f1_text->value();
+}
+
+static void cb_f2_text(Fl_Input2 *, void *)
+{
+	progStatus.f2_text = f2_text->value();
+}
+
+static void cb_f3_text(Fl_Input2 *, void *)
+{
+	progStatus.f3_text = f3_text->value();
+}
+
+static void cb_f4_text(Fl_Input2 *, void *)
+{
+	progStatus.f4_text = f4_text->value();
+}
+
 static void cb_btnFg(Fl_Button*, void*) {
+	unsigned char r,g,b;
+	Fl::get_color(progStatus.fgColors[0], r, g, b);
+	if (fl_color_chooser("Select Color", r, g, b)) {
+		progStatus.fgColors[0] = fl_rgb_color(r, g, b);
+	}
+	f1_text->textcolor(progStatus.fgColors[0]);
+	f1_text->redraw();
+}
+
+static void cb_btnBg(Fl_Button*, void*) {
+	unsigned char r,g,b;
+	Fl::get_color(progStatus.bgColors[0], r, g, b);
+	if (fl_color_chooser("Select Color", r, g, b)) {
+		progStatus.bgColors[0] = fl_rgb_color(r, g, b);
+	}
+	f1_text->color(progStatus.bgColors[0]);
+	f1_text->redraw();
+}
+
+static void cb_btnFg1(Fl_Button*, void*) {
 	unsigned char r,g,b;
 	Fl::get_color(progStatus.fgColors[1], r, g, b);
 	if (fl_color_chooser("Select Color", r, g, b)) {
 		progStatus.fgColors[1] = fl_rgb_color(r, g, b);
 	}
-	txtSample[1]->textcolor(progStatus.fgColors[1]);
-	txtSample[1]->redraw();
+	f2_text->textcolor(progStatus.fgColors[1]);
+	f2_text->redraw();
 }
 
-static void cb_btnBg(Fl_Button*, void*) {
+static void cb_btnBg1(Fl_Button*, void*) {
 	unsigned char r,g,b;
 	Fl::get_color(progStatus.bgColors[1], r, g, b);
 	if (fl_color_chooser("Select Color", r, g, b)) {
 		progStatus.bgColors[1] = fl_rgb_color(r, g, b);
 	}
-	txtSample[1]->color(progStatus.bgColors[1]);
-	txtSample[1]->redraw();
+	f2_text->color(progStatus.bgColors[1]);
+	f2_text->redraw();
 }
 
-static void cb_btnFg1(Fl_Button*, void*) {
+static void cb_btnFg2(Fl_Button*, void*) {
 	unsigned char r,g,b;
 	Fl::get_color(progStatus.fgColors[2], r, g, b);
 	if (fl_color_chooser("Select Color", r, g, b)) {
 		progStatus.fgColors[2] = fl_rgb_color(r, g, b);
 	}
-	txtSample[2]->textcolor(progStatus.fgColors[2]);
-	txtSample[2]->redraw();
+	f3_text->textcolor(progStatus.fgColors[2]);
+	f3_text->redraw();
 }
 
-static void cb_btnBg1(Fl_Button*, void*) {
+static void cb_btnBg2(Fl_Button*, void*) {
 	unsigned char r,g,b;
 	Fl::get_color(progStatus.bgColors[2], r, g, b);
 	if (fl_color_chooser("Select Color", r, g, b)) {
 		progStatus.bgColors[2] = fl_rgb_color(r, g, b);
 	}
-	txtSample[2]->color(progStatus.bgColors[2]);
-	txtSample[2]->redraw();
+	f3_text->color(progStatus.bgColors[2]);
+	f3_text->redraw();
 }
 
-static void cb_btnFg2(Fl_Button*, void*) {
+static void cb_btnFg3(Fl_Button*, void*) {
 	unsigned char r,g,b;
 	Fl::get_color(progStatus.fgColors[3], r, g, b);
 	if (fl_color_chooser("Select Color", r, g, b)) {
 		progStatus.fgColors[3] = fl_rgb_color(r, g, b);
 	}
-	txtSample[3]->textcolor(progStatus.fgColors[3]);
-	txtSample[3]->redraw();
+	f4_text->textcolor(progStatus.fgColors[3]);
+	f4_text->redraw();
 }
 
-static void cb_btnBg2(Fl_Button*, void*) {
+static void cb_btnBg3(Fl_Button*, void*) {
 	unsigned char r,g,b;
 	Fl::get_color(progStatus.bgColors[3], r, g, b);
 	if (fl_color_chooser("Select Color", r, g, b)) {
 		progStatus.bgColors[3] = fl_rgb_color(r, g, b);
 	}
-	txtSample[3]->color(progStatus.bgColors[3]);
-	txtSample[3]->redraw();
+	f4_text->color(progStatus.bgColors[3]);
+	f4_text->redraw();
 }
 
-static void cb_btnFg3(Fl_Button*, void*) {
+static void cb_btnFg4(Fl_Button*, void*) {
 	unsigned char r,g,b;
 	Fl::get_color(progStatus.fgColors[4], r, g, b);
 	if (fl_color_chooser("Select Color", r, g, b)) {
 		progStatus.fgColors[4] = fl_rgb_color(r, g, b);
 	}
-	txtSample[4]->textcolor(progStatus.fgColors[4]);
-	txtSample[4]->redraw();
+	txt_sample->textcolor(progStatus.fgColors[4]);
+	txt_sample->redraw();
 }
 
-static void cb_btnBg3(Fl_Button*, void*) {
+static void cb_btnBg4(Fl_Button*, void*) {
 	unsigned char r,g,b;
 	Fl::get_color(progStatus.bgColors[4], r, g, b);
 	if (fl_color_chooser("Select Color", r, g, b)) {
 		progStatus.bgColors[4] = fl_rgb_color(r, g, b);
 	}
-	txtSample[4]->color(progStatus.bgColors[4]);
-	txtSample[4]->redraw();
-}
-
-static void cb_btnFg4(Fl_Button*, void*) {
-	unsigned char r,g,b;
-	Fl::get_color(progStatus.fgColors[5], r, g, b);
-	if (fl_color_chooser("Select Color", r, g, b)) {
-		progStatus.fgColors[5] = fl_rgb_color(r, g, b);
-	}
-	txtSample[5]->textcolor(progStatus.fgColors[5]);
-	txtSample[5]->redraw();
-}
-
-static void cb_btnBg4(Fl_Button*, void*) {
-	unsigned char r,g,b;
-	Fl::get_color(progStatus.bgColors[5], r, g, b);
-	if (fl_color_chooser("Select Color", r, g, b)) {
-		progStatus.bgColors[5] = fl_rgb_color(r, g, b);
-	}
-	txtSample[5]->color(progStatus.bgColors[5]);
-	txtSample[5]->redraw();
+	txt_sample->color(progStatus.bgColors[4]);
+	txt_sample->redraw();
 }
 
 static void cb_mdb_color(Fl_Button *, void*) {
@@ -707,135 +752,34 @@ void cb_chkAutoPriority (Fl_Check_Button *w, void *)
 	adjust_priority();
 }
 
-void cb_chk_mdb_netnbr (Fl_Check_Button *w, void *)
-{
-	progStatus.mdb_netnbr = chk_mdb_netnbr->value();
-}
-
-void cb_chk_mdb_prefix (Fl_Check_Button *w, void *)
-{
-	progStatus.mdb_prefix = chk_mdb_prefix->value();
-}
-
-void cb_chk_mdb_area (Fl_Check_Button *w, void *)
-{
-	progStatus.mdb_area = chk_mdb_area->value();
-}
-
-void cb_chk_mdb_suffix (Fl_Check_Button *w, void *)
-{
-	progStatus.mdb_suffix = chk_mdb_suffix->value();
-}
-
-void cb_chk_mdb_callsign (Fl_Check_Button *w, void *)
-{
-	progStatus.mdb_callsign = chk_mdb_callsign->value();
-}
-
-void cb_chk_mdb_name (Fl_Check_Button *w, void *)
-{
-	progStatus.mdb_name = chk_mdb_name->value();
-}
-
-void cb_chk_mdb_fname (Fl_Check_Button *w, void *)
-{
-	progStatus.mdb_fname = chk_mdb_fname->value();
-}
-
-void cb_chk_mdb_lname (Fl_Check_Button *w, void *)
-{
-	progStatus.mdb_lname = chk_mdb_lname->value();
-}
-
-void cb_chk_mdb_addr (Fl_Check_Button *w, void *)
-{
-	progStatus.mdb_addr = chk_mdb_addr->value();
-}
-
-void cb_chk_mdb_city (Fl_Check_Button *w, void *)
-{
-	progStatus.mdb_city = chk_mdb_city->value();
-}
-
-void cb_chk_mdb_state (Fl_Check_Button *w, void *)
-{
-	progStatus.mdb_state = chk_mdb_state->value();
-}
-
-void cb_chk_mdb_zip (Fl_Check_Button *w, void *)
-{
-	progStatus.mdb_zip = chk_mdb_zip->value();
-}
-
-void cb_chk_mdb_phone (Fl_Check_Button *w, void *)
-{
-	progStatus.mdb_phone = chk_mdb_phone->value();
-}
-
-void cb_chk_mdb_birthdate (Fl_Check_Button *w, void *)
-{
-	progStatus.mdb_birthdate = chk_mdb_birthdate->value();
-}
-
-void cb_chk_mdb_spouse (Fl_Check_Button *w, void *)
-{
-	progStatus.mdb_spouse = chk_mdb_spouse->value();
-}
-
-void cb_chk_mdb_sp_birth (Fl_Check_Button *w, void *)
-{
-	progStatus.mdb_sp_birth = chk_mdb_sp_birth->value();
-}
-
-void cb_chk_mdb_comment1 (Fl_Check_Button *w, void *)
-{
-	progStatus.mdb_comment1 = chk_mdb_comment1->value();
-}
-
-void cb_chk_mdb_comment2 (Fl_Check_Button *w, void *)
-{
-	progStatus.mdb_comment2 = chk_mdb_comment2->value();
-}
-
-void cb_chk_mdb_email (Fl_Check_Button *w, void *)
-{
-	progStatus.mdb_email = chk_mdb_email->value();
-}
-
-void cb_chk_mdb_locator (Fl_Check_Button *w, void *)
-{
-	progStatus.mdb_locator = chk_mdb_locator->value();
-}
-
-void cb_chk_mdb_country (Fl_Check_Button *w, void *)
-{
-	progStatus.mdb_country = chk_mdb_country->value();
-}
-
-void cb_chk_mdb_logdate (Fl_Check_Button *w, void *)
-{
-	progStatus.mdb_logdate = chk_mdb_logdate->value();
-}
-
-void cb_chk_mdb_prevdate (Fl_Check_Button *w, void *)
-{
-	progStatus.mdb_prevdate = chk_mdb_prevdate->value();
-}
-
-void cb_chk_mdb_nbrlogins (Fl_Check_Button *w, void *)
-{
-	progStatus.mdb_nbrlogins = chk_mdb_nbrlogins->value();
-}
-
-void cb_chk_mdb_status (Fl_Check_Button *w, void *)
-{
-	progStatus.mdb_status = chk_mdb_status->value();
-}
-
-void cb_chk_mdb_joined (Fl_Check_Button *w, void *)
-{
-	progStatus.mdb_joined = chk_mdb_joined->value();
-}
+void cb_chk_mdb_netnbr (Fl_Check_Button *w, void *) { progStatus.mdb_netnbr = chk_mdb_netnbr->value(); }
+void cb_chk_mdb_prefix (Fl_Check_Button *w, void *) { progStatus.mdb_prefix = chk_mdb_prefix->value(); }
+void cb_chk_mdb_area (Fl_Check_Button *w, void *) { progStatus.mdb_area = chk_mdb_area->value(); }
+void cb_chk_mdb_suffix (Fl_Check_Button *w, void *) { progStatus.mdb_suffix = chk_mdb_suffix->value(); }
+void cb_chk_mdb_callsign (Fl_Check_Button *w, void *) { progStatus.mdb_callsign = chk_mdb_callsign->value(); }
+void cb_chk_mdb_name (Fl_Check_Button *w, void *) { progStatus.mdb_name = chk_mdb_name->value(); }
+void cb_chk_mdb_fname (Fl_Check_Button *w, void *) { progStatus.mdb_fname = chk_mdb_fname->value(); }
+void cb_chk_mdb_lname (Fl_Check_Button *w, void *) { progStatus.mdb_lname = chk_mdb_lname->value(); }
+void cb_chk_mdb_addr (Fl_Check_Button *w, void *) { progStatus.mdb_addr = chk_mdb_addr->value(); }
+void cb_chk_mdb_city (Fl_Check_Button *w, void *) { progStatus.mdb_city = chk_mdb_city->value(); }
+void cb_chk_mdb_state (Fl_Check_Button *w, void *) { progStatus.mdb_state = chk_mdb_state->value(); }
+void cb_chk_mdb_zip (Fl_Check_Button *w, void *) { progStatus.mdb_zip = chk_mdb_zip->value(); }
+void cb_chk_mdb_phone (Fl_Check_Button *w, void *) { progStatus.mdb_phone = chk_mdb_phone->value(); }
+void cb_chk_mdb_birthdate (Fl_Check_Button *w, void *) { progStatus.mdb_birthdate = chk_mdb_birthdate->value(); }
+void cb_chk_mdb_spouse (Fl_Check_Button *w, void *) { progStatus.mdb_spouse = chk_mdb_spouse->value(); }
+void cb_chk_mdb_sp_birth (Fl_Check_Button *w, void *) { progStatus.mdb_sp_birth = chk_mdb_sp_birth->value(); }
+void cb_chk_mdb_comment1 (Fl_Check_Button *w, void *) { progStatus.mdb_comment1 = chk_mdb_comment1->value(); }
+void cb_chk_mdb_comment2 (Fl_Check_Button *w, void *) { progStatus.mdb_comment2 = chk_mdb_comment2->value(); }
+void cb_chk_mdb_email (Fl_Check_Button *w, void *) { progStatus.mdb_email = chk_mdb_email->value(); }
+void cb_chk_mdb_locator (Fl_Check_Button *w, void *) { progStatus.mdb_locator = chk_mdb_locator->value(); }
+void cb_chk_mdb_country (Fl_Check_Button *w, void *) { progStatus.mdb_country = chk_mdb_country->value(); }
+void cb_chk_mdb_county (Fl_Check_Button *w, void *) { progStatus.mdb_county = chk_mdb_county->value(); }
+void cb_chk_mdb_traffic (Fl_Check_Button *w, void *) { progStatus.mdb_traffic = chk_mdb_traffic->value(); }
+void cb_chk_mdb_logdate (Fl_Check_Button *w, void *) { progStatus.mdb_logdate = chk_mdb_logdate->value(); }
+void cb_chk_mdb_prevdate (Fl_Check_Button *w, void *) { progStatus.mdb_prevdate = chk_mdb_prevdate->value(); }
+void cb_chk_mdb_nbrlogins (Fl_Check_Button *w, void *) { progStatus.mdb_nbrlogins = chk_mdb_nbrlogins->value(); }
+void cb_chk_mdb_status (Fl_Check_Button *w, void *) { progStatus.mdb_status = chk_mdb_status->value(); }
+void cb_chk_mdb_joined (Fl_Check_Button *w, void *) { 	progStatus.mdb_joined = chk_mdb_joined->value(); }
 
 void cb_btn_setall(Fl_Button*, void *)
 {
@@ -865,6 +809,8 @@ void cb_btn_setall(Fl_Button*, void *)
 	chk_mdb_nbrlogins->value(progStatus.mdb_nbrlogins = 1); chk_mdb_nbrlogins->redraw();
 	chk_mdb_status->value(progStatus.mdb_status = 1); chk_mdb_status->redraw();
 	chk_mdb_joined->value(progStatus.mdb_joined = 1); chk_mdb_joined->redraw();
+	chk_mdb_county->value(progStatus.mdb_county = 1); chk_mdb_county->redraw();
+	chk_mdb_traffic->value(progStatus.mdb_traffic = 1); chk_mdb_traffic->redraw();
 }
 
 void cb_btn_clrall(Fl_Button*, void *)
@@ -895,14 +841,16 @@ void cb_btn_clrall(Fl_Button*, void *)
 	chk_mdb_nbrlogins->value(progStatus.mdb_nbrlogins = 0); chk_mdb_nbrlogins->redraw();
 	chk_mdb_status->value(progStatus.mdb_status = 0); chk_mdb_status->redraw();
 	chk_mdb_joined->value(progStatus.mdb_joined = 0); chk_mdb_joined->redraw();
+	chk_mdb_county->value(progStatus.mdb_county = 0); chk_mdb_county->redraw();
+	chk_mdb_traffic->value(progStatus.mdb_traffic = 0); chk_mdb_traffic->redraw();
 }
 
 Fl_Double_Window* configDialog() {
-	Fl_Double_Window* w = new Fl_Double_Window(440, 250, "Net Configuration");
+	Fl_Double_Window* w = new Fl_Double_Window(450, 250, "Net Configuration");
 
-	tabsConfig = new Fl_Tabs(0, 10, 440, 210);
+	tabsConfig = new Fl_Tabs(0, 10, 450, 210);
 	tabsConfig->color((Fl_Color)44);
-		tabGroupUI = new Fl_Group(0, 35, 440, 185, "UI");
+		tabGroupUI = new Fl_Group(0, 35, 450, 185, "UI");
 			btn_new_login_is_up = new Fl_Check_Button(15, 50, 70, 15, "New login is up");
 			btn_new_login_is_up->tooltip("Move first time login to the >...<\nspot in the call in list");
 			btn_new_login_is_up->down_box(FL_DOWN_BOX);
@@ -966,75 +914,79 @@ Fl_Double_Window* configDialog() {
 
 		tabGroupUI->end();
 
-		tabGroupColors = new Fl_Group(0, 35, 440, 185, "Colors");
+		tabGroupColors = new Fl_Group(0, 35, 450, 185, "Status");
 		tabGroupColors->hide();
-			Fl_Box *gcbox = new Fl_Box(0, 40, 440, 20, "Color coding for call-in & pick lists");
+			Fl_Box *gcbox = new Fl_Box(0, 40, 450, 20, "Color coding for call-in status");
 			gcbox->box(FL_FLAT_BOX);
 			gcbox->align(FL_ALIGN_CENTER);
 
-			txtSample[1] = new Fl_Output(145, 65, 45, 24, "Logged In");
-			txtSample[1]->textfont(FL_SCREEN);
-			txtSample[1]->value("Text");
-			txtSample[1]->color(progStatus.bgColors[1]);
-			txtSample[1]->textcolor(progStatus.fgColors[1]);
+			f1_text = new Fl_Input2(130, 65, 150, 24, "F1 select");
+			f1_text->textfont(FL_SCREEN);
+			f1_text->value(progStatus.f1_text.c_str());
+			f1_text->color(progStatus.bgColors[0]);
+			f1_text->textcolor(progStatus.fgColors[0]);
+			f1_text->callback((Fl_Callback*)cb_f1_text);
 
-			btnFg[1] = new Fl_Button(205, 65, 45, 24, "Fg");
-			btnFg[1]->callback((Fl_Callback*)cb_btnFg);
+			btnFg[0] = new Fl_Button(285, 65, 45, 24, "Fg");
+			btnFg[0]->callback((Fl_Callback*)cb_btnFg);
 
-			btnBg[2] = new Fl_Button(270, 65, 45, 24, "Bg");
-			btnBg[2]->callback((Fl_Callback*)cb_btnBg);
+			btnBg[0] = new Fl_Button(330, 65, 45, 24, "Bg");
+			btnBg[0]->callback((Fl_Callback*)cb_btnBg);
 
-			txtSample[2] = new Fl_Output(145, 92, 45, 24, "First Response");
-			txtSample[2]->textfont(FL_SCREEN);
-			txtSample[2]->value("Text");
-			txtSample[2]->color(progStatus.bgColors[2]);
-			txtSample[2]->textcolor(progStatus.fgColors[2]);
+			f2_text = new Fl_Input2(130, 92, 150, 24, "F2 select");
+			f2_text->textfont(FL_SCREEN);
+			f2_text->value(progStatus.f2_text.c_str());
+			f2_text->color(progStatus.bgColors[1]);
+			f2_text->textcolor(progStatus.fgColors[1]);
+			f2_text->callback((Fl_Callback*)cb_f2_text);
 
-			btnFg[2] = new Fl_Button(205, 92, 45, 24, "Fg");
-			btnFg[2]->callback((Fl_Callback*)cb_btnFg1);
+			btnFg[1] = new Fl_Button(285, 92, 45, 24, "Fg");
+			btnFg[1]->callback((Fl_Callback*)cb_btnFg1);
 
-			btnBg[2] = new Fl_Button(270, 92, 45, 24, "Bg");
-			btnBg[2]->callback((Fl_Callback*)cb_btnBg1);
+			btnBg[1] = new Fl_Button(330, 92, 45, 24, "Bg");
+			btnBg[1]->callback((Fl_Callback*)cb_btnBg1);
 
-			txtSample[3] = new Fl_Output(145, 119, 45, 24, "Second Response");
-			txtSample[3]->textfont(FL_SCREEN);
-			txtSample[3]->value("Text");
-			txtSample[3]->color(progStatus.bgColors[3]);
-			txtSample[3]->textcolor(progStatus.fgColors[3]);
+			f3_text = new Fl_Input2(130, 119, 150, 24, "F3 select");
+			f3_text->textfont(FL_SCREEN);
+			f3_text->value(progStatus.f3_text.c_str());
+			f3_text->color(progStatus.bgColors[2]);
+			f3_text->textcolor(progStatus.fgColors[2]);
+			f3_text->callback((Fl_Callback*)cb_f3_text);
 
-			btnFg[3] = new Fl_Button(205, 119, 45, 24, "Fg");
-			btnFg[3]->callback((Fl_Callback*)cb_btnFg2);
+			btnFg[2] = new Fl_Button(285, 119, 45, 24, "Fg");
+			btnFg[2]->callback((Fl_Callback*)cb_btnFg2);
 
-			btnBg[3] = new Fl_Button(270, 119, 45, 24, "Bg");
-			btnBg[3]->callback((Fl_Callback*)cb_btnBg2);
+			btnBg[2] = new Fl_Button(330, 119, 45, 24, "Bg");
+			btnBg[2]->callback((Fl_Callback*)cb_btnBg2);
 
-			txtSample[4] = new Fl_Output(145, 146, 45, 24, "Logged Out");
-			txtSample[4]->textfont(FL_SCREEN);
-			txtSample[4]->value("Text");
-			txtSample[4]->color(progStatus.bgColors[4]);
-			txtSample[4]->textcolor(progStatus.fgColors[4]);
+			f4_text = new Fl_Input2(130, 146, 150, 24, "F4 select");
+			f4_text->textfont(FL_SCREEN);
+			f4_text->value(progStatus.f4_text.c_str());
+			f4_text->color(progStatus.bgColors[3]);
+			f4_text->textcolor(progStatus.fgColors[3]);
+			f4_text->callback((Fl_Callback*)cb_f4_text);
 
-			btnFg[4] = new Fl_Button(205, 146, 45, 24, "Fg");
-			btnFg[4]->callback((Fl_Callback*)cb_btnFg3);
+			btnFg[3] = new Fl_Button(285, 146, 45, 24, "Fg");
+			btnFg[3]->callback((Fl_Callback*)cb_btnFg3);
 
-			btnBg[4] = new Fl_Button(270, 145, 45, 24, "Bg");
-			btnBg[4]->callback((Fl_Callback*)cb_btnBg3);
+			btnBg[3] = new Fl_Button(330, 145, 45, 24, "Bg");
+			btnBg[3]->callback((Fl_Callback*)cb_btnBg3);
 
-			txtSample[5] = new Fl_Output(145, 180, 45, 24, "Pick List Item");
-			txtSample[5]->textfont(FL_SCREEN);
-			txtSample[5]->value("Text");
-			txtSample[5]->color(progStatus.bgColors[5]);
-			txtSample[5]->textcolor(progStatus.fgColors[5]);
+			txt_sample = new Fl_Output(130, 180, 150, 24, "Pick List Item");
+			txt_sample->textfont(FL_SCREEN);
+			txt_sample->value("sample text");
+			txt_sample->color(progStatus.bgColors[4]);
+			txt_sample->textcolor(progStatus.fgColors[4]);
 
-			btnFg[5] = new Fl_Button(205, 180, 45, 24, "Fg");
-			btnFg[5]->callback((Fl_Callback*)cb_btnFg4);
+			btnFg[4] = new Fl_Button(285, 180, 45, 24, "Fg");
+			btnFg[4]->callback((Fl_Callback*)cb_btnFg4);
 
-			btnBg[5] = new Fl_Button(270, 180, 45, 24, "Bg");
-			btnBg[5]->callback((Fl_Callback*)cb_btnBg4);
+			btnBg[4] = new Fl_Button(330, 180, 45, 24, "Bg");
+			btnBg[4]->callback((Fl_Callback*)cb_btnBg4);
 
 		tabGroupColors->end();
 
-		tabGroupPriority = new Fl_Group(0, 35, 440, 185, "Priority");
+		tabGroupPriority = new Fl_Group(0, 35, 450, 185, "Priority");
 		tabGroupPriority->hide();
 			cfgP1 = new Fl_Input2(160, 70, 20, 25, "Priority 1 character");
 			cfgP1->callback((Fl_Callback*)cb_cfgP1);
@@ -1078,7 +1030,7 @@ Fl_Double_Window* configDialog() {
 
 		tabGroupPriority->end();
 
-		tabGroupLookup = new Fl_Group(0, 35, 440, 185, "Lookup");
+		tabGroupLookup = new Fl_Group(0, 35, 450, 185, "Lookup");
 		tabGroupLookup->hide();
 
 			inp_myLocator = new Fl_Input2(15, 60, 80, 24, "My Loc:");
@@ -1146,7 +1098,7 @@ Fl_Double_Window* configDialog() {
 
 		tabGroupLookup->end();
 
-		tabGroupMasterDB = new Fl_Group(0, 35, 440, 185, "MasterDB");
+		tabGroupMasterDB = new Fl_Group(0, 35, 450, 185, "MasterDB");
 		tabGroupMasterDB->hide();
 
 			inp_masterdb = new Fl_Input2(10, 60, 360, 24, "Master DB");
@@ -1179,7 +1131,7 @@ Fl_Double_Window* configDialog() {
 
 		tabGroupMasterDB->end();
 
-		tabGroupSharedFields = new Fl_Group(0, 35, 440, 185, "Shared Fields");
+		tabGroupSharedFields = new Fl_Group(0, 35, 450, 185, "Shared");
 
 int gx = 5, gy = 45;
 			chk_mdb_prefix = new Fl_Check_Button(gx, gy, 15, 15, "prefix");
@@ -1216,12 +1168,12 @@ gy += 22;
 			chk_mdb_lname->value(progStatus.mdb_lname);
 			chk_mdb_lname->align(FL_ALIGN_RIGHT);
 			chk_mdb_lname->callback((Fl_Callback*)cb_chk_mdb_lname);
-gx += 105; gy = 45;
+gy += 22;
 			chk_mdb_addr = new Fl_Check_Button(gx, gy, 15, 15, "addr");
 			chk_mdb_addr->value(progStatus.mdb_addr);
 			chk_mdb_addr->align(FL_ALIGN_RIGHT);
 			chk_mdb_addr->callback((Fl_Callback*)cb_chk_mdb_addr);
-gy += 22;
+gx += 120; gy = 45;
 			chk_mdb_city = new Fl_Check_Button(gx, gy, 15, 15, "city");
 			chk_mdb_city->value(progStatus.mdb_city);
 			chk_mdb_city->align(FL_ALIGN_RIGHT);
@@ -1251,7 +1203,7 @@ gy += 22;
 			chk_mdb_spouse->value(progStatus.mdb_spouse);
 			chk_mdb_spouse->align(FL_ALIGN_RIGHT);
 			chk_mdb_spouse->callback((Fl_Callback*)cb_chk_mdb_spouse);
-gx += 105; gy = 45;
+gy += 22;
 			chk_mdb_sp_birth = new Fl_Check_Button(gx, gy, 15, 15, "sp_birth");
 			chk_mdb_sp_birth->value(progStatus.mdb_sp_birth);
 			chk_mdb_sp_birth->align(FL_ALIGN_RIGHT);
@@ -1261,7 +1213,7 @@ gy += 22;
 			chk_mdb_comment1->value(progStatus.mdb_comment1);
 			chk_mdb_comment1->align(FL_ALIGN_RIGHT);
 			chk_mdb_comment1->callback((Fl_Callback*)cb_chk_mdb_comment1);
-gy += 22;
+gx += 120; gy = 45;
 			chk_mdb_comment2 = new Fl_Check_Button(gx, gy, 15, 15, "comment2");
 			chk_mdb_comment2->value(progStatus.mdb_comment2);
 			chk_mdb_comment2->align(FL_ALIGN_RIGHT);
@@ -1286,7 +1238,7 @@ gy += 22;
 			chk_mdb_logdate->value(progStatus.mdb_logdate);
 			chk_mdb_logdate->align(FL_ALIGN_RIGHT);
 			chk_mdb_logdate->callback((Fl_Callback*)cb_chk_mdb_logdate);
-gx += 105; gy = 45;
+gy += 22;
 			chk_mdb_prevdate = new Fl_Check_Button(gx, gy, 15, 15, "prevdate");
 			chk_mdb_prevdate->value(progStatus.mdb_prevdate);
 			chk_mdb_prevdate->align(FL_ALIGN_RIGHT);
@@ -1301,7 +1253,7 @@ gy += 22;
 			chk_mdb_status->value(progStatus.mdb_status);
 			chk_mdb_status->align(FL_ALIGN_RIGHT);
 			chk_mdb_status->callback((Fl_Callback*)cb_chk_mdb_status);
-gy += 22;
+gx += 120; gy = 45;
 			chk_mdb_joined = new Fl_Check_Button(gx, gy, 15, 15, "joined");
 			chk_mdb_joined->value(progStatus.mdb_joined);
 			chk_mdb_joined->align(FL_ALIGN_RIGHT);
@@ -1311,11 +1263,21 @@ gy += 22;
 			chk_mdb_netnbr->value(progStatus.mdb_netnbr);
 			chk_mdb_netnbr->align(FL_ALIGN_RIGHT);
 			chk_mdb_netnbr->callback((Fl_Callback*)cb_chk_mdb_netnbr);
-
-			Fl_Button *btn_setall = new Fl_Button(340, 164, 60, 24, "Set All");
+gy += 22;
+			chk_mdb_county = new Fl_Check_Button(gx, gy, 15, 15, "county");
+			chk_mdb_county->value(progStatus.mdb_county);
+			chk_mdb_county->align(FL_ALIGN_RIGHT);
+			chk_mdb_county->callback((Fl_Callback*)cb_chk_mdb_county);
+gy += 22;
+			chk_mdb_traffic = new Fl_Check_Button(gx, gy, 15, 15, "traffic");
+			chk_mdb_traffic->value(progStatus.mdb_traffic);
+			chk_mdb_traffic->align(FL_ALIGN_RIGHT);
+			chk_mdb_traffic->callback((Fl_Callback*)cb_chk_mdb_traffic);
+gx = 500 - 135; gy += 24;
+			Fl_Button *btn_setall = new Fl_Button(gx, gy, 60, 24, "Set All");
 			btn_setall->callback((Fl_Callback*)cb_btn_setall);
-
-			Fl_Button *btn_clrall = new Fl_Button(340, 190, 60, 24, "Clr All");
+gy += 30;
+			Fl_Button *btn_clrall = new Fl_Button(gx, gy, 60, 24, "Clr All");
 			btn_clrall->callback((Fl_Callback*)cb_btn_clrall);
 
 		tabGroupSharedFields->end();
@@ -1330,6 +1292,8 @@ gy += 22;
 	return w;
 }
 
+extern Fl_Double_Window *login_list;
+
 Fl_Browser *log_in_view=(Fl_Browser *)0;
 
 Fl_Button *btn_copy_to_clipboard=(Fl_Button *)0;
@@ -1341,21 +1305,23 @@ static void cb_btn_copy_to_clipboard(Fl_Button*, void*) {
 Fl_Button *btn_close_log_ins=(Fl_Button *)0;
 
 static void cb_btn_close_log_ins(Fl_Button* o, void*) {
-	o->parent()->hide();
+	if (login_list && login_list) login_list->hide();
 }
 
 Fl_Double_Window* Log_ins_dialog() {
-	Fl_Double_Window* w = new Fl_Double_Window(300, 235, "Current Log Ins");
+	Fl_Double_Window* w = new Fl_Double_Window(400, 235, "Current Log Ins");
 
-	log_in_view = new Fl_Browser(2, 2, 296, 205);
+	log_in_view = new Fl_Browser(2, 2, 396, 205);
 	log_in_view->align(Fl_Align(FL_ALIGN_TOP));
-	log_in_view->has_scrollbar(Fl_Browser_::VERTICAL_ALWAYS);
+	log_in_view->has_scrollbar(Fl_Browser_::BOTH_ALWAYS);
 
-	btn_copy_to_clipboard = new Fl_Button(40, 210, 70, 20, "Copy");
+	btn_copy_to_clipboard = new Fl_Button(400 - 150, 210, 70, 20, "Copy");
 	btn_copy_to_clipboard->callback((Fl_Callback*)cb_btn_copy_to_clipboard);
 
-	btn_close_log_ins = new Fl_Button(190, 210, 70, 20, "Close");
+	btn_close_log_ins = new Fl_Button(400 - 75, 210, 70, 20, "Close");
 	btn_close_log_ins->callback((Fl_Callback*)cb_btn_close_log_ins);
+
+	w->end();
 
 	return w;
 }

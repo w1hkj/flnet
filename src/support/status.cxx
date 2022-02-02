@@ -32,23 +32,28 @@
 #include "csvdb.h"
 #include "my_UI.h"
 
+#include "sorting.h"
+
 status progStatus = {
 	50,			// int	mainX;
 	50,			// int	mainY;
 	SMALL,		// int	ui_size;
 
 	FL_BLACK,	// int	fgColors[5];
-	FL_BLACK,
 	FL_WHITE,
 	FL_YELLOW,
 	FL_WHITE,
 	FL_YELLOW,
 	FL_WHITE,	// int	bgColors[5];
-	FL_WHITE,
 	FL_BLUE,
 	FL_DARK_GREEN,
 	FL_DARK_RED,
 	FL_DARK_GREEN,
+
+	"First",	// std::string f1_text;
+	"Second",	// std::string f1_text;
+	"Third",	// std::string f1_text;
+	"Fourth",	// std::string f1_text;
 
 	0,			// int	disp_new_login;
 	0,			// int	open_editor;
@@ -94,6 +99,41 @@ status progStatus = {
 	1,			// int	mdb_status;
 	1,			// int	mdb_joined;
 	1,			// int	mdb_netnbr
+	1,			// int	mdb_county;
+	1,			// int	mdb_traffic;
+
+	1, "CALLSIGN",	// int chk0; std::string header0;
+	1, "NAME",		// int chk1; std::string header1;
+	1, "NETNBR",	// int chk2; std::string header2;
+	0, "LOGDATE",	// int chk3; std::string header3;
+	1, "LOGTIME",	// int chk4; std::string header4;
+	0, "PREVDATE",	// int chk5; std::string header5;
+	0, "NBRLOGINS",	// int chk6; std::string header6;
+	1, "STATUS",	// int chk7; std::string header7;
+	0, "PREFIX",	// int chk8; std::string header8;
+	0, "AREA",		// int chk9; std::string header9;
+	0, "SUFFIX",	// int chk10; std::string header10;
+	0, "FNAME",		// int chk11; std::string header11;
+	0, "LNAME",		// int chk12; std::string header12;
+	0, "ADDR",		// int chk13; std::string header13;
+	0, "CITY",		// int chk14; std::string header14;
+	0, "STATE",		// int chk15; std::string header15;
+	0, "ZIP",		// int chk16; std::string header16;
+	0, "PHONE",		// int chk17; std::string header17;
+	0, "BIRTHDATE",	// int chk18; std::string header18;
+	0, "JOINED",	// int chk19; std::string header19;
+	0, "EMAIL",		// int chk20; std::string header20;
+	0, "LOCATOR",	// int chk21; std::string header21;
+	0, "COUNTRY",	// int chk22; std::string header22;
+	0, "COUNTY",	// int chk23; std::string header23;
+	0, "TRAFFIC",	// int chk24; std::string header24;
+	0, "SPOUSE",	// int chk24; std::string header25;
+	0, "SP_BIRTH",	// int chk25; std::string header26;
+	0, "COMMENT1",	// int chk26; std::string header27;
+	0, "COMMENT2",	// int chk27; std::string header28;
+
+	'\t',		// char	column_char;
+	2,			// int	col_spaces;
 
 	"A",		// std::string	chP1;
 	"B",		// std::string	chP2;
@@ -125,6 +165,9 @@ void status::saveLastState()
 		mainX = mX;
 		mainY = mY;
 	}
+
+	save_column_select();
+
 	flnetpref.set("version", PACKAGE_VERSION);
 	flnetpref.set("mainx", mX);
 	flnetpref.set("mainy", mY);
@@ -135,14 +178,12 @@ void status::saveLastState()
 	flnetpref.set("fgColors[2]", fgColors[2]);
 	flnetpref.set("fgColors[3]", fgColors[3]);
 	flnetpref.set("fgColors[4]", fgColors[4]);
-	flnetpref.set("fgColors[5]", fgColors[5]);
 
 	flnetpref.set("bgColors[0]", bgColors[0]);
 	flnetpref.set("bgColors[1]", bgColors[1]);
 	flnetpref.set("bgColors[2]", bgColors[2]);
 	flnetpref.set("bgColors[3]", bgColors[3]);
 	flnetpref.set("bgColors[4]", bgColors[4]);
-	flnetpref.set("bgColors[5]", bgColors[5]);
 
 	flnetpref.set("disp_new_login", disp_new_login);
 	flnetpref.set("open_editor", open_editor);
@@ -180,6 +221,39 @@ void status::saveLastState()
 	flnetpref.set("mdb_isopen", mdb_isopen);
 	flnetpref.set("mdb_color", mdb_color);
 
+	flnetpref.set("chk0", chk0); flnetpref.set("header0", header0.c_str());
+	flnetpref.set("chk1", chk1); flnetpref.set("header1", header1.c_str());
+	flnetpref.set("chk2", chk2); flnetpref.set("header2", header2.c_str());
+	flnetpref.set("chk3", chk3); flnetpref.set("header3", header3.c_str());
+	flnetpref.set("chk4", chk4); flnetpref.set("header4", header4.c_str());
+	flnetpref.set("chk5", chk5); flnetpref.set("header5", header5.c_str());
+	flnetpref.set("chk6", chk6); flnetpref.set("header6", header6.c_str());
+	flnetpref.set("chk7", chk7); flnetpref.set("header7", header7.c_str());
+	flnetpref.set("chk8", chk8); flnetpref.set("header8", header8.c_str());
+	flnetpref.set("chk9", chk9); flnetpref.set("header9", header9.c_str());
+	flnetpref.set("chk10", chk10); flnetpref.set("header10", header10.c_str());
+	flnetpref.set("chk11", chk11); flnetpref.set("header11", header11.c_str());
+	flnetpref.set("chk12", chk12); flnetpref.set("header12", header12.c_str());
+	flnetpref.set("chk13", chk13); flnetpref.set("header13", header13.c_str());
+	flnetpref.set("chk14", chk14); flnetpref.set("header14", header14.c_str());
+	flnetpref.set("chk15", chk15); flnetpref.set("header15", header15.c_str());
+	flnetpref.set("chk16", chk16); flnetpref.set("header16", header16.c_str());
+	flnetpref.set("chk17", chk17); flnetpref.set("header17", header17.c_str());
+	flnetpref.set("chk18", chk18); flnetpref.set("header18", header18.c_str());
+	flnetpref.set("chk19", chk19); flnetpref.set("header19", header19.c_str());
+	flnetpref.set("chk20", chk20); flnetpref.set("header20", header20.c_str());
+	flnetpref.set("chk21", chk21); flnetpref.set("header21", header21.c_str());
+	flnetpref.set("chk22", chk22); flnetpref.set("header22", header22.c_str());
+	flnetpref.set("chk23", chk23); flnetpref.set("header23", header23.c_str());
+	flnetpref.set("chk24", chk24); flnetpref.set("header24", header24.c_str());
+	flnetpref.set("chk25", chk25); flnetpref.set("header25", header25.c_str());
+	flnetpref.set("chk26", chk26); flnetpref.set("header26", header26.c_str());
+	flnetpref.set("chk27", chk27); flnetpref.set("header27", header27.c_str());
+	flnetpref.set("chk28", chk28); flnetpref.set("header28", header28.c_str());
+
+	flnetpref.set("column_char", column_char);
+	flnetpref.set("col_spaces", col_spaces);
+
 	flnetpref.set("chAuto", chAuto);
 
 	flnetpref.set("call_justify", call_justify);
@@ -192,6 +266,11 @@ void status::saveLastState()
 	flnetpref.set("strP1", strP1.c_str());
 	flnetpref.set("strP2", strP2.c_str());
 	flnetpref.set("strP3", strP3.c_str());
+
+	flnetpref.set("f1_text", f1_text.c_str());
+	flnetpref.set("f2_text", f2_text.c_str());
+	flnetpref.set("f3_text", f3_text.c_str());
+	flnetpref.set("f4_text", f4_text.c_str());
 
 	flnetpref.set("myLocator", myLocator.c_str());
 	flnetpref.set("user_name", user_name.c_str());
@@ -215,20 +294,19 @@ void status::loadLastState()
 		flnetpref.get("ui_size", ui_size, ui_size);
 	}
 
+	char sztext[501];
 
 	flnetpref.get("fgColors[0]", fgColors[0], fgColors[0]);
 	flnetpref.get("fgColors[1]", fgColors[1], fgColors[1]);
 	flnetpref.get("fgColors[2]", fgColors[2], fgColors[2]);
 	flnetpref.get("fgColors[3]", fgColors[3], fgColors[3]);
 	flnetpref.get("fgColors[4]", fgColors[4], fgColors[4]);
-	flnetpref.get("fgColors[5]", fgColors[5], fgColors[5]);
 
 	flnetpref.get("bgColors[0]", bgColors[0], bgColors[0]);
 	flnetpref.get("bgColors[1]", bgColors[1], bgColors[1]);
 	flnetpref.get("bgColors[2]", bgColors[2], bgColors[2]);
 	flnetpref.get("bgColors[3]", bgColors[3], bgColors[3]);
 	flnetpref.get("bgColors[4]", bgColors[4], bgColors[4]);
-	flnetpref.get("bgColors[5]", bgColors[5], bgColors[5]);
 
 	flnetpref.get("disp_new_login", disp_new_login, disp_new_login);
 	flnetpref.get("open_editor", open_editor, open_editor);
@@ -266,13 +344,107 @@ void status::loadLastState()
 	flnetpref.get("mdb_isopen", mdb_isopen, mdb_isopen);
 	flnetpref.get("mdb_color", mdb_color, mdb_color);
 
+	flnetpref.get("chk0", chk0, chk0);
+	flnetpref.get("header0", sztext, header0.c_str(), 500); header0 = sztext;
+
+	flnetpref.get("chk1", chk1, chk1);
+	flnetpref.get("header1", sztext, header1.c_str(), 500); header1 = sztext;
+
+	flnetpref.get("chk2", chk2, chk2);
+	flnetpref.get("header2", sztext, header2.c_str(), 500); header2 = sztext;
+
+	flnetpref.get("chk3", chk3, chk3);
+	flnetpref.get("header3", sztext, header3.c_str(), 500); header3 = sztext;
+
+	flnetpref.get("chk4", chk4, chk4);
+	flnetpref.get("header4", sztext, header4.c_str(), 500); header4 = sztext;
+
+	flnetpref.get("chk5", chk5, chk5);
+	flnetpref.get("header5", sztext, header5.c_str(), 500); header5 = sztext;
+
+	flnetpref.get("chk6", chk6, chk6);
+	flnetpref.get("header6", sztext, header6.c_str(), 500); header6 = sztext;
+
+	flnetpref.get("chk7", chk7, chk7);
+	flnetpref.get("header7", sztext, header7.c_str(), 500); header7 = sztext;
+
+	flnetpref.get("chk8", chk8, chk8);
+	flnetpref.get("header8", sztext, header8.c_str(), 500); header8 = sztext;
+
+	flnetpref.get("chk9", chk9, chk9);
+	flnetpref.get("header9", sztext, header9.c_str(), 500); header9 = sztext;
+
+	flnetpref.get("chk10", chk10, chk10);
+	flnetpref.get("header10", sztext, header10.c_str(), 500); header10 = sztext;
+
+	flnetpref.get("chk11", chk11, chk11);
+	flnetpref.get("header11", sztext, header11.c_str(), 500); header11 = sztext;
+
+	flnetpref.get("chk12", chk12, chk12);
+	flnetpref.get("header12", sztext, header12.c_str(), 500); header12 = sztext;
+
+	flnetpref.get("chk13", chk13, chk13);
+	flnetpref.get("header13", sztext, header13.c_str(), 500); header13 = sztext;
+
+	flnetpref.get("chk14", chk14, chk14);
+	flnetpref.get("header14", sztext, header14.c_str(), 500); header14 = sztext;
+
+	flnetpref.get("chk15", chk15, chk15);
+	flnetpref.get("header15", sztext, header15.c_str(), 500); header15 = sztext;
+
+	flnetpref.get("chk16", chk16, chk16);
+	flnetpref.get("header16", sztext, header16.c_str(), 500); header16 = sztext;
+
+	flnetpref.get("chk17", chk17, chk17);
+	flnetpref.get("header17", sztext, header17.c_str(), 500); header17 = sztext;
+
+	flnetpref.get("chk18", chk18, chk18);
+	flnetpref.get("header18", sztext, header18.c_str(), 500); header18 = sztext;
+
+	flnetpref.get("chk19", chk19, chk19);
+	flnetpref.get("header19", sztext, header19.c_str(), 500); header19 = sztext;
+
+	flnetpref.get("chk20", chk20, chk20);
+	flnetpref.get("header20", sztext, header20.c_str(), 500); header20 = sztext;
+
+	flnetpref.get("chk21", chk21, chk21);
+	flnetpref.get("header21", sztext, header21.c_str(), 500); header21 = sztext;
+
+	flnetpref.get("chk22", chk22, chk22);
+	flnetpref.get("header22", sztext, header22.c_str(), 500); header22 = sztext;
+
+	flnetpref.get("chk23", chk23, chk23);
+	flnetpref.get("header23", sztext, header23.c_str(), 500); header23 = sztext;
+
+	flnetpref.get("chk24", chk24, chk24);
+	flnetpref.get("header24", sztext, header24.c_str(), 500); header24 = sztext;
+
+	flnetpref.get("chk25", chk25, chk25);
+	flnetpref.get("header25", sztext, header25.c_str(), 500); header25 = sztext;
+
+	flnetpref.get("chk26", chk26, chk26);
+	flnetpref.get("header26", sztext, header26.c_str(), 500); header26 = sztext;
+
+	flnetpref.get("chk27", chk27, chk27);
+	flnetpref.get("header27", sztext, header27.c_str(), 500); header27 = sztext;
+
+	flnetpref.get("chk28", chk28, chk28);
+	flnetpref.get("header28", sztext, header28.c_str(), 500); header28 = sztext;
+
+	flnetpref.get("column_char", column_char, column_char);
+	flnetpref.get("col_spaces", col_spaces, col_spaces);
+
 	flnetpref.get("chAuto", chAuto, chAuto);
 	callinlist.AutoPriority(chAuto);
 
 	flnetpref.get("call_justify", call_justify, call_justify);
 	flnetpref.get("name_justify", name_justify, name_justify);
 
-	char sztext[501];
+	flnetpref.get("f1_text", sztext, f1_text.c_str(), 500); f1_text = sztext;
+	flnetpref.get("f2_text", sztext, f2_text.c_str(), 500); f2_text = sztext;
+	flnetpref.get("f3_text", sztext, f3_text.c_str(), 500); f3_text = sztext;
+	flnetpref.get("f4_text", sztext, f4_text.c_str(), 500); f4_text = sztext;
+
 	flnetpref.get("chP1", sztext, chP1.c_str(), 500); chP1 = sztext;
 	flnetpref.get("chP2", sztext, chP2.c_str(), 500); chP2 = sztext;
 	flnetpref.get("chP3", sztext, chP3.c_str(), 500); chP3 = sztext;
@@ -291,4 +463,7 @@ void status::loadLastState()
 	flnetpref.get("masterdb", sztext, masterdb.c_str(), 500); masterdb = sztext;
 
 	flnetpref.get("arc_conversion", arc_conversion, arc_conversion);
+
+	load_column_select();
+
 }
