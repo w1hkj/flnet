@@ -270,10 +270,10 @@ void updateCallins (bool fldigi_flag)
 		ssInfo.append("\n").append(line);
 
 		txtInfo->label (ssInfo.c_str());
-	} else if (callinlist.numlist() == 0)
+	} else
 		txtInfo->label ("");
-	else
-		txtInfo->label ("New record!");
+
+	txtInfo->redraw_label();
 
 	if (login_list && login_list->visible())
 		update_log_ins();
@@ -990,7 +990,6 @@ std::cout <<
 			default :
 				break;
 		}
-//		return 1;
 	}
 
 	if ((k == FL_Enter || k == FL_KP_Enter) && my_status == AREA) {
@@ -1006,9 +1005,14 @@ std::cout <<
 		dispCallIns (false);
 		clearPickList ();
 		clearSAP ();
-		if (progStatus.disp_new_login && progStatus.open_editor) cb_F12 (WhoIsUp);
-		updateLogins();
-//		return 1;
+		if (progStatus.disp_new_login && progStatus.open_editor) {
+			cb_F12 (WhoIsUp);
+			updateLogins();
+		} else {
+			updateLogins();
+			txtInfo->label("New checkin");
+			txtInfo->redraw_label();
+		}
 	}
 
 	Fl::add_timeout (0.1, debounce);
