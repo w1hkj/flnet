@@ -336,95 +336,124 @@ void newEditWindow()
 	out_sorted_by = new Fl_Output(460, 0, 75, 25, "Sorted by:");
 	out_sorted_by->color( (Fl_Color)20);
 
+	lblFileName = new Fl_Output(10, 30, 400, 24);
+	lblFileName->box(FL_BORDER_BOX);
+	lblFileName->color(52);
+
+	lblNumRecs = new Fl_Output(415, 30, 110, 24);
+	lblNumRecs->box(FL_BORDER_BOX);
+	lblNumRecs->color(53);
+
 	int y = 75;
-	inpPrefix = new Fl_Input2(10, y, 40, 22, "Prefix");
-	inpPrefix->align(FL_ALIGN_TOP_LEFT);
-	inpPrefix->callback((Fl_Callback *)cb_prefix);
-
-	inpArea = new Fl_Input2(54, y, 28, 22, "Area");
-	inpArea->align(FL_ALIGN_TOP_LEFT);
-	inpArea->callback((Fl_Callback *)cb_area);
-
-	inpSuffix = new Fl_Input2(86, y, 64, 22, "Suffix");
-	inpSuffix->align(FL_ALIGN_TOP_LEFT);
-	inpSuffix->callback((Fl_Callback *)cb_suffix);
-
-	inpNickname = new Fl_Input2(154, y, 147, 22, "Nickname");
-	inpNickname->align(FL_ALIGN_TOP_LEFT);
-
-	inpNetNbr = new Fl_Input2(305, y, 60, 22, "Net #");
-	inpNetNbr->align(FL_ALIGN_TOP_LEFT);
-
-	inpCounty = new Fl_Input2(375, y, 155, 22, "County/Prov");
-	inpCounty->align(FL_ALIGN_TOP_LEFT);
-
-	y += 40;
 	inpCallsign = new Fl_Input2(10, y, 110, 22, "Callsign");
+	inpCallsign->tooltip("Net member Callsign");
 	inpCallsign->align(FL_ALIGN_TOP_LEFT);
 
-	inpPrevDate = new Fl_DateInput(125, y, 110, 22, "Prev Date");
+	inpPrefix = new Fl_Input2(125, y, 40, 22, "Prefix");
+	inpPrefix->align(FL_ALIGN_TOP_LEFT);
+	inpPrefix->tooltip("Callsign Prefix");
+	inpPrefix->callback((Fl_Callback *)cb_prefix);
+
+	inpArea = new Fl_Input2(170, y, 40, 22, "Area");
+	inpArea->align(FL_ALIGN_TOP_LEFT);
+	inpArea->tooltip("Callsign Area");
+	inpArea->callback((Fl_Callback *)cb_area);
+
+	inpSuffix = new Fl_Input2(215, y, 65, 22, "Suffix");
+	inpSuffix->align(FL_ALIGN_TOP_LEFT);
+	inpSuffix->tooltip("Callsign Suffix");
+	inpSuffix->callback((Fl_Callback *)cb_suffix);
+
+	inpNickname = new Fl_Input2(285, y, 145, 22, "Nickname");
+	inpNickname->tooltip("Name used in QSO");
+	inpNickname->align(FL_ALIGN_TOP_LEFT);
+
+	y += 40;
+	inpNetNbr = new Fl_Input2(10, y, 75, 22, "Net #");
+	inpNetNbr->tooltip("Assigned net number");
+	inpNetNbr->align(FL_ALIGN_TOP_LEFT);
+
+	inpPrevDate = new Fl_DateInput(90, y, 110, 22, "Prev Date");
 	inpPrevDate->format(2);
+	inpPrevDate->tooltip("Date of last log-in");
 	inpPrevDate->align(FL_ALIGN_TOP_LEFT);
 
-	txtLogDate = new Fl_DateInput(245, y, 110, 22, "Log Date");
+	txtLogDate = new Fl_DateInput(205, y, 110, 22, "Log Date");
 	txtLogDate->format(2);
+	txtLogDate->tooltip("Current log-in date");
 	txtLogDate->align(FL_ALIGN_TOP_LEFT);
 
-	inpJoined = new Fl_DateInput(365, y, 110, 22, "Joined");
+	inpJoined = new Fl_DateInput(320, y, 110, 22, "Joined");
 	inpJoined->format(2);
+	inpJoined->tooltip("Date member joined the net");
 	inpJoined->align(FL_ALIGN_TOP_LEFT);
 
 	y += 40;
 	inpNbrLogins = new Fl_Input2(10, y, 70, 22, "Nbr Logins");
+	inpNbrLogins->tooltip("Number of times member has logged in to net");
 	inpNbrLogins->align(FL_ALIGN_TOP_LEFT);
 
 	inpStatus = new Fl_Input2(105, y, 22, 22, "Status");
+	inpStatus->tooltip("Numeric status indicator");
 	inpStatus->align(FL_ALIGN_TOP);
 
 	inpLocator = new Fl_Input2(155, y, 70, 22, "Locator");
 	inpLocator->align(FL_ALIGN_TOP_LEFT);
 	inpLocator->callback((Fl_Callback *)cb_locator);
+	inpLocator->tooltip("4 or 6 character Maidenhead location");
 	inpLocator->when(FL_WHEN_CHANGED);
 
 	outAzimuth = new Fl_Output(245, y, 70, 22, "Azimuth");
 	outAzimuth->align(FL_ALIGN_TOP_LEFT);
+	outAzimuth->tooltip("Computed azimuth, net control to member");
 	outAzimuth->color((Fl_Color)20);
 
 	outDistance = new Fl_Output(335, y, 100, 22, "Distance");
 	outDistance->align(FL_ALIGN_TOP_LEFT);
+	outDistance->tooltip("Computed distance, net control to member");
 	outDistance->color((Fl_Color)20);
 
 //----------------------------------------------------------------------
 
 	y += 40;
-	inpFname = new Fl_Input2(70, y, 105, 22, "Name:");
+
+	inpFname = new Fl_Input2(20, y, 125, 22, "First name:");
 	inpFname->tooltip("first name");
+	inpFname->align(FL_ALIGN_TOP_LEFT);
 
-	inpLname = new Fl_Input2(180, y, 165, 22);
-	inpLname->tooltip("lase name");
+	inpLname = new Fl_Input2(150, y, 235, 22, "Last name");
+	inpLname->tooltip("last name");
+	inpLname->align(FL_ALIGN_TOP_LEFT);
 
-	inpBirthday = new Fl_DateInput(390, y, 120, 22, "Bday:");
+	inpBirthday = new Fl_DateInput(390, y, 120, 22, "Birthday:");
 	inpBirthday->tooltip("date of birth");
+	inpBirthday->align(FL_ALIGN_TOP_LEFT);
 
 	y += 26;
-	inpAddress = new Fl_Input2(70, y, 275, 22, "Addr:");
-	inpAddress->tooltip("street");
-	inpPhone = new Fl_Input2(390, y, 135, 22, "Ph:");
+	inpAddress = new Fl_Input2(70, y, 265, 22, "Addr:");
+	inpAddress->tooltip("Street address");
+
+	inpPhone = new Fl_Input2(390, y, 135, 22, "Phone:");
 	inpPhone->tooltip("phone #");
 
 	y += 26;
-	inpCity = new Fl_Input2(70, y, 190, 22, "");
+	inpCity = new Fl_Input2(70, y, 190, 22, "City");
 	inpCity->tooltip("city");
 
-	inpState = new Fl_Input2(265, y, 35, 22);
+	inpState = new Fl_Input2(310, y, 50, 22, "St/Pr");
 	inpState->callback((Fl_Callback *)cbState);
 	inpState->when(FL_WHEN_CHANGED);
-	inpState->tooltip("state");
+	inpState->tooltip("State");
 
-	inpZip = new Fl_Input2(305, y, 60, 22);
-	inpZip->tooltip("zip");
+	inpZip = new Fl_Input2(390, y, 90, 22, "ZIP");
+	inpZip->tooltip("zip / postal code");
 
-	inpCountry = new Fl_Input2(370, y, 140, 22);
+	y += 26;
+
+	inpCounty = new Fl_Input2(70, y, 140, 22, "County:");
+	inpCounty->tooltip("County or other geographic designator");
+
+	inpCountry = new Fl_Input2(310, y, 140, 22, "Country:");
 	inpCountry->tooltip("country");
 
 	y += 26;
@@ -433,7 +462,7 @@ void newEditWindow()
 	y += 26;
 	inpSpouse = new Fl_Input2(70, y, 85, 22, "Spouse:");
 
-	inpSpBirthday = new Fl_Input2(235, y, 75, 22, "Sp Bday:");
+	inpSpBirthday = new Fl_Input2(275, y, 75, 22, "Spouse Bday:");
 
 	y += 26;
 	inpTraffic = new Fl_Input2(70, y, 440, 22, "Traffic:");
@@ -445,7 +474,7 @@ void newEditWindow()
 	inpComment2 = new Fl_Input2(70, y, 440, 24);
 
 	int xpos = 45;
-	int ypos = 420;
+	int ypos = editor->h() - 30;
 	int width = 25;
 	int height = 25;
 
@@ -484,14 +513,6 @@ void newEditWindow()
 	xpos += (width + 30);
 	btnClose = new Fl_Button(xpos, ypos, width, height, "Close");
 	btnClose->callback((Fl_Callback*)cb_CloseEditor);
-
-	lblFileName = new Fl_Output(10, 30, 400, 24);
-	lblFileName->box(FL_BORDER_BOX);
-	lblFileName->color(52);
-
-	lblNumRecs = new Fl_Output(415, 30, 110, 24);
-	lblNumRecs->box(FL_BORDER_BOX);
-	lblNumRecs->color(53);
 
 	editor->end();
 
