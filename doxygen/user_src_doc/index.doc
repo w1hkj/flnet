@@ -20,7 +20,7 @@
 <!--FLNET User Manual-->
 \mainpage
 
-\section mpage Version 7.4
+\section mpage Version 7.5.0
 
 \tableofcontents
 
@@ -454,6 +454,7 @@ comma separated strings:
 <li>EMAIL</li>
 <li>PREVDATE</li>
 <li>LOCATOR</li>
+<li>COUNTY</li>
 <li>COUNTRY</li>
 </ul>
 
@@ -518,10 +519,11 @@ will open so that details can immediately be added to the database.
 
 Current call in is up - Every new log in will move that entry to the "up"
 position in the Call In List.
-\subsection ssColors Colors
+
+\subsection ssStatusColors Status & Colors
 <center>
-\image latex ConfigColors.png "" width=4.0in
-\image html ConfigColors.png ""
+\image latex ConfigStatus.png "" width=4.0in
+\image html ConfigStatus.png ""
 </center>
 
 The function keys F1, F2, F3 and F4 when pressed will change the forground and background colors
@@ -537,6 +539,8 @@ she chooses. One use might choose to designate
 | Acknowledged #1       | BLUE      |
 | Acknowledged #2       | GREEN     |
 | Logged out            | RED       |
+ 
+The status <i>text</i> will be substituted for the status field in the current logins report dialog.
 
 </center>
 
@@ -556,6 +560,38 @@ early responses to a check in process to accommodate band conditions.
 
 You can check the Auto By Priority box if you want prioritization to be
 automatic.
+
+\subsection ssLoginsReport Logins Report
+<center>
+\image latex Logins.png "" width=6.0in
+\image html  Logins.png ""
+</center>
+
+Open the <b>Logins Report</b> dialog using the menu item <i>Reports/Logins</i>.  The report format is user configurable.
+Which fields, and field order are selected using the <b>Select Sort Fields</b> dialog.  Open this dialog using the
+<i>Report/Select fields</i> menu item:
+
+<center>
+\image latex Select-Sort-Fields.png "" width=2.0in
+\image html  Select-Sort-Fields.png ""
+</center>
+
+To move a field up (to the left on report), or down (to the right on the report): 
+<ul>
+<li>select the field by clicking on the associated lighted button (it will turn yellow)</li>
+<li>move the field up or down using the respective up / dn arrow button</li>
+</ul>
+Enable the associated check box to activate the field on the report.
+
+All configuration changes and changes to the log-in list will be immediately reflected in the reports dialog.
+
+The copy button puts a space filled replica of the reports dialog contents in the system clipboard.  You can then paste the clipboard
+contents into any clipboard aware control, a text editor, the fldigi transmit panel, etc.
+
+<center>
+\image latex Clipboard-Copy.png "" width=6.0in
+\image html  Clipboard-Copy.png ""
+</center>
 
 \subsection ssLookup External data sources
 <center>

@@ -1,6 +1,24 @@
+2022-02-03  dave-w1hkj  <w1hkj@bellsouth.net>
+
+	c4e3489: Version 7.5.0
+	64c64b7: editor
+	3d35570: nucall
+	eb45f0b: logins
+
+2022-01-29  Harry G McGavran Jr  <w5pny@w5pny.com>
+
+	1eed131: hamcall
+
+2021-12-26  dave-w1hkj  <w1hkj@bellsouth.net>
+
+	2b22d52: New fields
+	cb86629: XmlRpc Client ID
+	baa30e9: openSUSE Tumbleweed
+	e55288a: Key bounce
+
 2021-03-31  David Freese  <w1hkj@bellsouth.net>
 
-	cd28a36: Version 7.4.0
+	282253d: Version 7.4.0
 
 2021-03-25  dave-w1hkj  <w1hkj@bellsouth.net>
 
