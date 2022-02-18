@@ -23,8 +23,6 @@
 
 #include <string>
 
-using namespace std;
-
 enum { RIGHT_JUSTIFY, LEFT_JUSTIFY, AREA_JUSTIFY };
 
 struct status {

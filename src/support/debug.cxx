@@ -51,8 +51,6 @@
 #include "netshared.h"
 #include "threads.h"
 
-using namespace std;
-
 #define MAX_LINES 65536
 
 static FILE* wfile;
@@ -74,7 +72,7 @@ static void clear_cb(Fl_Widget *w, void*);
 
 static char fmt[1024];
 static char sztemp[1024];
-static string slines = "";
+static std::string slines = "";
 
 void debug::start(const char* filename)
 {
@@ -167,7 +165,7 @@ void debug::show(void)
 void debug::sync_text(void* arg)
 {
 	guard_lock text_lock(&debug_mutex);
-	size_t p = string::npos;
+	size_t p = std::string::npos;
 	while (!slines.empty()) {
 		p = slines.find('\n');
 		btext->add(slines.substr(0, p).c_str());

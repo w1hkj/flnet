@@ -39,8 +39,6 @@
 #include <cstring>
 #include <string>
 
-using namespace std;
-
 typedef enum {
 	SUNDAY,
 	MONDAY,
@@ -67,7 +65,7 @@ typedef enum {
 } month_t;
 
 class Date {
-	friend ostream &operator<<( ostream &, Date &);
+	friend std::ostream &operator<<( std::ostream &, Date &);
 
 protected:
 	int  year;

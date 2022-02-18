@@ -65,25 +65,25 @@ int	WhoIsUp = 0;
 static int lastUp;
 
 char keyval[2] = " ";
-string szPrefix = "";
-string szArea = "";
-string szSuffix = "";
-string szFullName;
-string szLogDate;
-string szPrevDate;
-string szBirthday;
-string szNetNbr;
-string szSpouse;
-string szPhone;
-string szQTH;
-string szEmail;
-string szComment1;
-string szComment2;
-string szFirstName;
-string szCallSign;
-string szCountry;
-string szAzimuth;
-string szDistance;
+std::string szPrefix = "";
+std::string szArea = "";
+std::string szSuffix = "";
+std::string szFullName;
+std::string szLogDate;
+std::string szPrevDate;
+std::string szBirthday;
+std::string szNetNbr;
+std::string szSpouse;
+std::string szPhone;
+std::string szQTH;
+std::string szEmail;
+std::string szComment1;
+std::string szComment2;
+std::string szFirstName;
+std::string szCallSign;
+std::string szCountry;
+std::string szAzimuth;
+std::string szDistance;
 
 bool updateFldigi = true;
 
@@ -178,7 +178,7 @@ void updateCallins (bool fldigi_flag)
 
 		szEmail.assign(trim(rec.email.c_str()));
 		size_t pat = szEmail.find("@");
-		if (pat != string::npos) szEmail.insert(pat, "@");
+		if (pat != std::string::npos) szEmail.insert(pat, "@");
 
 		szCountry = trim(rec.country.c_str());
 
@@ -280,7 +280,7 @@ void updateCallins (bool fldigi_flag)
 
 }
 
-static string outfilename;
+static std::string outfilename;
 
 void clear_outfilename()
 {
@@ -316,9 +316,9 @@ void updateLogins (bool closing = false)
 
 	csv_filename = selected_file;
 	size_t p = csv_filename.find(".csv");
-	if (p != string::npos) csv_filename.erase(p);
+	if (p != std::string::npos) csv_filename.erase(p);
 	p = csv_filename.find(".CSV");
-	if (p != string::npos) csv_filename.erase(p);
+	if (p != std::string::npos) csv_filename.erase(p);
 	csv_filename.append("-").append(ftoday);
 
 	txt_filename = csv_filename;
@@ -365,7 +365,7 @@ void updateLogins (bool closing = false)
 
 	for (int i = 0; i < 30; i++) cols[i] = 0;
 
-// find column positions based on max string size in each column
+// find column positions based on max std::string size in each column
 	for (int j = 0; j <= N; j++) {
 		colpos = 0;
 		for (int col = 0; col < 30; col++) {
@@ -411,7 +411,7 @@ void updateLogins (bool closing = false)
 
 void my_UI::UpdateWhoIsUp (long L)
 {
-	string pr, ar, su, nm;
+	std::string pr, ar, su, nm;
 	csvRecord rec;
 	netdb.get(L, rec);
 	callinlist.modify (WhoIsUp, L,

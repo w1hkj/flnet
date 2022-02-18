@@ -43,8 +43,6 @@
 
 #include "netshared.h"
 
-using namespace std;
-
 //----------------------------------------------------------------------
 //
 //----------------------------------------------------------------------
@@ -456,7 +454,7 @@ void Url::debug(bool on)
 		std::string fname = home_dir;
 		fname.append("network_debug.txt");
 		remove(fname.c_str());
-		debug_file.open(fname.c_str(), ios::app);
+		debug_file.open(fname.c_str(), std::ios::app);
 	}
 	else {
 		if (debug_file) {

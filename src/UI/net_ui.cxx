@@ -599,7 +599,7 @@ static void cb_masterdb(Fl_Input2 *, void *)
 
 static void cb_select_masterdb( Fl_Button *, void *)
 {
-	string open_dir = home_dir;
+	std::string open_dir = home_dir;
 	char *p = fl_file_chooser (
 		"Select master DB file", "*.csv", 
 		open_dir.c_str(), 0);

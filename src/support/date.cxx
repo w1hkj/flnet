@@ -279,7 +279,7 @@ char *Date::szDate ()
 
 // operator functions
 
-ostream &operator<<( ostream &output, Date &d )
+std::ostream &operator<<( std::ostream &output, Date &d )
 {
   output << d.szDate ();
   return output;

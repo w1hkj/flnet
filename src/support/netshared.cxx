@@ -73,7 +73,7 @@ size_t		currec;
 size_t		list_index;
 size_t		AddedRecNbr;
 
-string sSimpleName;
+std::string sSimpleName;
 char szDispName[200];
 
 Fl_Window	*NetNbrSearch = NULL,
@@ -89,9 +89,9 @@ void close_misc_dialogs(void)
 	if(CallsignBrowse) CallsignBrowse->hide();
 }
 
-string uppercase( string s)
+std::string uppercase( std::string s)
 {
-	static string ucase;
+	static std::string ucase;
 	ucase.clear();
 	ucase.assign(s);
 	for (size_t i = 0; i < s.length(); i++)
@@ -99,9 +99,9 @@ string uppercase( string s)
 	return ucase;
 }
 
-string trim(string s)
+std::string trim(std::string s)
 {
-	static string trimmed;
+	static std::string trimmed;
 	trimmed.clear();
 	trimmed.assign(s);
 	while (trimmed.length() && trimmed[0] == ' ') trimmed.erase(0);
@@ -434,7 +434,7 @@ void update_select_label()
 	box_db_select->redraw_label();
 }
 
-void openDB(string fname)
+void openDB(std::string fname)
 {
 	sSimpleName = fl_filename_name(fname.c_str());
 	netdb.filename(fname.c_str());
@@ -1381,7 +1381,7 @@ void cb_btnNewSave(Fl_Button *b, void *d)
 
 void cb_LookupCall (Fl_Menu_ *m, void *d)
 {
-	string inpCall;
+	std::string inpCall;
 	inpCall.assign(trim(uppercase(inpPrefix->value())));
 	inpCall.append(trim(uppercase(inpArea->value())));
 	inpCall.append(trim(uppercase(inpSuffix->value())));

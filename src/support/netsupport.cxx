@@ -55,7 +55,7 @@ extern void clear_outfilename();
 
 void cb_mnuOpen(Fl_Menu_*mnu, void *d)
 {
-	string open_dir = home_dir;
+	std::string open_dir = home_dir;
 	char *p = fl_file_chooser (
 		"Select .csv file", "*.csv", 
 		open_dir.c_str(), 0);

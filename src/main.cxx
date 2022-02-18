@@ -96,9 +96,9 @@ std::string selected_file;
 
 // Show an error dialog and print to cerr if available.
 // On win32 Fl::fatal displays its own error window.
-static void fatal_error(string sz_error)
+static void fatal_error(std::string sz_error)
 {
-	string s = "Fatal error!\n";
+	std::string s = "Fatal error!\n";
 	s.append(sz_error).append("\n").append(strerror(errno));
 
 	// Win32 will display a MessageBox error message
@@ -290,7 +290,7 @@ int main (int argc, char *argv[])
 	{
 		int r;
 		if ((r = mkdir(home_dir.c_str(), 0777)) == -1 && errno != EEXIST) {
-			string s = "Could not make directory ";
+			std::string s = "Could not make directory ";
 			fatal_error(s);
 		}
 		std::string last_filename = home_dir;
@@ -301,16 +301,16 @@ int main (int argc, char *argv[])
 
 #define LINESIZE 1024
 		char buff[LINESIZE + 1];
-		fstream dbfile(cfg_filename.c_str(), ios::in | ios::binary);
+		std::fstream dbfile(cfg_filename.c_str(), std::ios::in | std::ios::binary);
 		if (dbfile) {
 			// read & map header line
 			memset(buff, 0, LINESIZE + 1);
 			dbfile.getline(buff, LINESIZE);
 			selected_file = buff;
 			size_t p = selected_file.find('\r');
-			if (p != string::npos) selected_file.erase(p);
+			if (p != std::string::npos) selected_file.erase(p);
 			p = selected_file.rfind('\n');
-			if (p != string::npos) selected_file.erase(p);
+			if (p != std::string::npos) selected_file.erase(p);
 			last_filename = selected_file;
 			dbfile.close();
 		} else {

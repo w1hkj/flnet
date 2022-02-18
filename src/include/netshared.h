@@ -59,7 +59,7 @@ extern State editstate;
 extern size_t currec;
 extern size_t brwsnum;
 
-extern string sSimpleName;
+extern std::string sSimpleName;
 
 extern Fl_Input2 *inpPrefix;
 

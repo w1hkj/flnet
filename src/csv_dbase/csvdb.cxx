@@ -58,7 +58,7 @@ std::string csvRecord::print()
 }
 
 //szFields on 10 char spacing
-static string szFields = "\
+static std::string szFields = "\
 PREFIX    AREA      SUFFIX    CALLSIGN  \
 NAME      NETNBR    LOGDATE   NBRLOGINS \
 STATUS    JOINED    FNAME     LNAME     \
@@ -72,17 +72,17 @@ PREFIX,AREA,SUFFIX,CALLSIGN,NAME,NETNBR,LOGDATE,NBRLOGINS,STATUS,JOINED,\
 FNAME,LNAME,ADDR,CITY,STATE,ZIP,PHONE,BIRTHDATE,SPOUSE,SP_BIRTH,\
 COMMENT1,COMMENT2,EMAIL,PREVDATE,LOCATOR,COUNTRY,COUNTY,TRAFFIC";
 
-bool csvdb::mapheader(string header)
+bool csvdb::mapheader(std::string header)
 {
 	bool ok = false;
 	size_t p;
-	string hfield;
+	std::string hfield;
 	for (int i = PREFIX; i < LAST_FIELD; fpos[i++] = -1);
 	for (int i = PREFIX; i < LAST_FIELD; i++) {
 		if (header.empty()) break;
 		field( header, hfield);
 		p = szFields.find(hfield);
-		if (p != string::npos) {
+		if (p != std::string::npos) {
 			fpos[i] = p/10;
 			ok = true;
 		}
@@ -161,7 +161,7 @@ int csvdb::find_callsign(std::string callsign)
 // field extracts the leading field in the referenced string
 // the leading field is removed from the string
 //----------------------------------------------------------------------
-void csvdb::field(string &s, string &fld)
+void csvdb::field(std::string &s, std::string &fld)
 {
 	// empty reference string ==> empty field
 	if (s.empty()) {
@@ -177,9 +177,9 @@ void csvdb::field(string &s, string &fld)
 		// field is quoted
 		s.erase(0, 1);
 		p = s.find("\","); // find end of field
-		if (p == string::npos) {
+		if (p == std::string::npos) {
 			p = s.find("\""); // possibly last record
-			if ( p != string::npos) {
+			if ( p != std::string::npos) {
 				fld = s.substr(0, p);
 				s.clear();
 				return;
@@ -202,7 +202,7 @@ void csvdb::field(string &s, string &fld)
 			fld.clear();
 		} else {
 			p = s.find(",");
-			if (p == string::npos) {
+			if (p == std::string::npos) {
 				fld = s;
 				s.clear();
 			} else {
@@ -212,11 +212,11 @@ void csvdb::field(string &s, string &fld)
 		}
 	}
 	// change double quotes to single
-	while ((p = fld.find("\"\"")) != string::npos)
+	while ((p = fld.find("\"\"")) != std::string::npos)
 		fld.erase(p, 1);
 }
 
-bool csvdb::split(string s, csvRecord &rec)
+bool csvdb::split(std::string s, csvRecord &rec)
 {
 	clearrec(rec);
 
@@ -269,7 +269,7 @@ int csvdb::load()
 	char buff[LINESIZE + 1];
 
 	backup(dbfilename);
-	fstream dbfile(dbfilename.c_str(), ios::in | ios::binary);
+	std::fstream dbfile(dbfilename.c_str(), std::ios::in | std::ios::binary);
 	if (!dbfile) {
 		dbrecs.clear();
 		return 0;
@@ -284,7 +284,7 @@ int csvdb::load()
 	if (!mapheader(buff)) return -1;
 
 	// header passes test, read rest of file
-	string sbuff;
+	std::string sbuff;
 	while (!dbfile.eof()) {
 		memset(buff, 0, LINESIZE + 1);
 		dbfile.getline(buff, LINESIZE);
@@ -300,9 +300,9 @@ int csvdb::load()
 	return 0;
 }
 
-string csvdb::trim(string s)
+std::string csvdb::trim(std::string s)
 {
-	static string trimmed;
+	static std::string trimmed;
 	trimmed.assign(s);
 	while (trimmed.length() && trimmed[0] == ' ') trimmed.erase(0);
 	while (trimmed.length() && trimmed[trimmed.length()-1] == ' ')
@@ -310,21 +310,21 @@ string csvdb::trim(string s)
 	return trimmed;
 }
 
-string csvdb::delimit(string s)
+std::string csvdb::delimit(std::string s)
 {
-	static string delimited;
+	static std::string delimited;
 	bool quoted = false;
 	delimited.assign(trim(s));
 	size_t p = delimited.find("\"");
-	while (p != string::npos) {
+	while (p != std::string::npos) {
 		delimited.insert(p, "\"");
 		quoted = true;
 		p = delimited.find("\"", p+2);
 	}
-	if (delimited.find(" ") != string::npos ||
-		delimited.find(",") != string::npos ||
-		delimited.find(";") != string::npos ||
-		delimited.find("'") != string::npos) quoted = true;
+	if (delimited.find(" ") != std::string::npos ||
+		delimited.find(",") != std::string::npos ||
+		delimited.find(";") != std::string::npos ||
+		delimited.find("'") != std::string::npos) quoted = true;
 	if (quoted) {
 		delimited.insert(0, "\"");
 		delimited.append("\"");
@@ -340,7 +340,7 @@ string csvdb::delimit(string s)
 // quote, space, comma etc are quoted.  Trailing and leading spaces are
 // removed to conserve file size
 //----------------------------------------------------------------------
-void csvdb::join(csvRecord &rec, string &str)
+void csvdb::join(csvRecord &rec, std::string &str)
 {
 	str.assign(delimit(rec.prefix)).append(",");
 	str.append(delimit(rec.area)).append(",");
@@ -387,7 +387,7 @@ void csvdb::update_clist()
 
 int csvdb::save()
 {
-	fstream dbfile(dbfilename.c_str(), ios::out | ios::binary);
+	std::fstream dbfile(dbfilename.c_str(), std::ios::out | std::ios::binary);
 	if (!dbfile) return -1;
 
 	// csv file header line
@@ -396,7 +396,7 @@ int csvdb::save()
 	if (dbrecs.size() > 0) {
 		qsort ( clist, dbrecs.size(), sizeof(callsigns), callsign_comp);
 		// records
-		string line;
+		std::string line;
 		size_t n;
 		for (n = 0; n < dbrecs.size(); n++) {
 			join(dbrecs[clist[n].nbr], line);
@@ -479,7 +479,7 @@ int csvdb::add(csvRecord &rec)
 
 int csvdb::erase(size_t n)
 {
-	vector<csvRecord>::iterator p = dbrecs.begin();
+	std::vector<csvRecord>::iterator p = dbrecs.begin();
 	size_t i = 0;
 	while (p <= dbrecs.end() && i != n) {p++; i++;}
 	if (i != n) return 1;

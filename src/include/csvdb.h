@@ -35,9 +35,6 @@
 #include <iostream>
 #include <fstream>
 
-using namespace std;
-
-
 struct callsigns {
 	char callsign[15];
 	char netnbr[10];
@@ -49,34 +46,34 @@ struct callsigns {
 };
 
 struct csvRecord {
-	string prefix;
-	string area;
-	string suffix;
-	string callsign;
-	string name;
-	string netnbr;
-	string logdate;
-	string nbrlogins;
-	string status;
-	string joined;
-	string fname;
-	string lname;
-	string addr;
-	string city;
-	string state;
-	string zip;
-	string phone;
-	string birthdate;
-	string spouse;
-	string sp_birth;
-	string comment1;
-	string comment2;
-	string email;
-	string prevdate;
-	string locator;
-	string country;
-	string county;
-	string traffic;
+	std::string prefix;
+	std::string area;
+	std::string suffix;
+	std::string callsign;
+	std::string name;
+	std::string netnbr;
+	std::string logdate;
+	std::string nbrlogins;
+	std::string status;
+	std::string joined;
+	std::string fname;
+	std::string lname;
+	std::string addr;
+	std::string city;
+	std::string state;
+	std::string zip;
+	std::string phone;
+	std::string birthdate;
+	std::string spouse;
+	std::string sp_birth;
+	std::string comment1;
+	std::string comment2;
+	std::string email;
+	std::string prevdate;
+	std::string locator;
+	std::string country;
+	std::string county;
+	std::string traffic;
 	csvRecord() {
 		prefix.clear(); area.clear(); suffix.clear(); callsign.clear();
 		name.clear(); netnbr.clear(); logdate.clear(); nbrlogins.clear();
@@ -106,8 +103,8 @@ public:
 
 private:
 	static const char *csvFields;
-	string dbfilename;
-	vector<csvRecord> dbrecs;
+	std::string dbfilename;
+	std::vector<csvRecord> dbrecs;
 	csvRecord record;
 	int cur_recnbr;
 	int fpos[LAST_FIELD];
@@ -122,8 +119,8 @@ public:
 	}
 	~csvdb() { delete [] clist;}
 
-	void filename(string fname) { dbfilename.assign(fname); }
-	string filename() { return dbfilename; }
+	void filename(std::string fname) { dbfilename.assign(fname); }
+	std::string filename() { return dbfilename; }
 	int save();
 	int load();
 	size_t numrecs() { return dbrecs.size(); }
@@ -134,13 +131,13 @@ public:
 	int find_netnbr(std::string);
 	int find_callsign(std::string);
 	int erase(size_t n);
-	string delimit(string s);
-	string trim(string s);
-	void field(string &s, string &fld);
-	bool split(string s, csvRecord &rec);
-	void join(csvRecord &rec, string &s);
+	std::string delimit(std::string s);
+	std::string trim(std::string s);
+	void field(std::string &s, std::string &fld);
+	bool split(std::string s, csvRecord &rec);
+	void join(csvRecord &rec, std::string &s);
 	void clearrec(csvRecord &rec);
-	bool mapheader(string s);
+	bool mapheader(std::string s);
 	std::string print(csvRecord &rec);
 	std::string print(int n);
 };

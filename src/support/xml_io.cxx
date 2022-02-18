@@ -54,7 +54,6 @@
 
 #include "debug.h"
 
-using namespace std;
 using XmlRpc::XmlRpcValue;
 
 #define DEFAULT_XMLRPC_TIMEOUT 1.0 //6.0
@@ -99,7 +98,7 @@ void * xmlrpc_loop(void *d);
 //=====================================================================
 int update_interval = XMLRPC_UPDATE_INTERVAL;
 
-string xmlcall = "";
+std::string xmlcall = "";
 
 /*************************************************************
  *
@@ -214,12 +213,12 @@ std::string get_callsign(void)
 {
 	XmlRpcValue status;
 	XmlRpcValue query;
-	static string response;
+	static std::string response;
 
 	try {
 		guard_lock xmllock(&mutex_xmlrpc);
 		execute(fldigi_get_callsign, query, status);
-		string resp = status;
+		std::string resp = status;
 		response = resp;
 	} catch (const XmlRpc::XmlRpcException& e) {
 		LOG_ERROR("%s xmlrpc_errno = %d", e.getMessage().c_str(), xmlrpc_errno);
@@ -235,12 +234,12 @@ std::string get_name(void)
 {
 	XmlRpcValue status;
 	XmlRpcValue query;
-	static string response;
+	static std::string response;
 
 	try {
 		guard_lock xmllock(&mutex_xmlrpc);
 		execute(fldigi_get_name, query, status);
-		string resp = status;
+		std::string resp = status;
 		response = resp;
 	} catch (const XmlRpc::XmlRpcException& e) {
 		LOG_DEBUG("%s xmlrpc_errno = %d", e.getMessage().c_str(), xmlrpc_errno);
@@ -256,12 +255,12 @@ std::string get_qth(void)
 {
 	XmlRpcValue status;
 	XmlRpcValue query;
-	static string response;
+	static std::string response;
 
 	try {
 		guard_lock xmllock(&mutex_xmlrpc);
 		execute(fldigi_get_qth, query, status);
-		string resp = status;
+		std::string resp = status;
 		response = resp;
 	} catch (const XmlRpc::XmlRpcException& e) {
 		LOG_ERROR("%s xmlrpc_errno = %d", e.getMessage().c_str(), xmlrpc_errno);
@@ -277,12 +276,12 @@ std::string get_state(void)
 {
 	XmlRpcValue status;
 	XmlRpcValue query;
-	static string response;
+	static std::string response;
 
 	try {
 		guard_lock xmllock(&mutex_xmlrpc);
 		execute(fldigi_get_state, query, status);
-		string resp = status;
+		std::string resp = status;
 		response = resp;
 	} catch (const XmlRpc::XmlRpcException& e) {
 		LOG_ERROR("%s xmlrpc_errno = %d", e.getMessage().c_str(), xmlrpc_errno);
@@ -292,19 +291,19 @@ std::string get_state(void)
 }
 
 /*************************************************************
- * Return emply string if offline
+ * Return emply std::string if offline
  * Contains "T" if online.
  *************************************************************/
 std::string fldigi_online_check(void)
 {
 	XmlRpcValue status;
 	XmlRpcValue query;
-	static string response;
+	static std::string response;
 
 	try {
 		guard_lock xmllock(&mutex_xmlrpc);
 		execute(fldigi_online_xmlrpc, query, status);
-		string resp = status;
+		std::string resp = status;
 		response = resp;
 	} catch (const XmlRpc::XmlRpcException& e) {
 #ifndef __WIN32__
