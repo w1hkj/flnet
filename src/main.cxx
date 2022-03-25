@@ -60,6 +60,8 @@
 #include "masterdb.h"
 #include "my_UI.h"
 
+#include "font_browser.h"
+
 #ifdef WIN32
 #  include "flnetrc.h"
 #  include "compat.h"
@@ -257,6 +259,8 @@ int main (int argc, char *argv[])
 	sprintf (title, "flnet %s", FLNET_VERSION);
 	main_window->label(title);
 	main_window->callback(exit_main);
+
+	font_browser = new Font_Browser;
 
 	ui_size(progStatus.ui_size, progStatus.mainX, progStatus.mainY);
 

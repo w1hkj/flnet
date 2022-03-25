@@ -28,6 +28,7 @@
 #include <FL/Fl_File_Chooser.H>
 #include <FL/Fl_Color_Chooser.H>
 #include <FL/Fl_Scroll.H>
+#include <FL/Fl_Output.H>
 
 #include "icons.h"
 #include "flinput2.h"
@@ -134,6 +135,11 @@ Fl_Check_Button *btn_new_login_is_up=(Fl_Check_Button *)0;
 Fl_Check_Button *btnOpenEditor=(Fl_Check_Button *)0;
 Fl_Check_Button *btn_current_call_in_is_up=(Fl_Check_Button *)0;
 
+Fl_Button *btn_select_font = (Fl_Button *)0;
+Fl_Output *txt_selected_font = (Fl_Output *)0;
+
+Fl_Output *font_name = (Fl_Output *)0;
+
 Fl_Output *txt_sample = (Fl_Output *)0;
 
 Fl_Input2 *f1_text = (Fl_Input2 *)0;
@@ -143,6 +149,8 @@ Fl_Input2 *f4_text = (Fl_Input2 *)0;
 
 Fl_Button *btnFg[5]={(Fl_Button *)0};
 Fl_Button *btnBg[5]={(Fl_Button *)0};
+
+extern void cb_btn_font(Fl_Button *, void *);
 
 //----------------------------------------------------------------------
 // main dialog
@@ -891,6 +899,11 @@ Fl_Double_Window* configDialog() {
 			combo_arc_conversion->align(FL_ALIGN_RIGHT);
 			combo_arc_conversion->value(progStatus.arc_conversion);
 			combo_arc_conversion->callback((Fl_Callback*)cb_arc_conversion);
+
+			btn_select_font = new Fl_Button(240, 180, 60, 24, "Font");
+			btn_select_font->callback((Fl_Callback *)cb_btn_font);
+
+			txt_selected_font = new Fl_Output(305, 180, 140, 24, "");
 
 			grp_sort_order = new Fl_Group(240, 50, 180, 125, "Preferred Sort Order");
 			grp_sort_order->box(FL_ENGRAVED_BOX);

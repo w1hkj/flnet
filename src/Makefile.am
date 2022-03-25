@@ -11,7 +11,8 @@ flnet_LDADD = @FLNET_BUILD_LDADD@
 MINGW32_SRC = \
 	UI/flnet.rc \
 	include/flnetrc.h \
-	include/compat.h compat/getsysinfo.c compat/mingw.c compat/mingw.h
+	include/compat.h compat/getsysinfo.c compat/mingw.c compat/mingw.h \
+	include/compat-mingw.h
 
 # Build the xmlrpcpp source if libflxmlrpc is not found
 XMLRPCPP_SRC = \
@@ -329,6 +330,7 @@ flnet_SOURCES += \
 	csv_dbase/csvdb.cxx \
 	support/date.cxx \
 	support/debug.cxx \
+	support/font_browser.cxx \
 	support/icons.cxx \
 	support/loglist.cxx \
 	support/locator.cxx \
@@ -366,6 +368,7 @@ flnet_SOURCES += \
 	include/net_icon.h \
 	include/flinput2.h \
 	include/flnetrc.h \
+	include/font_browser.h \
 	include/locator.h \
 	include/masterdb.h \
 	include/netshared.h \

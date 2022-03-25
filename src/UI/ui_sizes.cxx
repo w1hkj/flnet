@@ -32,7 +32,11 @@
 #include "netshared.h"
 #include "status.h"
 
+#include "font_browser.h"
+
 extern Fl_Window *main_window;
+
+extern Fl_Output *txt_selected_font;
 
 struct UI_SIZES {
 	int			x;
@@ -44,58 +48,57 @@ struct UI_SIZES {
 };
 
 UI_SIZES UI_small[] = {
-	{   0,   0, 390, 460, FL_COURIER, 12}, // window  0
-	{   0,   0, 390,  25, FL_COURIER, 12}, // menu_ bar 1
-	{   0,  25, 390, 430, FL_COURIER, 12}, // myUI 2
-	{  15,  26, 140,  18, FL_COURIER_BOLD, 12}, // box_callins
-	{   0,  45, 230, 255, FL_COURIER, 12}, // net_grp1  4
-	{   2, 125,  15,  25, FL_COURIER, 12}, // ptr_left  4
-	{ 215, 125,  15,  25, FL_COURIER, 12}, // ptr_right  6
-	{  15,  45, 198, 255, FL_COURIER_BOLD, 14}, // net_grp2  7
-	{  17,  47, 194,  26, FL_COURIER_BOLD, 12}, // txtTitles  8
-	{  17,  70, 194,  16, FL_COURIER, 12}, // txtLine[0]  9
-	{  17,  85, 194,  16, FL_COURIER, 12}, // txtLine[1]  10
-	{  17, 100, 194,  16, FL_COURIER, 12}, // txtLine[2]  11
-	{  17, 115, 194,  16, FL_COURIER, 12}, // txtLine[3]  12
-	{  17, 130, 194,  16, FL_COURIER, 12}, // txtLine[4]  13
-	{  17, 145, 194,  16, FL_COURIER, 12}, // txtLine[5]  14
-	{  17, 160, 194,  16, FL_COURIER, 12}, // txtLine[6]  15
-	{  17, 175, 194,  16, FL_COURIER, 12}, // txtLine[7]  16
-	{  17, 190, 194,  16, FL_COURIER, 12}, // txtLine[8]  17
-	{  17, 205, 194,  16, FL_COURIER, 12}, // txtLine[9]  18
-	{  17, 220, 194,  16, FL_COURIER, 12}, // txtLine[10]  19
-	{  17, 235, 194,  16, FL_COURIER, 12}, // txtLine[11]  20
-	{  17, 250, 194,  16, FL_COURIER, 12}, // txtLine[12]  21
-	{  17, 265, 194,  16, FL_COURIER, 12}, // txtLine[13]  22
-	{  17, 280, 194,  16, FL_COURIER, 12}, // txtLine[14]  23
+	{   0,   0, 390, 460, FL_COURIER, 12}, // window
+	{   0,   0, 390,  25, FL_COURIER, 12}, // menu_ bar
+	{   0,  25, 390, 430, FL_COURIER, 12}, // myUI
+	{  15,  26, 140,  18, FL_COURIER, 12}, // box_callins
+	{   0,  45, 230, 255, FL_COURIER, 12}, // net_grp1
+	{   2, 125,  15,  25, FL_COURIER, 12}, // ptr_left
+	{ 215, 125,  15,  25, FL_COURIER, 12}, // ptr_right
+	{  15,  45, 198, 255, FL_COURIER, 14}, // net_grp2
+	{  17,  47, 194,  26, FL_COURIER, 12}, // txtTitles
+	{  17,  70, 194,  16, FL_COURIER, 12}, // txtLine[0]
+	{  17,  85, 194,  16, FL_COURIER, 12}, // txtLine[1]
+	{  17, 100, 194,  16, FL_COURIER, 12}, // txtLine[2]
+	{  17, 115, 194,  16, FL_COURIER, 12}, // txtLine[3]
+	{  17, 130, 194,  16, FL_COURIER, 12}, // txtLine[4]
+	{  17, 145, 194,  16, FL_COURIER, 12}, // txtLine[5]
+	{  17, 160, 194,  16, FL_COURIER, 12}, // txtLine[6]
+	{  17, 175, 194,  16, FL_COURIER, 12}, // txtLine[7]
+	{  17, 190, 194,  16, FL_COURIER, 12}, // txtLine[8]
+	{  17, 205, 194,  16, FL_COURIER, 12}, // txtLine[9]
+	{  17, 220, 194,  16, FL_COURIER, 12}, // txtLine[10]
+	{  17, 235, 194,  16, FL_COURIER, 12}, // txtLine[11]
+	{  17, 250, 194,  16, FL_COURIER, 12}, // txtLine[12]
+	{  17, 265, 194,  16, FL_COURIER, 12}, // txtLine[13]
+	{  17, 280, 194,  16, FL_COURIER, 12}, // txtLine[14]
 
-	{ 160,  26, 290,  18, FL_COURIER_BOLD, 12}, // box_db_select
-	{ 230,  45, 155, 255, FL_COURIER, 12}, // dbSelectGroup  24
-	{ 240,  65,  40,  25, FL_COURIER, 12}, // boxLoginSuffix  25
-	{ 285,  65,  30,  25, FL_COURIER, 12}, // boxLoginPrefix  26
-	{ 320,  65,  40,  25, FL_COURIER, 12}, // boxLoginArea  27
+	{ 160,  26, 290,  18, FL_COURIER, 12}, // box_db_select
+	{ 230,  45, 155, 255, FL_COURIER, 12}, // dbSelectGroup
+	{ 240,  65,  40,  25, FL_COURIER, 12}, // boxLoginSuffix
+	{ 285,  65,  30,  25, FL_COURIER, 12}, // boxLoginPrefix
+	{ 320,  65,  40,  25, FL_COURIER, 12}, // boxLoginArea
 
-	{ 235,  95, 146, (NPICKITEMS/2)*12+8, FL_COURIER, 12}, // net_grp3  28
-	{ 238,  98,  70,  12, FL_COURIER, 12}, // txtPick[0]   29
-	{ 308,  98,  70,  12, FL_COURIER, 12}, // txtPick[12]  39
-
-	{ 320, 135,  25, 120, FL_COURIER, 12}, // txtPickArrows  49
-	{ 235,  40,  40,  30, FL_COURIER, 12}, // bx_suffix  50
-	{ 280,  40,  40,  30, FL_COURIER, 12}, // bx_prefix  51
-	{ 320,  40,  40,  30, FL_COURIER, 12}, // bx_area  52
-	{   2, 301, 386, 155, FL_COURIER, 13}, // txtInfo  53
+	{ 235,  95, 146, (NPICKITEMS/2)*12+8, FL_COURIER, 12}, // net_grp3
+	{ 238,  98,  70,  12, FL_COURIER, 12}, // txtPick[0]
+	{ 308,  98,  70,  12, FL_COURIER, 12}, // txtPick[12]
+	{ 320, 135,  25, 120, FL_COURIER, 12}, // txtPickArrows
+	{ 235,  40,  40,  30, FL_COURIER, 12}, // bx_suffix
+	{ 280,  40,  40,  30, FL_COURIER, 12}, // bx_prefix
+	{ 320,  40,  40,  30, FL_COURIER, 12}, // bx_area
+	{   2, 301, 386, 155, FL_COURIER, 13}, // txtInfo
 };
 
 UI_SIZES UI_big[] = {
 	{   0,   0, 475, 635, FL_COURIER, 16}, // window
-	{   0,   0, 475,  25, FL_COURIER, 12}, // menu_ bar
+	{   0,   0, 475,  25, FL_COURIER, 12}, // menu_bar
 	{   0,  25, 475, 414, FL_COURIER, 16}, // myUI
-	{  17,  28, 163,  28, FL_COURIER_BOLD, 15}, // box_callins
+	{  17,  28, 163,  28, FL_COURIER, 15}, // box_callins
 	{   0,  49, 275, 396, FL_COURIER, 14}, // net_grp1
 	{   2, 180,  15,  24, FL_COURIER, 16}, // ptr_left
 	{ 270, 180,  15,  24, FL_COURIER, 16}, // ptr_right
-	{  15,  58, 255, 388, FL_COURIER_BOLD, 16}, // net_grp2
-	{  17,  60, 251,  24, FL_COURIER_BOLD, 15}, // txtTitles
+	{  15,  58, 255, 388, FL_COURIER, 16}, // net_grp2
+	{  17,  60, 251,  24, FL_COURIER, 15}, // txtTitles
 	{  17,  84, 251,  24, FL_COURIER, 15}, // txtLine[0]
 	{  17, 108, 251,  24, FL_COURIER, 15}, // txtLine[1]
 	{  17, 132, 251,  24, FL_COURIER, 15}, // txtLine[2]
@@ -112,15 +115,15 @@ UI_SIZES UI_big[] = {
 	{  17, 396, 251,  24, FL_COURIER, 15}, // txtLine[13]
 	{  17, 420, 251,  24, FL_COURIER, 15}, // txtLine[14]
 
-	{ 190,  28, 435,  28, FL_COURIER_BOLD, 15}, // box_db_select
+	{ 190,  28, 435,  28, FL_COURIER, 15}, // box_db_select
 	{ 284,  60, 185, 380, FL_COURIER, 18}, // dbSelectGroup
 	{ 291,  87,  60,  30, FL_COURIER, 18}, // boxLoginSuffix
 	{ 355,  87,  60,  30, FL_COURIER, 18}, // boxLoginPrefix
 	{ 419,  87,  40,  30, FL_COURIER, 18}, // boxLoginArea
 
-	{ 291, 125, 170, (NPICKITEMS/2)*16+4, FL_COURIER, 16}, // net_grp3  28
-	{ 293, 127,  83,  16, FL_COURIER, 16}, // txtPick[0]   29
-	{ 376, 127,  83,  16, FL_COURIER, 16}, // txtPick[12]  39
+	{ 291, 125, 170, (NPICKITEMS/2)*16+4, FL_COURIER, 16}, // net_grp3
+	{ 293, 127,  83,  16, FL_COURIER, 16}, // txtPick[0]
+	{ 376, 127,  83,  16, FL_COURIER, 16}, // txtPick[12]
 
 	{ 374, 195,  25, 180, FL_COURIER, 18}, // txtPickArrows
 	{ 291,  60,  60,  25, FL_COURIER, 16}, // bx_suffix
@@ -131,8 +134,18 @@ UI_SIZES UI_big[] = {
 
 int last_size = SMALL;
 
+void set_fonts()
+{
+//	std::cout << "Font: " << progStatus.ui_font << std::endl;
+	size_t num_widgets = sizeof(UI_big) / sizeof(*UI_big);
+	for (size_t n = 0; n < num_widgets; n++)
+		UI_small[n].fnt = UI_big[n].fnt = progStatus.ui_font;
+}
+
 void ui_size(int sz, int X, int Y)
 {
+	set_fonts();
+
 	UI_SIZES *ui = UI_small;
 	if (sz == BIG) ui = UI_big;
 	last_size = progStatus.ui_size = sz;
@@ -274,7 +287,7 @@ void ui_size(int sz, int X, int Y)
 	txtInfo->resize(ui->x, ui->y, ui->w, ui->h);
 	txtInfo->labelfont(ui->fnt);
 	txtInfo->labelsize(ui->size);
-	
+
 	main_window->redraw();
 }
 
@@ -285,4 +298,30 @@ void change_size()
 	} else {
 		ui_size(BIG, main_window->x(), main_window->y());
 	}
+}
+
+
+void cb_font_selected(Fl_Widget*, void*) {
+
+	Fl_Font font = font_browser->fontNumber();
+
+	progStatus.ui_font = font;
+
+	ui_size(progStatus.ui_size, main_window->x(), main_window->y());
+	txt_selected_font->value( font_browser->fontName(progStatus.ui_font) );
+
+	font_browser->hide();
+ 
+}
+
+
+void cb_btn_font(Fl_Button*, void*) {
+	if (!font_browser) return;
+
+	font_browser->fontNumber(progStatus.ui_font);
+	font_browser->fontSize(18);
+	font_browser->fontColor(FL_BLACK);
+	font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
+	font_browser->callback(cb_font_selected);
+	font_browser->show();
 }

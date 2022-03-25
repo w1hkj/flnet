@@ -22,6 +22,7 @@
 #include <fstream>
 #include <string>
 
+#include <FL/Fl.H>
 #include <FL/Fl_Preferences.H>
 
 #include "config.h"
@@ -38,6 +39,7 @@ status progStatus = {
 	50,			// int	mainX;
 	50,			// int	mainY;
 	SMALL,		// int	ui_size;
+	4,			// int	ui_fnt; default mono font
 
 	FL_BLACK,	// int	fgColors[5];
 	FL_WHITE,
@@ -172,6 +174,7 @@ void status::saveLastState()
 	flnetpref.set("mainx", mX);
 	flnetpref.set("mainy", mY);
 	flnetpref.set("ui_size", ui_size);
+	flnetpref.set("ui_font", ui_font);
 
 	flnetpref.set("fgColors[0]", fgColors[0]);
 	flnetpref.set("fgColors[1]", fgColors[1]);
@@ -286,15 +289,17 @@ void status::saveLastState()
 
 void status::loadLastState()
 {
+	char sztext[501];
+
 	Fl_Preferences flnetpref(home_dir.c_str(), "w1hkj.com", PACKAGE_NAME);
 
-	if (flnetpref.entryExists("version")) {
-		flnetpref.get("mainx", mainX, mainX);
-		flnetpref.get("mainy", mainY, mainY);
-		flnetpref.get("ui_size", ui_size, ui_size);
-	}
+	if (!flnetpref.entryExists("version")) 
+		return;
 
-	char sztext[501];
+	flnetpref.get("mainx", mainX, mainX);
+	flnetpref.get("mainy", mainY, mainY);
+	flnetpref.get("ui_size", ui_size, ui_size);
+	flnetpref.get("ui_font", ui_font, ui_font);
 
 	flnetpref.get("fgColors[0]", fgColors[0], fgColors[0]);
 	flnetpref.get("fgColors[1]", fgColors[1], fgColors[1]);

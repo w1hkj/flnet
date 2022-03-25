@@ -29,6 +29,7 @@ struct status {
 	int		mainX;
 	int		mainY;
 	int		ui_size;
+	int		ui_font;
 
 	int		fgColors[5];
 	int		bgColors[5];

@@ -41,6 +41,8 @@
 
 extern loglist callinlist;
 
+extern Fl_Output *txt_selected_font;
+
 static Fl_Window *cfgDialog = 0;
 
 void close_config(void)
@@ -56,6 +58,8 @@ void create_config()
 		cfgDialog = configDialog ();
 }
 
+#include "font_browser.h"
+
 void cbConfig ()
 {
 	create_config();
@@ -63,6 +67,8 @@ void cbConfig ()
 	btn_new_login_is_up->value(progStatus.disp_new_login);
 	btnOpenEditor->value(progStatus.open_editor);
 	btn_current_call_in_is_up->value(progStatus.callin_is_up);
+
+	txt_selected_font->value( font_browser->fontName(progStatus.ui_font) );
 
 	cbo_call_justify->value(progStatus.call_justify);
 	cbo_name_justify->value(progStatus.name_justify);
