@@ -110,6 +110,21 @@ void QRZ_DETAILS_query();
 
 //static notify_dialog *announce = 0;
 
+std::string percent_encode (std::string str) {
+	std::string chars = " !#$&'()*+,/:;=?@[]{}";
+	std::string out;
+	char chrstr[10];
+
+	for (size_t n = 0; n < str.length(); n++) {
+		if (chars.find(str[n]) != std::string::npos) {
+			snprintf(chrstr, sizeof(chrstr), "%%%2X", str[n]);
+			out.append(chrstr);
+		} else
+			out += str[n];
+	}
+	return out;
+}
+
 void print_query(const std::string &name, const std::string &s)
 {
 	if (DISP_DEBUG)
@@ -550,10 +565,10 @@ bool getSessionKey(std::string& sessionpage)
 {
 	std::string html = "http://";
 	html.append(qrzhost);
-	html.append(" /xml/current/?username=");
-	html.append(progStatus.user_name);
-	html.append(";password=");
-	html.append(progStatus.user_password);
+	html.append(" /xml/current/?user_name=");
+	html.append(percent_encode(progStatus.user_name));
+	html.append(";user_password=");
+	html.append(percent_encode(progStatus.user_password));
 	html.append(";agent=");
 	html.append(PACKAGE_NAME);
 	html.append("-");
@@ -880,10 +895,10 @@ bool HAMCALLget(std::string& htmlpage)
         url.erase(0, p+2);
         size_t len = url.length();
         if (url[len-1]!='/') url.append("/");
-        url.append("call?username=");
-        url.append(progStatus.user_name);
-        url.append("&password=");
-        url.append(progStatus.user_password);
+        url.append("call?user_name=");
+        url.append(percent_encode(progStatus.user_name));
+        url.append("&user_password=");
+        url.append(percent_encode(progStatus.user_password));
         url.append("&rawlookup=1&callsign=");
         url.append(callsign);
         url.append("&program=flnet-");
@@ -916,7 +931,7 @@ static std::string HAMQTH_reply = "";
 #undef HAMQTH_DEBUG
 /*
  * send:
-     https://www.hamqth.com/xml.php?u=username&p=password
+     https://www.hamqth.com/xml.php?u=user_name&p=user_password
  * response:
      <?xml version="1.0"?>
      <HamQTH version="2.7" xmlns="https://www.hamqth.com">
@@ -976,8 +991,8 @@ bool HAMQTH_get_session_id()
 	if ((p1 = url.find("https")) != std::string::npos)
 		url.erase(p1+4,1);
 	if (url[url.length()-1] != '/') url += '/';
-	url.append("xml.php?u=").append(progStatus.user_name);
-	url.append("&p=").append(progStatus.user_password);
+	url.append("xml.php?u=").append(percent_encode(progStatus.user_name));
+	url.append("&p=").append(percent_encode(progStatus.user_password));
 
 	HAMQTH_session_id.clear();
 
